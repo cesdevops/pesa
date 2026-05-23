@@ -3,260 +3,481 @@
 
 {% block content %}
 
+<style>
+  /* Enhanced UI styles matching PESA theme */
+  :root {
+    --navy: #0d2b45;
+    --navy2: #154360;
+    --navy3: #1a5276;
+    --gold: #e67e00;
+    --gold2: #f39c12;
+    --gray1: #f0f3f5;
+    --gray2: #dce3ea;
+    --muted: #5a6a78;
+  }
+
+  .page-header-modern {
+    background: linear-gradient(135deg, #fff 0%, #fef9e7 100%);
+    padding: 1.2rem 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    border-left: 5px solid var(--gold);
+    box-shadow: 0 2px 8px rgba(13,43,69,.06);
+  }
+
+  .page-header-modern h3 {
+    font-family: 'Noto Serif Devanagari', serif;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .page-header-modern h3 i {
+    color: var(--gold);
+    font-size: 1.6rem;
+  }
+
+  .btn-gold-outline {
+    background: transparent;
+    border: 2px solid var(--gold);
+    color: var(--navy);
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 8px 20px;
+    transition: all 0.2s;
+  }
+
+  .btn-gold-outline:hover {
+    background: var(--gold);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(230,126,0,.3);
+  }
+
+  .filter-card {
+    background: white;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(13,43,69,.08);
+    margin-bottom: 1.8rem;
+    overflow: hidden;
+  }
+
+  .filter-card .card-header-custom {
+    background: var(--navy);
+    padding: 12px 20px;
+    border-bottom: 3px solid var(--gold);
+  }
+
+  .filter-card .card-header-custom h6 {
+    margin: 0;
+    color: white;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+  }
+
+  .filter-card .card-header-custom h6 i {
+    color: var(--gold);
+    margin-right: 8px;
+  }
+
+  .filter-card .card-body {
+    padding: 1.5rem;
+  }
+
+  .form-label-modern {
+    font-weight: 600;
+    color: var(--navy3);
+    font-size: 12px;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .form-control-modern, .form-select-modern {
+    border: 1.5px solid var(--gray2);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
+    transition: all 0.2s;
+    width: 100%;
+  }
+
+  .form-control-modern:focus, .form-select-modern:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(230,126,0,0.15);
+    outline: none;
+  }
+
+  .data-table-card {
+    background: white;
+    border: none;
+    border-radius: 16px;
+    overflow-x: auto;
+    box-shadow: 0 4px 14px rgba(13,43,69,.08);
+  }
+
+  .data-table-card .table-responsive {
+    padding: 0;
+  }
+
+  .data-table-card table {
+    margin-bottom: 0;
+    font-size: 12.5px;
+    width: 100%;
+    min-width: 800px;
+  }
+
+  .data-table-card thead th {
+    background: var(--navy);
+    color: white;
+    font-weight: 600;
+    padding: 14px 12px;
+    border-bottom: 3px solid var(--gold);
+    vertical-align: middle;
+    font-size: 12px;
+    letter-spacing: 0.3px;
+    text-align: center;
+  }
+
+  .data-table-card tbody td {
+    padding: 12px;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--gray2);
+    text-align: center;
+  }
+
+  .data-table-card tbody tr:hover {
+    background: #fef9e7;
+    transition: background 0.2s;
+  }
+
+  .badge-active {
+    background: linear-gradient(135deg, #1e7e34 0%, #28a745 100%);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: white;
+    display: inline-block;
+  }
+
+  .badge-inactive {
+    background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: white;
+    display: inline-block;
+  }
+
+  /* SEPARATE ACTION BUTTONS - EACH IN ITS OWN COLUMN */
+  .btn-action {
+    padding: 6px 14px;
+    font-size: 11px;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    width: auto;
+    min-width: 85px;
+  }
+
+  .btn-action i {
+    font-size: 12px;
+  }
+
+  .btn-edit {
+    background: #f39c12;
+    color: #1e2a36;
+    border: none;
+  }
+
+  .btn-edit:hover {
+    background: #e67e22;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(243,156,18,.3);
+    color: #1e2a36;
+  }
+
+  .btn-delete {
+    background: #c0392b;
+    color: white;
+    border: none;
+  }
+
+  .btn-delete:hover {
+    background: #a93226;
+    transform: translateY(-1px);
+    color: white;
+  }
+
+  .btn-adduser {
+    background: var(--navy);
+    color: white;
+    border: none;
+  }
+
+  .btn-adduser:hover {
+    background: var(--navy3);
+    transform: translateY(-1px);
+    color: white;
+  }
+
+  /* Modal styling */
+  .modal-modern .modal-content {
+    border-radius: 16px;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  }
+
+  .modal-modern .modal-header {
+    background: var(--navy);
+    color: white;
+    border-bottom: 3px solid var(--gold);
+    padding: 16px 20px;
+  }
+
+  .modal-modern .modal-header .modal-title {
+    font-weight: 700;
+    font-family: 'Noto Serif Devanagari', serif;
+    font-size: 1.2rem;
+  }
+
+  .modal-modern .modal-header .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: 0.8;
+  }
+
+  .modal-modern .modal-body {
+    padding: 1.8rem;
+  }
+
+  .modal-modern .modal-footer {
+    background: var(--gray1);
+    border-top: 1px solid var(--gray2);
+    padding: 1rem 1.8rem;
+  }
+
+  .btn-save {
+    background: var(--gold);
+    color: var(--navy);
+    font-weight: 700;
+    border: none;
+    padding: 8px 24px;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+
+  .btn-save:hover {
+    background: #cf6d00;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(230,126,0,.3);
+  }
+
+  .btn-update {
+    background: var(--navy);
+    color: white;
+    font-weight: 700;
+    border: none;
+    padding: 8px 24px;
+    border-radius: 8px;
+  }
+
+  .btn-update:hover {
+    background: var(--navy3);
+    transform: translateY(-1px);
+  }
+
+  .alert-custom {
+    border-radius: 12px;
+    border-left: 5px solid;
+    padding: 12px 18px;
+    margin-bottom: 1.5rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: var(--muted);
+  }
+
+  .empty-state i {
+    font-size: 3rem;
+    color: var(--gray2);
+    margin-bottom: 1rem;
+  }
+
+  .record-count {
+    background: var(--gold);
+    color: var(--navy);
+    border-radius: 30px;
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-left: 10px;
+  }
+
+  code {
+    background: var(--gray1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+  }
+  
+  .text-start-cell {
+    text-align: left;
+  }
+</style>
+
 <div class="container-fluid mt-4">
 
-    <!-- ================================================= -->
     <!-- HEADER -->
-    <!-- ================================================= -->
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <h3 class="mb-0">
-            Manage Zilla Parishad
+    <div class="page-header-modern d-flex justify-content-between align-items-center">
+        <h3>
+            <i class="fas fa-building"></i>
+            जिल्हा परिषद व्यवस्थापन
+            <span class="record-count">{{ all_zilla_parishad|length }} एकूण</span>
         </h3>
-
-        <button class="btn btn-primary"
-                data-bs-toggle="modal"
-                data-bs-target="#addModal">
-
-            Add Zilla Parishad
-
+        <button class="btn btn-gold-outline" data-bs-toggle="modal" data-bs-target="#addModal">
+            <i class="fas fa-plus-circle"></i> नवीन जिल्हा परिषद
         </button>
-
     </div>
 
-    <!-- ================================================= -->
     <!-- MESSAGES -->
-    <!-- ================================================= -->
-
     {% if messages %}
-
         {% for message in messages %}
-
-            <div class="alert alert-success alert-dismissible fade show">
-
+            <div class="alert alert-custom alert-{{ message.tags }} alert-dismissible fade show" 
+                 role="alert"
+                 style="background: {% if message.tags == 'success' %}#e8f5e9{% elif message.tags == 'error' %}#fdecea{% else %}#fff8e1{% endif %};
+                        border-left-color: {% if message.tags == 'success' %}#1e7e34{% elif message.tags == 'error' %}#c0392b{% else %}#f39c12{% endif %};">
+                <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %} me-2"></i>
                 {{ message }}
-
-                <button type="button"
-                        class="btn-close"
-                        data-bs-dismiss="alert">
-                </button>
-
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
-
         {% endfor %}
-
     {% endif %}
 
-    <!-- ================================================= -->
-    <!-- SEARCH & FILTER -->
-    <!-- ================================================= -->
-
-    <div class="card border-0 shadow-sm mb-4">
-
-        <div class="card-body">
-
-            <form method="GET">
-
-                <div class="row align-items-end">
-
-                    <!-- SEARCH -->
-
-                    <div class="col-md-6 mb-2">
-
-                        <label class="form-label">
-
-                            Search By Name / District / Code
-
-                        </label>
-
-                        <input type="text"
-                                                     <input type="text"
-                               name="search"
-                               class="form-control"
-                               placeholder="Enter Name, District or Code"
-                               value="{{ search }}">
-            <div class="col-md-3 mb-2">
-
-                        <label class="form-label">
-
-                            Status
-
-                        </label>
-
-                        <select name="status"
-                                class="form-select">
-
-                            <option value="">
-                                All
-                            </option>
-
-                            <option value="Active"
-                            {% if status == 'Active' %}selected{% endif %}>
-
-                                Active
-
-                            </option>
-
-                            <option value="Inactive"
-                            {% if status == 'Inactive' %}selected{% endif %}>
-
-                                Inactive
-
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                    <!-- BUTTON -->
-
-                    <div class="col-md-3 mb-2">
-
-                        <button type="submit"
-                                class="btn btn-primary w-100">
-
-                            Search
-
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </form>
-
+    <!-- SEARCH FILTER -->
+    <div class="filter-card">
+        <div class="card-header-custom">
+            <h6><i class="fas fa-search"></i> फिल्टर / शोध</h6>
         </div>
-
+        <div class="card-body">
+            <form method="GET">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label-modern">
+                            <i class="fas fa-search me-1"></i> शोधा
+                        </label>
+                        <input type="text"
+                               name="search"
+                               class="form-control-modern"
+                               placeholder="नाव, जिल्हा किंवा कोड..."
+                               value="{{ search|default:'' }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label-modern">
+                            <i class="fas fa-filter me-1"></i> स्थिती
+                        </label>
+                        <select name="status" class="form-select-modern">
+                            <option value="">सर्व</option>
+                            <option value="Active" {% if status == 'Active' %}selected{% endif %}>सक्रिय</option>
+                            <option value="Inactive" {% if status == 'Inactive' %}selected{% endif %}>निष्क्रिय</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100" style="background: var(--navy); border-radius: 8px;">
+                            <i class="fas fa-search"></i> शोधा
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="{% url 'ZP-Manage-Zilla-Parishad' %}" class="btn btn-secondary w-100" style="border-radius: 8px; background: var(--gray2); color: var(--navy);">
+                            <i class="fas fa-undo-alt"></i> रीसेट
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <!-- ================================================= -->
-    <!-- TABLE -->
-    <!-- ================================================= -->
-
-    <div class="card border-0 shadow-sm">
-
-        <div class="card-body table-responsive">
-
-            <table class="table table-bordered table-hover align-middle">
-
-                <thead class="table-dark">
-
+    <!-- TABLE - WITH THREE SEPARATE COLUMNS FOR ACTIONS -->
+    <div class="data-table-card">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
                     <tr>
-
-                        <th>#</th>
-                        <th>Zilla Parishad Name</th>
-                        <th>District</th>
-                        <th>Code</th>
-                        <th>Contact Person</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Status</th>
-                        <th width="180">Action</th>
-
+                        <th width="50">#</th>
+                        <th>जिल्हा परिषद नाव</th>
+                        <th>जिल्हा</th>
+                        <th width="120">कोड</th>
+                        <th width="100">स्थिती</th>
+                        <th width="110" class="text-center">संपादन</th>
+                        <th width="100" class="text-center">हटवा</th>
+                        <th width="120" class="text-center">वापरकर्ता</th>
                     </tr>
-
                 </thead>
-
                 <tbody>
-
                     {% for zp in all_zilla_parishad %}
-
                     <tr>
-
+                        <td>{{ forloop.counter }}</td>
+                        <td class="text-start-cell fw-semibold">{{ zp.zillaParishad_name|default:"-" }}</td>
+                        <td>{{ zp.district.name|default:"-" }}</td>
+                        <td><code>{{ zp.zillaParishad_code|default:"-" }}</code></td>
                         <td>
-                            {{ forloop.counter }}
-                        </td>
-
-                        <td>
-                            {{ zp.zillaParishad_name }}
-                        </td>
-
-                        <td>
-                            {{ zp.district_name }}
-                        </td>
-
-                        <td>
-                            {{ zp.zillaParishad_name_code }}
-                        </td>
-
-                        <td>
-                            {{ zp.contact_person|default:"-" }}
-                        </td>
-
-                        <td>
-                            {{ zp.contact_email|default:"-" }}
-                        </td>
-
-                        <td>
-                            {{ zp.contact_phone|default:"-" }}
-                        </td>
-
-                        <td>
-
                             {% if zp.status == 'Active' %}
-
-                                <span class="badge bg-success">
-                                    Active
-                                </span>
-
+                                <span class="badge-active"><i class="fas fa-check-circle me-1"></i> सक्रिय</span>
                             {% else %}
-
-                                <span class="badge bg-danger">
-                                    Inactive
-                                </span>
-
+                                <span class="badge-inactive"><i class="fas fa-times-circle me-1"></i> निष्क्रिय</span>
                             {% endif %}
-
                         </td>
-
-                        <td>
-
-                            <!-- EDIT -->
-
-                            <button class="btn btn-warning btn-sm"
+                        <!-- SEPARATE COLUMN 1: EDIT BUTTON -->
+                        <td class="text-center">
+                            <button class="btn-action btn-edit"
                                     data-bs-toggle="modal"
                                     data-bs-target="#editModal{{ zp.id }}">
-
-                                Edit
-
+                                <i class="fas fa-edit"></i> संपादन
                             </button>
-
-                            <!-- DELETE -->
-
+                        </td>
+                        <!-- SEPARATE COLUMN 2: DELETE BUTTON -->
+                        <td class="text-center">
                             <a href="?delete_id={{ zp.id }}"
-                               class="btn btn-danger btn-sm"
-                               onclick="return confirm('Are you sure you want to delete this record?')">
-
-                                Delete
-
+                               class="btn-action btn-delete"
+                               onclick="return confirm('खात्री आहे? हा रेकॉर्ड हटवला जाईल!')">
+                                <i class="fas fa-trash-alt"></i> हटवा
                             </a>
-
                         </td>
-
+                        <!-- SEPARATE COLUMN 3: ADD USER BUTTON -->
+                        <td class="text-center">
+                            <a href="{% url 'ZP-Manage-Zilla-Parishad-User' %}?zp_id={{ zp.id }}"
+                               class="btn-action btn-adduser">
+                                <i class="fas fa-user-plus"></i> वापरकर्ता
+                            </a>
+                        </td>
                     </tr>
-
                     {% empty %}
-
                     <tr>
-
-                        <td colspan="9"
-                            class="text-center text-danger">
-
-                            No Data Found
-
+                        <td colspan="8" class="empty-state">
+                            <i class="fas fa-database"></i>
+                            <p class="mt-2 mb-0">कोणताही डेटा सापडला नाही</p>
+                            <small class="text-muted">कृपया नवीन नोंद करण्यासाठी वरील बटण वापरा</small>
                         </td>
-
                     </tr>
-
                     {% endfor %}
-
                 </tbody>
-
             </table>
-
         </div>
-
     </div>
 
 </div>
@@ -264,8 +485,7 @@
 <!-- ================================================= -->
 <!-- ADD MODAL -->
 <!-- ================================================= -->
-
-<div class="modal fade"
+<div class="modal fade modal-modern"
      id="addModal"
      tabindex="-1"
      aria-hidden="true">
@@ -285,9 +505,7 @@
                 <div class="modal-header">
 
                     <h5 class="modal-title">
-
-                        Add Zilla Parishad
-
+                        <i class="fas fa-plus-circle me-2"></i> नवीन जिल्हा परिषद
                     </h5>
 
                     <button type="button"
@@ -299,123 +517,56 @@
 
                 <div class="modal-body">
 
-                    <div class="row">
+                    <div class="row g-3">
 
-                        <!-- REQUIRED -->
-
-                        <div class="col-md-6 mb-3">
-
-                            <label class="form-label">
-
-                                Zilla Parishad Name
-                                <span class="text-danger">*</span>
-
+                        <div class="col-md-6">
+                            <label class="form-label-modern">
+                                जिल्हा परिषद नाव <span class="text-danger">*</span>
                             </label>
-
                             <input type="text"
                                    name="zillaParishad_name"
-                                   class="form-control"
+                                   class="form-control-modern"
+                                   placeholder="उदा. नाशिक जिल्हा परिषद"
                                    required>
-
                         </div>
 
-                        <div class="col-md-6 mb-3">
-
-                            <label class="form-label">
-
-                                District Name
-                                <span class="text-danger">*</span>
-
+                        <div class="col-md-6">
+                            <label class="form-label-modern">
+                                जिल्हा <span class="text-danger">*</span>
                             </label>
-
-                            <input type="text"
-                                   name="district_name"
-                                   class="form-control"
-                                   required>
-
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-
-                            <label class="form-label">
-
-                                ZP Code
-                                <span class="text-danger">*</span>
-
-                            </label>
-
-                            <input type="text"
-                                   name="zillaParishad_name_code"
-                                   class="form-control"
-                                   required>
-
-                        </div>
-
-                        <!-- OPTIONAL -->
-
-                        <div class="col-md-6 mb-3">
-
-                            <label class="form-label">
-
-                                Contact Person
-
-                            </label>
-
-                            <input type="text"
-                                   name="contact_person"
-                                   class="form-control">
-
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-
-                            <label class="form-label">
-
-                                Email
-
-                            </label>
-
-                            <input type="email"
-                                   name="contact_email"
-                                   class="form-control">
-
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-
-                            <label class="form-label">
-
-                                Contact Phone
-
-                            </label>
-
-                            <input type="text"
-                                   name="contact_phone"
-                                   class="form-control">
-
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-
-                            <label class="form-label">
-
-                                Status
-
-                            </label>
-
-                            <select name="status"
-                                    class="form-select">
-
-                                <option value="Active">
-                                    Active
-                                </option>
-
-                                <option value="Inactive">
-                                    Inactive
-                                </option>
-
+                            <select name="district"
+                                    class="form-select-modern"
+                                    required>
+                                <option value="">-- जिल्हा निवडा --</option>
+                                {% for district in all_districts %}
+                                    <option value="{{ district.id }}">
+                                        {{ district.name }}
+                                    </option>
+                                {% endfor %}
                             </select>
+                        </div>
 
+                        <div class="col-md-6">
+                            <label class="form-label-modern">
+                                जिल्हा परिषद कोड <span class="text-danger">*</span>
+                            </label>
+                            <input type="text"
+                                   name="zillaParishad_code"
+                                   class="form-control-modern"
+                                   placeholder="उदा. ZP_NAS_001"
+                                   required>
+                            <small class="text-muted" style="font-size: 10px;">अद्वितीय ओळख कोड</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label-modern">
+                                स्थिती
+                            </label>
+                            <select name="status"
+                                    class="form-select-modern">
+                                <option value="Active">सक्रिय</option>
+                                <option value="Inactive">निष्क्रिय</option>
+                            </select>
                         </div>
 
                     </div>
@@ -424,11 +575,16 @@
 
                 <div class="modal-footer">
 
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal"
+                            style="border-radius: 8px;">
+                        <i class="fas fa-times"></i> रद्द करा
+                    </button>
+
                     <button type="submit"
-                            class="btn btn-primary">
-
-                        Save
-
+                            class="btn-save">
+                        <i class="fas fa-save"></i> जतन करा
                     </button>
 
                 </div>
@@ -447,7 +603,7 @@
 
 {% for zp in all_zilla_parishad %}
 
-<div class="modal fade"
+<div class="modal fade modal-modern"
      id="editModal{{ zp.id }}"
      tabindex="-1"
      aria-hidden="true">
@@ -471,9 +627,7 @@
                 <div class="modal-header">
 
                     <h5 class="modal-title">
-
-                        Edit Zilla Parishad
-
+                        <i class="fas fa-edit me-2"></i> जिल्हा परिषद संपादन
                     </h5>
 
                     <button type="button"
@@ -485,135 +639,62 @@
 
                 <div class="modal-body">
 
-                    <div class="row">
+                    <div class="row g-3">
 
-                        <!-- REQUIRED -->
-
-                        <div class="col-md-6 mb-3">
-
-                            <label class="form-label">
-
-                                Zilla Parishad Name
-                                <span class="text-danger">*</span>
-
+                        <div class="col-md-6">
+                            <label class="form-label-modern">
+                                जिल्हा परिषद नाव <span class="text-danger">*</span>
                             </label>
-
                             <input type="text"
                                    name="zillaParishad_name"
-                                   class="form-control"
+                                   class="form-control-modern"
                                    value="{{ zp.zillaParishad_name }}"
                                    required>
-
                         </div>
 
-                        <div class="col-md-6 mb-3">
-
-                            <label class="form-label">
-
-                                District Name
-                                <span class="text-danger">*</span>
-
+                        <div class="col-md-6">
+                            <label class="form-label-modern">
+                                जिल्हा <span class="text-danger">*</span>
                             </label>
+                            <select name="district"
+                                    class="form-select-modern"
+                                    required>
+                                <option value="">-- जिल्हा निवडा --</option>
+                                {% for district in all_districts %}
+                                    <option value="{{ district.id }}"
+                                    {% if zp.district.id == district.id %}selected{% endif %}>
+                                        {{ district.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
 
+                        <div class="col-md-6">
+                            <label class="form-label-modern">
+                                जिल्हा परिषद कोड <span class="text-danger">*</span>
+                            </label>
                             <input type="text"
-                                   name="district_name"
-                                   class="form-control"
-                                   value="{{ zp.district_name }}"
+                                   name="zillaParishad_code"
+                                   class="form-control-modern"
+                                   value="{{ zp.zillaParishad_code }}"
                                    required>
-
                         </div>
 
-                        <div class="col-md-6 mb-3">
-
-                            <label class="form-label">
-
-                                ZP Code
-                                <span class="text-danger">*</span>
-
+                        <div class="col-md-6">
+                            <label class="form-label-modern">
+                                स्थिती
                             </label>
-
-                            <input type="text"
-                                   name="zillaParishad_name_code"
-                                   class="form-control"
-                                   value="{{ zp.zillaParishad_name_code }}"
-                                   required>
-
-                        </div>
-
-                        <!-- OPTIONAL -->
-
-                        <div class="col-md-6 mb-3">
-
-                            <label class="form-label">
-
-                                Contact Person
-
-                            </label>
-
-                            <input type="text"
-                                   name="contact_person"
-                                   class="form-control"
-                                   value="{{ zp.contact_person }}">
-
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-
-                            <label class="form-label">
-
-                                Email
-
-                            </label>
-
-                            <input type="email"
-                                   name="contact_email"
-                                   class="form-control"
-                                   value="{{ zp.contact_email }}">
-
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-
-                            <label class="form-label">
-
-                                Contact Phone
-
-                            </label>
-
-                            <input type="text"
-                                   name="contact_phone"
-                                   class="form-control"
-                                   value="{{ zp.contact_phone }}">
-
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-
-                            <label class="form-label">
-
-                                Status
-
-                            </label>
-
                             <select name="status"
-                                    class="form-select">
-
+                                    class="form-select-modern">
                                 <option value="Active"
                                 {% if zp.status == 'Active' %}selected{% endif %}>
-
-                                    Active
-
+                                    सक्रिय
                                 </option>
-
                                 <option value="Inactive"
                                 {% if zp.status == 'Inactive' %}selected{% endif %}>
-
-                                    Inactive
-
+                                    निष्क्रिय
                                 </option>
-
                             </select>
-
                         </div>
 
                     </div>
@@ -622,11 +703,16 @@
 
                 <div class="modal-footer">
 
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal"
+                            style="border-radius: 8px;">
+                        <i class="fas fa-times"></i> रद्द करा
+                    </button>
+
                     <button type="submit"
-                            class="btn btn-success">
-
-                        Update
-
+                            class="btn-update">
+                        <i class="fas fa-sync-alt"></i> अद्यतनित करा
                     </button>
 
                 </div>
