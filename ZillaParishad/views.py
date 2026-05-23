@@ -483,6 +483,10 @@ def ZP_Manage_Zilla_Parishad_User(request):
                 "address", ""
             ).strip()
 
+            role = request.POST.get(
+                "Role", ""
+            ).strip()
+
             status = request.POST.get(
                 "status", "Active"
             ).strip()
@@ -630,6 +634,7 @@ def ZP_Manage_Zilla_Parishad_User(request):
                 mobile=mobile,
                 email=email,
                 address=address,
+                Role=role,
 
                 profile=profile,
 
@@ -687,6 +692,10 @@ def ZP_Manage_Zilla_Parishad_User(request):
 
             address = request.POST.get(
                 "address", ""
+            ).strip()
+
+            role = request.POST.get(
+                "Role", ""
             ).strip()
 
             status = request.POST.get(
@@ -780,7 +789,12 @@ def ZP_Manage_Zilla_Parishad_User(request):
                     validate_email(
                         email
                     )
+                if role:
 
+                    validate_clean_text(
+                        role,
+                        "Role"
+                    )
             except ValidationError as e:
 
                 messages.error(
@@ -822,6 +836,7 @@ def ZP_Manage_Zilla_Parishad_User(request):
             obj.mobile = mobile
             obj.email = email
             obj.address = address
+            obj.Role = role
 
             obj.status = status
 
