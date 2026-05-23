@@ -9,4 +9,9 @@ urlpatterns = [
     path('Superuser-Logout/',views.Superuser_Logout,name='Superuser-Logout'),
     path('Superuser-Dashboard/',views.Superuser_Dashboard,name='Superuser-Dashboard'),
 
+
+
+    path('Manage-District/',views.Manage_District,name='Manage-District'),
+    path('Manage-Taluka/',views.Manage_Taluka,name='Manage-Taluka'),
+
 ]   
