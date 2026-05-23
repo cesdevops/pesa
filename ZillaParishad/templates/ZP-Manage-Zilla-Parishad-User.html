@@ -1,745 +1,710 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PESA Fund Management System – Official Portal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Marathi&family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=Crimson+Pro:wght@500;600;700;800&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+{% extends 'Superuser-base.html' %}
+{% load static %}
 
-    :root {
-      --gov-navy:        #0B2F5C;
-      --gov-navy-dark:   #07203F;
-      --gov-saffron:     #D97706;
-      --gov-saffron-hover: #B45309;
-      --gov-teal:        #1E6F5C;
-      --gov-soft-bg:     #F0F4F8;
-      --gov-card-bg:     #FFFFFF;
-      --gov-border:      #DCE3EC;
-      --gov-text-dark:   #1E2A3A;
-      --gov-text-muted:  #4A5B6E;
-      --gov-accent-blue: #2C6E9E;
-      --gov-highlight:   #FEF3C7;
-      --shadow-sm:       0 2px 6px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.05);
-      --shadow-md:       0 8px 20px rgba(11,47,92,0.08), 0 2px 6px rgba(0,0,0,0.04);
-      --shadow-lg:       0 20px 35px rgba(11,47,92,0.12), 0 5px 12px rgba(0,0,0,0.06);
-    }
+{% block content %}
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #E9F0F9 0%, #DFE8F2 100%);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      color: var(--gov-text-dark);
-    }
+<style>
+  /* Enhanced UI styles matching PESA theme */
+  :root {
+    --navy: #0d2b45;
+    --navy2: #154360;
+    --navy3: #1a5276;
+    --gold: #e67e00;
+    --gold2: #f39c12;
+    --gray1: #f0f3f5;
+    --gray2: #dce3ea;
+    --muted: #5a6a78;
+  }
 
-    /* Top Tricolor Stripe */
-    .top-stripe { display: flex; align-items: stretch; height: 5px; }
-    .top-stripe span { flex: 1; }
-    .top-stripe .s1 { background: #D97706; }
-    .top-stripe .s2 { background: #F8FAFC; }
-    .top-stripe .s3 { background: #1E6F5C; }
+  .page-header-modern {
+    background: linear-gradient(135deg, #fff 0%, #fef9e7 100%);
+    padding: 1.2rem 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    border-left: 5px solid var(--gold);
+    box-shadow: 0 2px 8px rgba(13,43,69,.06);
+  }
 
-    /* Header */
-    header {
-      background: linear-gradient(112deg, var(--gov-navy) 0%, #123B66 100%);
-      border-bottom: 1px solid rgba(217,119,6,0.4);
-      box-shadow: var(--shadow-md);
-      position: relative;
-    }
-    header::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image:
-        radial-gradient(circle at 15% 40%, rgba(217,119,6,0.08) 2%, transparent 45%),
-        radial-gradient(circle at 85% 70%, rgba(30,111,92,0.08) 2%, transparent 50%);
-      pointer-events: none;
-    }
-    .header-inner {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 22px 32px 24px;
-      display: flex;
-      align-items: center;
-      gap: 26px;
-      flex-wrap: wrap;
-      position: relative;
-    }
-    .emblem-wrap {
-      flex-shrink: 0;
-      width: 80px; height: 80px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 46px;
-      box-shadow: 0 0 0 2px rgba(217,119,6,0.4), 0 0 0 5px rgba(255,255,255,0.05);
-      color: #FDE68A;
-    }
-    .header-text { flex: 1; }
-    .header-text .ministry {
-      font-size: 11px;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      color: #FCD34D;
-      font-weight: 600;
-      margin-bottom: 5px;
-    }
-    .header-text h1 {
-      font-family: 'Crimson Pro', serif;
-      font-size: 34px;
-      font-weight: 800;
-      color: white;
-      line-height: 1.2;
-    }
-    .header-text .subtitle {
-      font-size: 12.5px;
-      color: rgba(255,255,255,0.75);
-      margin-top: 5px;
-    }
-    .header-text .marathi {
-      font-family: 'Tiro Devanagari Marathi', serif;
-      font-size: 14px;
-      color: #FDE68A;
-      margin-top: 5px;
-      font-weight: 500;
-    }
-    .header-badges { display: flex; gap: 14px; flex-shrink: 0; }
-    .badge {
-      font-size: 10px;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      padding: 6px 14px;
-      border-radius: 40px;
-      font-weight: 600;
-      background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.25);
-      color: #FFF5E6;
-    }
+  .page-header-modern h3 {
+    font-family: 'Noto Serif Devanagari', serif;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 
-    /* Nav */
-    nav {
-      background: white;
-      border-bottom: 1px solid var(--gov-border);
-      padding: 0 32px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-    }
-    .nav-inner { max-width: 1280px; margin: 0 auto; display: flex; gap: 6px; }
-    nav a {
-      color: var(--gov-text-dark);
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 600;
-      padding: 12px 24px;
-      display: inline-block;
-      border-bottom: 3px solid transparent;
-      transition: all 0.2s;
-    }
-    nav a:hover, nav a.active {
-      color: var(--gov-saffron);
-      border-bottom-color: var(--gov-saffron);
-    }
+  .page-header-modern h3 i {
+    color: var(--gold);
+    font-size: 1.6rem;
+  }
 
-    /* Marquee */
-    .marquee-bar {
-      background: var(--gov-highlight);
-      border-top: 1px solid #FDE68A;
-      border-bottom: 1px solid #FDE68A;
-      padding: 8px 0;
-      overflow: hidden;
-    }
-    .marquee-inner {
-      display: inline-block;
-      animation: marquee 34s linear infinite;
-      font-size: 12.5px;
-      color: #92400E;
-      font-weight: 500;
-      white-space: nowrap;
-    }
-    .marquee-inner span { margin-right: 65px; }
-    .marquee-inner .bullet { color: var(--gov-saffron); margin-right: 8px; font-weight: bold; font-size: 14px; }
-    @keyframes marquee { from { transform: translateX(100vw); } to { transform: translateX(-100%); } }
+  .btn-gold-outline {
+    background: transparent;
+    border: 2px solid var(--gold);
+    color: var(--navy);
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 8px 20px;
+    transition: all 0.2s;
+  }
 
-    /* Main Layout */
-    main {
-      flex: 1;
-      max-width: 1280px;
-      margin: 0 auto;
-      width: 100%;
-      padding: 44px 28px 60px;
-      display: grid;
-      grid-template-columns: 1fr 420px;
-      gap: 38px;
-      align-items: start;
-    }
+  .btn-gold-outline:hover {
+    background: var(--gold);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(230,126,0,.3);
+  }
 
-    /* Info Panel */
-    .info-panel { display: flex; flex-direction: column; gap: 28px; }
+  .btn-back {
+    background: var(--gray2);
+    color: var(--navy);
+    border: none;
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-weight: 600;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    margin-bottom: 1.2rem;
+  }
 
-    .welcome-card {
-      background: var(--gov-card-bg);
-      border-radius: 24px;
-      padding: 28px 32px;
-      box-shadow: var(--shadow-md);
-      border-left: 5px solid var(--gov-saffron);
-    }
-    .welcome-card h2 {
-      font-family: 'Crimson Pro', serif;
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--gov-navy);
-      margin-bottom: 12px;
-    }
-    .welcome-card p { font-size: 14px; color: var(--gov-text-muted); line-height: 1.6; }
+  .btn-back:hover {
+    background: var(--gray3);
+    color: var(--navy);
+    transform: translateX(-2px);
+  }
 
-    .modules-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
-    .module-card {
-      background: white;
-      border-radius: 20px;
-      padding: 20px 12px;
-      text-align: center;
-      border: 1px solid var(--gov-border);
-      box-shadow: var(--shadow-sm);
-      transition: all 0.2s;
-      cursor: default;
-    }
-    .module-card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-md);
-      border-color: var(--gov-saffron);
-    }
-    .module-card .icon { font-size: 32px; display: block; margin-bottom: 12px; }
-    .module-card .label { font-size: 12px; font-weight: 700; color: var(--gov-navy); }
-    .module-card.saffron { border-top: 4px solid var(--gov-saffron); }
-    .module-card.green   { border-top: 4px solid var(--gov-teal); }
-    .module-card.navy    { border-top: 4px solid var(--gov-navy); }
-    .module-card.gold    { border-top: 4px solid #C27803; }
+  .filter-card {
+    background: white;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(13,43,69,.08);
+    margin-bottom: 1.8rem;
+    overflow: hidden;
+  }
 
-    .notices-card {
-      background: white;
-      border-radius: 24px;
-      border: 1px solid var(--gov-border);
-      box-shadow: var(--shadow-sm);
-      overflow: hidden;
-    }
-    .notices-head {
-      background: var(--gov-navy);
-      color: white;
-      padding: 16px 24px;
-      font-size: 14px;
-      font-weight: 600;
-    }
-    .notice-item {
-      padding: 15px 24px;
-      border-bottom: 1px solid #ECF2F9;
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      font-size: 13px;
-      color: var(--gov-text-dark);
-      line-height: 1.45;
-      transition: background 0.2s;
-    }
-    .notice-item:hover { background: #FEF9EF; }
-    .notice-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gov-saffron); margin-top: 6px; flex-shrink: 0; }
-    .notice-date { font-size: 10.5px; color: var(--gov-text-muted); margin-top: 5px; }
+  .filter-card .card-header-custom {
+    background: var(--navy);
+    padding: 12px 20px;
+    border-bottom: 3px solid var(--gold);
+  }
 
-    /* Login Card */
-    .login-wrap { position: sticky; top: 30px; }
-    .login-card {
-      background: white;
-      border-radius: 28px;
-      box-shadow: var(--shadow-lg);
-      border: 1px solid rgba(11,47,92,0.12);
-      overflow: hidden;
-    }
-    .login-head {
-      background: linear-gradient(115deg, #F8F4EC 0%, #FFFFFF 100%);
-      padding: 28px 32px 20px;
-      text-align: center;
-      border-bottom: 1px solid #E6E9F0;
-    }
-    .login-head .icon-circle {
-      width: 68px; height: 68px;
-      background: var(--gov-navy);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 32px;
-      margin: 0 auto 12px;
-      box-shadow: 0 10px 20px rgba(11,47,92,0.2);
-      color: #FFE5B4;
-    }
-    .login-head h2 {
-      font-family: 'Crimson Pro', serif;
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--gov-navy);
-      margin-bottom: 4px;
-    }
-    .login-head p { font-size: 12px; color: var(--gov-text-muted); }
+  .filter-card .card-header-custom h6 {
+    margin: 0;
+    color: white;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+  }
 
-    .login-body { padding: 28px 30px 24px; }
+  .filter-card .card-header-custom h6 i {
+    color: var(--gold);
+    margin-right: 8px;
+  }
 
-    /* ── 3-Button Login Type Selector ── */
-    .login-type-group { margin-bottom: 24px; }
-    .login-type-group > label {
-      display: block;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--gov-navy);
-      margin-bottom: 10px;
-      letter-spacing: 0.3px;
-    }
-    .login-type-btns { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
-    .lt-btn {
-      padding: 12px 8px;
-      border: 2px solid var(--gov-border);
-      border-radius: 16px;
-      background: white;
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.2s;
-      position: relative;
-      font-family: 'Inter', sans-serif;
-    }
-    .lt-btn .lt-icon  { font-size: 22px; display: block; margin-bottom: 6px; }
-    .lt-btn .lt-name  { font-size: 11px; font-weight: 700; color: var(--gov-navy); line-height: 1.3; display: block; }
-    .lt-btn .lt-sub   { font-size: 10px; color: var(--gov-text-muted); display: block; margin-top: 2px; }
-    .lt-btn:hover     { border-color: var(--gov-saffron); background: #FFFAF3; }
-    .lt-btn.selected  {
-      border-color: var(--gov-saffron);
-      background: #FEF9EF;
-      box-shadow: 0 0 0 3px rgba(217,119,6,0.15);
-    }
-    .lt-btn.selected .lt-name { color: var(--gov-saffron); }
-    .lt-btn.selected::after {
-      content: '✓';
-      position: absolute;
-      top: 6px; right: 8px;
-      font-size: 11px;
-      color: var(--gov-saffron);
-      font-weight: 700;
-    }
+  .filter-card .card-body {
+    padding: 1.5rem;
+  }
 
-    /* Form Fields */
-    .form-group { margin-bottom: 20px; }
-    .form-group label {
-      display: block;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--gov-navy);
-      margin-bottom: 6px;
-      letter-spacing: 0.3px;
-    }
-    .input-wrap { position: relative; display: flex; align-items: center; }
-    .input-icon { position: absolute; left: 15px; font-size: 16px; color: #8C9CB0; pointer-events: none; }
-    .input-wrap input {
-      width: 100%;
-      padding: 13px 14px 13px 44px;
-      border: 1.5px solid #DCE3EC;
-      border-radius: 18px;
-      font-size: 14px;
-      font-family: 'Inter', sans-serif;
-      color: var(--gov-text-dark);
-      background: #FCFDFF;
-      transition: all 0.2s;
-      outline: none;
-    }
-    .input-wrap input:focus {
-      border-color: var(--gov-saffron);
-      box-shadow: 0 0 0 4px rgba(217,119,6,0.12);
-      background: white;
-    }
-    .eye-btn {
-      position: absolute;
-      right: 14px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 18px;
-      color: #8C9CB0;
-      padding: 6px;
-    }
-    .forgot-row { text-align: right; margin: -6px 0 20px; }
-    .forgot-row a { font-size: 12px; color: var(--gov-saffron); text-decoration: none; font-weight: 600; }
+  .form-label-modern {
+    font-weight: 600;
+    color: var(--navy3);
+    font-size: 12px;
+    margin-bottom: 6px;
+    display: block;
+  }
 
-    .btn-login {
-      width: 100%;
-      padding: 14px;
-      background: var(--gov-saffron);
-      color: white;
-      border: none;
-      border-radius: 40px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: 0.2s;
-      box-shadow: 0 8px 20px rgba(217,119,6,0.3);
-      letter-spacing: 0.5px;
-      font-family: 'Inter', sans-serif;
-    }
-    .btn-login:hover { background: var(--gov-saffron-hover); transform: translateY(-1px); }
-    .btn-login:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+  .form-control-modern, .form-select-modern {
+    border: 1.5px solid var(--gray2);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
+    transition: all 0.2s;
+    width: 100%;
+  }
 
-    .spinner {
-      display: none;
-      width: 16px; height: 16px;
-      border: 2px solid rgba(255,255,255,0.4);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-      margin-left: 8px;
-      vertical-align: middle;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .btn-login.loading .spinner { display: inline-block; }
+  .form-control-modern:focus, .form-select-modern:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(230,126,0,0.15);
+    outline: none;
+  }
 
-    .divider {
-      display: flex; align-items: center; gap: 12px;
-      margin: 22px 0 16px;
-      color: #BCC9DC; font-size: 11px;
-    }
-    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #E2EAF3; }
+  .data-table-card {
+    background: white;
+    border: none;
+    border-radius: 16px;
+    overflow-x: auto;
+    box-shadow: 0 4px 14px rgba(13,43,69,.08);
+  }
 
-    .quick-links { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .quick-link-btn {
-      padding: 10px 8px;
-      border: 1.5px solid #DCE3EC;
-      border-radius: 36px;
-      background: white;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--gov-navy);
-      cursor: pointer;
-      text-align: center;
-      text-decoration: none;
-      transition: 0.2s;
-      display: block;
-    }
-    .quick-link-btn:hover { background: #FEF7E9; border-color: var(--gov-saffron); color: var(--gov-saffron); }
+  .data-table-card .table-responsive {
+    padding: 0;
+  }
 
-    .login-footer {
-      padding: 16px 28px;
-      background: #F9FBFE;
-      border-top: 1px solid #EFF2F8;
-      text-align: center;
-      font-size: 11px;
-      color: #5F7392;
-      line-height: 1.5;
-    }
-    .login-footer strong { color: var(--gov-navy); }
+  .data-table-card table {
+    margin-bottom: 0;
+    font-size: 12.5px;
+    width: 100%;
+    min-width: 1000px;
+  }
 
-    /* Alert Messages */
-    .alert {
-      padding: 12px 18px;
-      border-radius: 20px;
-      font-size: 12.5px;
-      margin-bottom: 18px;
-      display: none;
-      align-items: center;
-      gap: 10px;
-      font-weight: 500;
-    }
-    .alert.show { display: flex; }
-    .alert-error   { background: #FEF2F0; color: #B45309; border-left: 4px solid var(--gov-saffron); border-radius: 0 20px 20px 0; }
-    .alert-success { background: #E5F5ED; color: #1E6F5C; border-left: 4px solid var(--gov-teal); border-radius: 0 20px 20px 0; }
+  .data-table-card thead th {
+    background: var(--navy);
+    color: white;
+    font-weight: 600;
+    padding: 14px 10px;
+    border-bottom: 3px solid var(--gold);
+    vertical-align: middle;
+    font-size: 12px;
+    letter-spacing: 0.3px;
+    text-align: center;
+  }
 
-    /* Footer */
-    footer {
-      background: var(--gov-navy-dark);
-      color: rgba(255,255,255,0.75);
-      text-align: center;
-      padding: 20px 24px;
-      font-size: 12px;
-      border-top: 3px solid var(--gov-saffron);
-    }
-    footer .stripe { height: 2px; background: var(--gov-saffron); width: 70px; margin: 0 auto 12px; border-radius: 2px; }
-    footer strong { color: #FFE2B5; }
+  .data-table-card tbody td {
+    padding: 12px 10px;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--gray2);
+    text-align: center;
+  }
 
-    /* Responsive */
-    @media (max-width: 860px) {
-      main { grid-template-columns: 1fr; gap: 32px; }
-      .login-wrap { position: static; }
-      .header-inner { justify-content: center; text-align: center; }
-      .header-text h1 { font-size: 28px; }
-    }
-    @media (max-width: 540px) {
-      .modules-grid { grid-template-columns: repeat(2,1fr); }
-      .header-text h1 { font-size: 24px; }
-      nav a { padding: 10px 16px; font-size: 11.5px; }
-      .login-type-btns { grid-template-columns: 1fr; }
-    }
-  </style>
-</head>
-<body>
+  .data-table-card tbody tr:hover {
+    background: #fef9e7;
+    transition: background 0.2s;
+  }
 
-  <div class="top-stripe">
-    <span class="s1"></span><span class="s2"></span><span class="s3"></span>
-  </div>
+  .badge-active {
+    background: linear-gradient(135deg, #1e7e34 0%, #28a745 100%);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: white;
+    display: inline-block;
+  }
 
-  <header>
-    <div class="header-inner">
-      <div class="emblem-wrap">🏛️</div>
-      <div class="header-text">
-        <div class="ministry">Government of Maharashtra | Tribal Development Department</div>
-        <h1>PESA Fund Management System</h1>
-        <div class="subtitle">Panchayats (Extension to Scheduled Areas) Act, 1996 — Grampanchayat Finance Portal</div>
-        <div class="marathi">पेसा निधी व्यवस्थापन प्रणाली – शासकीय पोर्टल</div>
-      </div>
-      <div class="header-badges">
-        <span class="badge">Maharashtra Govt.</span>
-        <span class="badge">PESA Act 1996</span>
-      </div>
-    </div>
-  </header>
+  .badge-inactive {
+    background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: white;
+    display: inline-block;
+  }
 
-  <nav>
-    <div class="nav-inner">
-      <a href="#" class="active">🏠 Home</a>
-      <a href="#">📋 About PESA</a>
-      <a href="#">🏘️ Grampanchayat</a>
-      <a href="#">💰 Fund Tracker</a>
-      <a href="#">📊 Reports</a>
-      <a href="#">📞 Help Desk</a>
-    </div>
-  </nav>
+  .profile-img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--gold);
+  }
 
-  <div class="marquee-bar">
-    <div class="marquee-inner">
-      <span><span class="bullet">✦</span>PESA Fund Management Portal is now operational for all Scheduled Area Grampanchayats — Maharashtra</span>
-      <span><span class="bullet">✦</span>ग्रामसभा निधी विवरणपत्र सादर करण्याची अंतिम तारीख: ३१ मे २०२६</span>
-      <span><span class="bullet">✦</span>New circular: Minor forest produce revenue entry mandatory within 7 working days of receipt.</span>
-    </div>
-  </div>
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
 
-  <main>
+  .btn-action {
+    padding: 5px 12px;
+    font-size: 11px;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+  }
 
-    <!-- ── Left Info Panel ── -->
-    <div class="info-panel">
-      <div class="welcome-card">
-        <h2>Official PESA Fund Management</h2>
-        <p>
-          This government portal ensures transparent & efficient financial management for Grampanchayats
-          in Scheduled Areas under the PESA Act, 1996. Track allocations, submit utilization certificates,
-          and ensure compliance with tribal welfare norms.
-        </p>
-      </div>
+  .btn-action i {
+    font-size: 11px;
+  }
 
-      <div class="modules-grid">
-        <div class="module-card saffron"><span class="icon">💰</span><div class="label">Fund Allocation & Release</div></div>
-        <div class="module-card green"><span class="icon">📊</span><div class="label">Utilization Certificates</div></div>
-        <div class="module-card navy"><span class="icon">🏘️</span><div class="label">Grampanchayat Profile</div></div>
-        <div class="module-card gold"><span class="icon">📋</span><div class="label">PESA Compliance</div></div>
-        <div class="module-card saffron"><span class="icon">📂</span><div class="label">Gram Sabha Records</div></div>
-        <div class="module-card green"><span class="icon">📑</span><div class="label">Audit & Reports</div></div>
-      </div>
+  .btn-edit {
+    background: #f39c12;
+    color: #1e2a36;
+  }
 
-      <div class="notices-card">
-        <div class="notices-head">📢 Official Notifications</div>
-        <div class="notice-item"><div class="notice-dot"></div><div><div>PESA Fund utilization report for Q4 2025–26 due by May 31, 2026. All Grampanchayat Secretaries must submit online.</div><div class="notice-date">📅 15 May 2026</div></div></div>
-        <div class="notice-item"><div class="notice-dot"></div><div><div>ग्रामसभा विशेष अधिवेशन – PESA खर्च अनुमोदनासाठी सर्व ग्रामपंचायतींनी इतिवृत्त सादर करावे.</div><div class="notice-date">📅 10 May 2026</div></div></div>
-        <div class="notice-item"><div class="notice-dot"></div><div><div>New circular: Minor forest produce revenue entry mandatory within 7 working days of receipt.</div><div class="notice-date">📅 04 May 2026</div></div></div>
-        <div class="notice-item"><div class="notice-dot"></div><div><div>Training for Panchayat Samiti Finance Officers — Amravati Division, June 2–3, 2026.</div><div class="notice-date">📅 28 Apr 2026</div></div></div>
-        <div class="notice-item"><div class="notice-dot"></div><div><div>Reminder: Aadhaar-linked bank account verification for DBT must be completed.</div><div class="notice-date">📅 20 Apr 2026</div></div></div>
-      </div>
+  .btn-edit:hover {
+    background: #e67e22;
+    transform: translateY(-1px);
+    color: #1e2a36;
+  }
+
+  .btn-delete {
+    background: #c0392b;
+    color: white;
+  }
+
+  .btn-delete:hover {
+    background: #a93226;
+    transform: translateY(-1px);
+    color: white;
+  }
+
+  /* Modal styling */
+  .modal-modern .modal-content {
+    border-radius: 16px;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  }
+
+  .modal-modern .modal-header {
+    background: var(--navy);
+    color: white;
+    border-bottom: 3px solid var(--gold);
+    padding: 16px 20px;
+  }
+
+  .modal-modern .modal-header .modal-title {
+    font-weight: 700;
+    font-family: 'Noto Serif Devanagari', serif;
+    font-size: 1.2rem;
+  }
+
+  .modal-modern .modal-header .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: 0.8;
+  }
+
+  .modal-modern .modal-body {
+    padding: 1.8rem;
+  }
+
+  .modal-modern .modal-footer {
+    background: var(--gray1);
+    border-top: 1px solid var(--gray2);
+    padding: 1rem 1.8rem;
+  }
+
+  .btn-save {
+    background: var(--gold);
+    color: var(--navy);
+    font-weight: 700;
+    border: none;
+    padding: 8px 24px;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+
+  .btn-save:hover {
+    background: #cf6d00;
+    transform: translateY(-1px);
+  }
+
+  .btn-update {
+    background: var(--navy);
+    color: white;
+    font-weight: 700;
+    border: none;
+    padding: 8px 24px;
+    border-radius: 8px;
+  }
+
+  .btn-update:hover {
+    background: var(--navy3);
+    transform: translateY(-1px);
+  }
+
+  .alert-custom {
+    border-radius: 12px;
+    border-left: 5px solid #1e7e34;
+    padding: 12px 18px;
+    margin-bottom: 1.5rem;
+    background: #e8f5e9;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: var(--muted);
+  }
+
+  .empty-state i {
+    font-size: 3rem;
+    color: var(--gray2);
+    margin-bottom: 1rem;
+  }
+
+  .record-count {
+    background: var(--gold);
+    color: var(--navy);
+    border-radius: 30px;
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-left: 10px;
+  }
+
+  .profile-preview {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--gold);
+    margin-bottom: 10px;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+
+    <!-- HEADER - Modernized -->
+    <div class="page-header-modern d-flex justify-content-between align-items-center">
+        <h3>
+            <i class="fas fa-users"></i>
+            जिल्हा परिषद वापरकर्ते व्यवस्थापन
+            <span class="record-count">{{ users|length }} एकूण</span>
+        </h3>
+        <button class="btn btn-gold-outline" data-bs-toggle="modal" data-bs-target="#addModal">
+            <i class="fas fa-user-plus"></i> नवीन वापरकर्ता
+        </button>
     </div>
 
-    <!-- ── Right Login Card ── -->
-    <div class="login-wrap">
-      <div class="login-card">
-        <div class="login-head">
-          <div class="icon-circle">🔐</div>
-          <h2>Secure Staff Login</h2>
-          <p>पेसा प्रणाली – प्रमाणीकृत प्रवेश</p>
+    <!-- MESSAGES -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-custom alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Back Button -->
+    <a href="{% url 'ZP-Manage-Zilla-Parishad' %}" class="btn-back">
+        <i class="fas fa-arrow-left"></i> मागे जा
+    </a>
+
+    <!-- SEARCH FILTER - Enhanced Card -->
+    <div class="filter-card">
+        <div class="card-header-custom">
+            <h6><i class="fas fa-search"></i> फिल्टर / शोध</h6>
         </div>
-
-        <div class="login-body">
-
-          <!-- Django Messages -->
-          {% for message in messages %}
-            <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %} show">
-              {% if message.tags == 'error' %}⚠️{% else %}✅{% endif %}
-              <span>{{ message }}</span>
-            </div>
-          {% endfor %}
-
-          <!-- Client-side alert (JS only) -->
-          <div class="alert alert-error" id="jsErrAlert">
-            ⚠️ <span id="jsErrMsg"></span>
-          </div>
-
-          <form method="POST" action="{% url 'Login' %}" id="loginForm" onsubmit="return handleLogin(event)">
-            {% csrf_token %}
-
-            <!-- Hidden field — populated by JS when a type button is clicked -->
-            <input type="hidden" name="login_type" id="login_type_input" value="" />
-
-            <!-- ── 3 Login Type Buttons ── -->
-            <div class="login-type-group">
-              <label>Login Type <span style="color:#D97706;">*</span></label>
-              <div class="login-type-btns">
-
-                <button type="button" class="lt-btn" id="btn-ZillaParishad"
-                        onclick="selectLoginType('ZillaParishad')">
-                  <span class="lt-icon">🏛️</span>
-                  <span class="lt-name">Zilla Parishad</span>
-                  <span class="lt-sub">ZP Officer</span>
-                </button>
-
-                <button type="button" class="lt-btn" id="btn-PanchayatSamiti"
-                        onclick="selectLoginType('PanchayatSamiti')">
-                  <span class="lt-icon">🏘️</span>
-                  <span class="lt-name">Panchayat Samiti</span>
-                  <span class="lt-sub">PS Officer</span>
-                </button>
-
-                <button type="button" class="lt-btn" id="btn-Kosh"
-                        onclick="selectLoginType('Kosh')">
-                  <span class="lt-icon">🏦</span>
-                  <span class="lt-name">Kosh</span>
-                  <span class="lt-sub">Treasury User</span>
-                </button>
-
-              </div>
-            </div>
-
-            <!-- Username -->
-            <div class="form-group">
-              <label for="username">Username / Employee Code <span style="color:#D97706;">*</span></label>
-              <div class="input-wrap">
-                <span class="input-icon">👤</span>
-                <input type="text" name="username" id="username"
-                       placeholder="Enter registered username"
-                       autocomplete="username"
-                       value="{{ request.POST.username|default:'' }}" />
-              </div>
-            </div>
-
-            <!-- Password -->
-            <div class="form-group">
-              <label for="password">Secure Password <span style="color:#D97706;">*</span></label>
-              <div class="input-wrap">
-                <span class="input-icon">🔑</span>
-                <input type="password" name="password" id="password"
-                       placeholder="Enter password"
-                       autocomplete="current-password" />
-                <button type="button" class="eye-btn" onclick="togglePassword()" id="eyeBtn">👁️</button>
-              </div>
-            </div>
-
-            <div class="forgot-row"><a href="#">Forgot Password / Reset?</a></div>
-
-            <button type="submit" class="btn-login" id="loginBtn">
-              Access Dashboard <span class="spinner" id="spinner"></span>
-            </button>
-
-          </form>
-
-          <div class="divider">Department Quick Links</div>
-          <div class="quick-links">
-            <a href="#" class="quick-link-btn">📝 New Registration</a>
-            <a href="#" class="quick-link-btn">🔓 Forgot User ID</a>
-            <a href="#" class="quick-link-btn">📞 Tech Support</a>
-            <a href="#" class="quick-link-btn">📖 e-Handbook</a>
-          </div>
+        <div class="card-body">
+            <form method="GET">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label-modern">
+                            <i class="fas fa-search me-1"></i> शोधा
+                        </label>
+                        <input type="text"
+                               name="search"
+                               class="form-control-modern"
+                               placeholder="नाव, Username, मोबाइल किंवा ईमेल..."
+                               value="{{ search|default:'' }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label-modern">
+                            <i class="fas fa-filter me-1"></i> स्थिती
+                        </label>
+                        <select name="status" class="form-select-modern">
+                            <option value="">सर्व</option>
+                            <option value="Active" {% if status == 'Active' %}selected{% endif %}>सक्रिय</option>
+                            <option value="Inactive" {% if status == 'Inactive' %}selected{% endif %}>निष्क्रिय</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100" style="background: var(--navy); border-radius: 8px;">
+                            <i class="fas fa-search"></i> शोधा
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="{% url 'ZP-Manage-Zilla-Parishad-User' %}" class="btn btn-secondary w-100" style="border-radius: 8px; background: var(--gray2); color: var(--navy);">
+                            <i class="fas fa-undo-alt"></i> रीसेट
+                        </a>
+                    </div>
+                </div>
+            </form>
         </div>
-
-        <div class="login-footer">
-          <strong>PESA Fund Management System — Tribal Development Dept.</strong><br/>
-          Government Helpline: <strong>1800-XXX-XXXX</strong> (Toll Free) | 9:00 AM – 6:00 PM
-        </div>
-      </div>
     </div>
 
-  </main>
+    <!-- TABLE - Enhanced -->
+    <div class="data-table-card">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th width="50">#</th>
+                        <th width="70">प्रोफाइल</th>
+                        <th>जिल्हा परिषद</th>
+                        <th>नाव</th>
+                        <th>Username</th>
+                        <th>मोबाइल</th>
+                        <th>ईमेल</th>
+                        <th width="100">स्थिती</th>
+                        <th width="150">क्रिया</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for obj in users %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            {% if obj.profile %}
+                                <img src="{{ obj.profile.url }}" class="profile-img">
+                            {% else %}
+                                <img src="{% static 'assets/img/user.png' %}" class="profile-img">
+                            {% endif %}
+                        </td>
+                        <td><span class="fw-semibold">{{ obj.zilla_parishad_name|default:"-" }}</span></td>
+                        <td>{{ obj.name|default:"-" }}</td>
+                        <td>{{ obj.username|default:"-" }}</td>
+                        <td>{{ obj.mobile|default:"-" }}</td>
+                        <td>{{ obj.email|default:"-" }}</td>
+                        <td>
+                            {% if obj.status == 'Active' %}
+                                <span class="badge-active"><i class="fas fa-check-circle me-1"></i> सक्रिय</span>
+                            {% else %}
+                                <span class="badge-inactive"><i class="fas fa-times-circle me-1"></i> निष्क्रिय</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-action btn-edit"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editModal{{ obj.id }}">
+                                    <i class="fas fa-edit"></i> संपादन
+                                </button>
+                                <a href="?delete_id={{ obj.id }}"
+                                   class="btn-action btn-delete"
+                                   onclick="return confirm('खात्री आहे? हा वापरकर्ता हटवला जाईल!')">
+                                    <i class="fas fa-trash-alt"></i> हटवा
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="empty-state">
+                            <i class="fas fa-user-slash"></i>
+                            <p class="mt-2 mb-0">कोणताही डेटा सापडला नाही</p>
+                            <small class="text-muted">कृपया नवीन वापरकर्ता जोडण्यासाठी वरील बटण वापरा</small>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-  <footer>
-    <div class="stripe"></div>
-    <strong>PESA Fund Management System</strong> — Tribal Development Department, Government of Maharashtra<br/>
-    Transparent governance for Scheduled Area Grampanchayats | © 2026 All Rights Reserved
-  </footer>
+<!-- ================================================= -->
+<!-- ADD MODAL - Enhanced -->
+<!-- ================================================= -->
+<div class="modal fade modal-modern"
+     id="addModal"
+     tabindex="-1"
+     aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user-plus me-2"></i> नवीन जिल्हा परिषद वापरकर्ता
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label-modern">
+                                जिल्हा परिषद <span class="text-danger">*</span>
+                            </label>
+                            <select name="zilla_parishad" class="form-select-modern" required>
+                                <option value="">-- जिल्हा परिषद निवडा --</option>
+                                {% for zp in all_zilla_parishad %}
+                                    <option value="{{ zp.id }}">{{ zp.zillaParishad_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-modern">
+                                पूर्ण नाव <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" name="name" class="form-control-modern" placeholder="उदा. राजेश पाटील" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-modern">
+                                Username <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" name="username" class="form-control-modern" placeholder="लॉगिन आयडी" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-modern">
+                                पासवर्ड <span class="text-danger">*</span>
+                            </label>
+                            <input type="password" name="password" class="form-control-modern" placeholder="गुप्तांक" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-modern">
+                                मोबाइल क्रमांक
+                            </label>
+                            <input type="text" name="mobile" class="form-control-modern" placeholder="उदा. ९८७६५४३२१०">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-modern">
+                                ईमेल
+                            </label>
+                            <input type="email" name="email" class="form-control-modern" placeholder="email@example.com">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-modern">
+                                पत्ता
+                            </label>
+                            <textarea name="address" rows="3" class="form-control-modern" placeholder="संपूर्ण पत्ता"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-modern">
+                                प्रोफाइल फोटो
+                            </label>
+                            <input type="file" name="profile" class="form-control-modern" accept="image/*">
+                            <small class="text-muted">jpg, png, gif फॉरमॅटमध्ये फोटो अपलोड करा</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-modern">
+                                स्थिती
+                            </label>
+                            <select name="status" class="form-select-modern">
+                                <option value="Active">सक्रिय</option>
+                                <option value="Inactive">निष्क्रिय</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius: 8px;">
+                        <i class="fas fa-times"></i> रद्द करा
+                    </button>
+                    <button type="submit" class="btn-save">
+                        <i class="fas fa-save"></i> जतन करा
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-  <script>
-    var selectedType = '';
-    var allTypes = ['ZillaParishad', 'PanchayatSamiti', 'Kosh'];
+<!-- ================================================= -->
+<!-- EDIT MODALS - Enhanced -->
+<!-- ================================================= -->
+{% for obj in users %}
+<div class="modal fade modal-modern"
+     id="editModal{{ obj.id }}"
+     tabindex="-1"
+     aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="edit">
+                <input type="hidden" name="edit_id" value="{{ obj.id }}">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-edit me-2"></i> वापरकर्ता संपादन
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-12 text-center mb-3">
+                            {% if obj.profile %}
+                                <img src="{{ obj.profile.url }}" class="profile-preview">
+                            {% else %}
+                                <img src="{% static 'assets/img/user.png' %}" class="profile-preview">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-modern">
+                                जिल्हा परिषद <span class="text-danger">*</span>
+                            </label>
+                            <select name="zilla_parishad" class="form-select-modern" required>
+                                {% for zp in all_zilla_parishad %}
+                                    <option value="{{ zp.id }}" {% if obj.zilla_parishad.id == zp.id %}selected{% endif %}>
+                                        {{ zp.zillaParishad_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-modern">
+                                पूर्ण नाव <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" name="name" class="form-control-modern" value="{{ obj.name }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-modern">
+                                Username <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" name="username" class="form-control-modern" value="{{ obj.username }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-modern">
+                                पासवर्ड
+                            </label>
+                            <input type="password" name="password" class="form-control-modern" placeholder="बदलण्यासाठीच नवीन पासवर्ड टाका">
+                            <small class="text-muted">रिकामे ठेवल्यास जुना पासवर्ड राहील</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-modern">
+                                मोबाइल क्रमांक
+                            </label>
+                            <input type="text" name="mobile" class="form-control-modern" value="{{ obj.mobile }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-modern">
+                                ईमेल
+                            </label>
+                            <input type="email" name="email" class="form-control-modern" value="{{ obj.email }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-modern">
+                                पत्ता
+                            </label>
+                            <textarea name="address" rows="3" class="form-control-modern">{{ obj.address }}</textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-modern">
+                                प्रोफाइल फोटो
+                            </label>
+                            <input type="file" name="profile" class="form-control-modern" accept="image/*">
+                            <small class="text-muted">नवीन फोटो अपलोड करण्यासाठी निवडा</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-modern">
+                                स्थिती
+                            </label>
+                            <select name="status" class="form-select-modern">
+                                <option value="Active" {% if obj.status == 'Active' %}selected{% endif %}>सक्रिय</option>
+                                <option value="Inactive" {% if obj.status == 'Inactive' %}selected{% endif %}>निष्क्रिय</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius: 8px;">
+                        <i class="fas fa-times"></i> रद्द करा
+                    </button>
+                    <button type="submit" class="btn-update">
+                        <i class="fas fa-sync-alt"></i> अद्यतनित करा
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
 
-    function selectLoginType(type) {
-      selectedType = type;
-      document.getElementById('login_type_input').value = type;
-      allTypes.forEach(function(t) {
-        var btn = document.getElementById('btn-' + t);
-        if (t === type) {
-          btn.classList.add('selected');
-        } else {
-          btn.classList.remove('selected');
-        }
-      });
-      // Hide JS error if it was about login type
-      document.getElementById('jsErrAlert').classList.remove('show');
-    }
-
-    function togglePassword() {
-      var field = document.getElementById('password');
-      var btn   = document.getElementById('eyeBtn');
-      if (field.type === 'password') {
-        field.type = 'text';
-        btn.textContent = '🙈';
-      } else {
-        field.type = 'password';
-        btn.textContent = '👁️';
-      }
-    }
-
-    function showJsError(msg) {
-      document.getElementById('jsErrMsg').textContent = msg;
-      document.getElementById('jsErrAlert').classList.add('show');
-    }
-
-    function handleLogin(e) {
-      // Hide any previous JS error
-      document.getElementById('jsErrAlert').classList.remove('show');
-
-      // Validate login type
-      if (!selectedType) {
-        e.preventDefault();
-        showJsError('Please select a Login Type before proceeding.');
-        return false;
-      }
-
-      // Validate username
-      var username = document.getElementById('username').value.trim();
-      if (!username) {
-        e.preventDefault();
-        showJsError('Please enter your Username.');
-        return false;
-      }
-
-      // Validate password
-      var password = document.getElementById('password').value.trim();
-      if (!password) {
-        e.preventDefault();
-        showJsError('Please enter your Password.');
-        return false;
-      }
-
-      // All good — show spinner and submit
-      var btn = document.getElementById('loginBtn');
-      btn.classList.add('loading');
-      btn.disabled = true;
-      return true;
-    }
-
-    // On page load: if Django returned a POST (e.g. validation error),
-    // re-highlight the previously selected login type
-    (function() {
-      var postedType = '{{ request.POST.login_type|default:"" }}';
-      if (postedType && allTypes.indexOf(postedType) !== -1) {
-        selectLoginType(postedType);
-      }
-    })();
-  </script>
-
-</body>
-</html>
+{% endblock %}
