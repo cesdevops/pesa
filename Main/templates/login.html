@@ -34,14 +34,14 @@ body{
   display:flex;flex-direction:column;
 }
 
-/* ── TOP STRIPS ── */
+/* TOP STRIPS */
 .strip-tricolor{height:5px;background:linear-gradient(to right,#ff9933 33%,#fff 33% 66%,#138808 66%);}
 .strip-navy{background:var(--navy);color:#cde;font-size:11px;padding:3px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px;}
 .strip-navy a{color:#aed6f1;text-decoration:none;font-size:10.5px;}
 .strip-navy a:hover{text-decoration:underline;}
 .strip-nav-links{display:flex;gap:14px;align-items:center;}
 
-/* ── MAIN HEADER ── */
+/* MAIN HEADER */
 .main-header{
   background:#fff;
   border-bottom:3px solid var(--gold);
@@ -72,7 +72,7 @@ body{
 }
 .header-right .tagline{font-size:10px;color:var(--muted);}
 
-/* ── MENU BAR ── */
+/* MENU BAR */
 .menu-bar{
   background:var(--navy2);
   display:flex;align-items:center;
@@ -93,7 +93,7 @@ body{
 .menu-bar .spacer{flex:1;}
 .menu-bar .login-info{color:#aed6f1;font-size:11px;padding:7px 0;}
 
-/* ── NOTICE ── */
+/* NOTICE */
 .notice-bar{
   background:#fef9e7;
   border-bottom:1px solid #f9d71c;
@@ -111,7 +111,7 @@ body{
 .marquee-inner{white-space:nowrap;animation:scroll 25s linear infinite;}
 @keyframes scroll{from{transform:translateX(100%);}to{transform:translateX(-100%);}}
 
-/* ── MAIN BODY ── */
+/* MAIN BODY */
 .body-wrap{
   flex:1;
   display:flex;
@@ -119,7 +119,7 @@ body{
   linear-gradient(160deg,#e8f0f7 0%,#f0f3f5 50%,#e3ecf5 100%);
 }
 
-/* ── LEFT INFO PANEL ── */
+/* LEFT INFO PANEL */
 .info-panel{
   width:340px;flex-shrink:0;
   padding:20px 18px;
@@ -176,15 +176,16 @@ body{
 .doc-link:hover{background:var(--gray1);}
 .doc-link i{font-size:13px;color:var(--gold);}
 
-/* ── LOGIN AREA ── */
+/* LOGIN AREA — fixed: top-aligned, compact, no extra space */
 .login-area{
   flex:1;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:flex-start;
-  padding:18px 16px;
-  gap:12px;
+  padding:16px 16px 20px;
+  gap:10px;
+  overflow-y:auto;
 }
 
 .login-card{
@@ -207,13 +208,6 @@ body{
 .login-card-header .sub{font-size:11px;color:#aed6f1;margin-top:2px;}
 
 .login-card-body{padding:16px 18px;}
-
-.tabs{display:flex;border:1px solid var(--gray2);border-radius:5px;overflow:hidden;margin-bottom:14px;}
-.tab{
-  flex:1;text-align:center;padding:7px;font-size:11.5px;font-weight:500;
-  cursor:pointer;color:var(--muted);transition:background .15s;
-}
-.tab.active{background:var(--navy);color:#fff;}
 
 .field{margin-bottom:11px;}
 .field label{display:block;font-size:11.5px;font-weight:600;color:var(--navy);margin-bottom:4px;}
@@ -277,7 +271,7 @@ body{
 .help-strip strong{color:var(--navy);}
 .help-strip .sep{color:var(--gray2);}
 
-/* ── RIGHT SIDE PANEL ── */
+/* RIGHT SIDE PANEL */
 .side-panel{
   width:220px;flex-shrink:0;
   padding:16px 14px;
@@ -320,7 +314,7 @@ body{
 .user-type .uname{font-weight:600;color:var(--navy);display:block;font-size:11px;}
 .user-type .udesc{font-size:10px;color:var(--muted);}
 
-/* ── FOOTER ── */
+/* FOOTER */
 .footer{
   background:var(--navy);color:#aed6f1;
   border-top:2.5px solid var(--gold);
@@ -340,10 +334,8 @@ body{
 </head>
 <body>
 
-<!-- Tricolor Strip -->
 <div class="strip-tricolor"></div>
 
-<!-- Top Utility Bar -->
 <div class="strip-navy">
   <div style="display:flex;align-items:center;gap:6px;">
     <i class="fa fa-globe" style="font-size:11px;"></i>
@@ -362,7 +354,6 @@ body{
   </div>
 </div>
 
-<!-- Main Header -->
 <div class="main-header">
   <div class="emblem">
     <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -387,7 +378,6 @@ body{
   </div>
 </div>
 
-<!-- Menu Bar -->
 <div class="menu-bar">
   <a href="#" class="active"><i class="fa fa-home"></i> मुख्य पृष्ठ</a>
   <a href="#"><i class="fa fa-info-circle"></i> PESA विषयी</a>
@@ -400,7 +390,6 @@ body{
   <div class="login-info"><i class="fa fa-clock" style="font-size:11px;"></i> शेवटचे अद्यतन: ०५ जून २०२५</div>
 </div>
 
-<!-- Notice Bar -->
 <div class="notice-bar">
   <span class="label">&#128276; सूचना</span>
   <div class="marquee">
@@ -408,25 +397,21 @@ body{
       ग्रामसभा अहवाल सादर करण्याची अंतिम तारीख ३० जून २०२५ आहे &nbsp;|&nbsp;
       नवीन PESA नियम २०२२ अंतर्गत नोंदणी सुरू &nbsp;|&nbsp;
       आदिवासी महिला बचत गट अनुदान अर्ज स्वीकारले जात आहेत &nbsp;|&nbsp;
-      तांत्रिक अडचणींसाठी १८०० *** **** वर संपर्क करा &nbsp;|&nbsp;
-      पोर्टलवर नवीन सुविधा: थेट बँक हस्तांतरण स्थिती पाहता येईल
+      तांत्रिक अडचणींसाठी १८०० *** **** वर संपर्क करा
     </span>
   </div>
 </div>
 
-<!-- Body -->
 <div class="body-wrap">
 
-  <!-- LEFT INFO PANEL -->
+  <!-- LEFT INFO PANEL — unchanged -->
   <div class="info-panel">
-
     <div>
       <h3><i class="fa fa-info-circle"></i> PESA विषयी</h3>
       <div class="about-pesa">
         <strong>पंचायत (अनुसूचित क्षेत्रांवर विस्तार) अधिनियम, १९९६</strong> हा कायदा अनुसूचित जमातींच्या स्वयंशासनाचा अधिकार सुनिश्चित करतो. या अंतर्गत <strong>ग्रामसभेला</strong> नैसर्गिक संसाधने, जमीन व्यवस्थापन आणि विकास कार्यक्रमांवर थेट अधिकार दिला आहे.
       </div>
     </div>
-
     <div>
       <h3><i class="fa fa-chart-pie"></i> जिल्हा आकडेवारी</h3>
       <div class="stat-grid">
@@ -436,41 +421,27 @@ body{
         <div class="stat-card"><div class="num">३९</div><div class="lbl">प्रलंबित अहवाल</div></div>
       </div>
     </div>
-
     <div>
       <h3><i class="fa fa-newspaper"></i> ताज्या बातम्या</h3>
       <ul class="news-list">
         <li>
           <div class="dot"><i class="fa fa-circle" style="font-size:6px;"></i></div>
-          <div>
-            <a href="#">ग्रामसभा निधी वितरण २०२५-२६ सुरू</a>
-            <span class="date">०३ जून २०२५</span>
-          </div>
+          <div><a href="#">ग्रामसभा निधी वितरण २०२५-२६ सुरू</a><span class="date">०३ जून २०२५</span></div>
         </li>
         <li>
           <div class="dot"><i class="fa fa-circle" style="font-size:6px;"></i></div>
-          <div>
-            <a href="#">नवीन आदिवासी शाळा निर्माण योजना मंजूर</a>
-            <span class="date">२८ मे २०२५</span>
-          </div>
+          <div><a href="#">नवीन आदिवासी शाळा निर्माण योजना मंजूर</a><span class="date">२८ मे २०२५</span></div>
         </li>
         <li>
           <div class="dot"><i class="fa fa-circle" style="font-size:6px;"></i></div>
-          <div>
-            <a href="#">वनहक्क पट्टे वितरण कार्यक्रम — जिल्हास्तरीय</a>
-            <span class="date">२०ा मे २०२५</span>
-          </div>
+          <div><a href="#">वनहक्क पट्टे वितरण कार्यक्रम — जिल्हास्तरीय</a><span class="date">२० मे २०२५</span></div>
         </li>
         <li>
           <div class="dot"><i class="fa fa-circle" style="font-size:6px;"></i></div>
-          <div>
-            <a href="#">PESA प्रशिक्षण शिबीर — सर्व तालुके</a>
-            <span class="date">१५ मे २०२५</span>
-          </div>
+          <div><a href="#">PESA प्रशिक्षण शिबीर — सर्व तालुके</a><span class="date">१५ मे २०२५</span></div>
         </li>
       </ul>
     </div>
-
     <div>
       <h3><i class="fa fa-file-download"></i> महत्वाचे दस्तऐवज</h3>
       <div class="doc-links">
@@ -480,132 +451,98 @@ body{
         <a href="#" class="doc-link"><i class="fa fa-file-alt"></i> परिपत्रक यादी</a>
       </div>
     </div>
-
   </div>
 
+  <!-- CENTER LOGIN — top aligned, no dead space -->
   <div class="login-area">
-<form method="post" action="{% url 'Login' %}">
-   
-    {% csrf_token %}
+    <form method="post" action="{% url 'Login' %}" style="width:100%;max-width:390px;display:flex;flex-direction:column;gap:10px;">
+      {% csrf_token %}
 
-    <div class="login-card">
-      <div class="login-card-header">
-        <div class="title">&#128274; PESA प्रणाली — अधिकृत प्रवेश</div>
-        <div class="sub">केवळ अधिकृत शासकीय कर्मचारी / ग्रामपंचायत सदस्य लॉगिन करू शकतात</div>
-      </div>
-      <div class="login-card-body">
+      <div class="login-card">
+        <div class="login-card-header">
+          <div class="title">&#128274; PESA प्रणाली — अधिकृत प्रवेश</div>
+          <div class="sub">केवळ अधिकृत शासकीय कर्मचारी / ग्रामपंचायत सदस्य लॉगिन करू शकतात</div>
+        </div>
+        <div class="login-card-body">
 
-        <!-- Tabs -->
-        <!-- <div class="tabs">
-          <div class="tab active" onclick="setTab(this,'officer')"><i class="fa fa-user-tie" style="font-size:11px;margin-right:4px;"></i> अधिकारी लॉगिन</div>
-          <div class="tab" onclick="setTab(this,'gram')"><i class="fa fa-home" style="font-size:11px;margin-right:4px;"></i> ग्रामपंचायत</div>
-          <div class="tab" onclick="setTab(this,'citizen')"><i class="fa fa-user" style="font-size:11px;margin-right:4px;"></i> नागरिक</div>
-        </div> -->
+          <div class="field">
+            <label>वापरकर्ता प्रकार <span class="req">*</span></label>
+            <div class="input-row">
+              <i class="fa fa-id-badge icon"></i>
+              <select name="login_type" required>
+                <option value="">— प्रकार निवडा —</option>
+                <option value="ZillaParishad">🏛️ जिल्हा परिषद अधिकारी</option>
+                <option value="PanchayatSamiti">🏘️ पंचायत समिती अधिकारी</option>
+                <option value="Kosh">🏦 कोष विभाग अधिकारी</option>
+              </select>
+              <i class="fa fa-chevron-down sel-arrow"></i>
+            </div>
+          </div>
 
-        <!-- User Role -->
-        <div class="field">
-          <label>वापरकर्ता प्रकार <span class="req">*</span></label>
-          <div class="input-row">
-            <i class="fa fa-id-badge icon"></i>
-            <select name="login_type" required>
-              <option value="">— प्रकार निवडा —</option>
-           
+          <div class="field">
+            <label>वापरकर्ता आयडी / कर्मचारी क्रमांक <span class="req">*</span></label>
+            <div class="input-row">
+              <i class="fa fa-user icon"></i>
+              <input type="text" name="username" placeholder="वापरकर्ता आयडी प्रविष्ट करा" required/>
+            </div>
+          </div>
 
-            <option value="ZillaParishad">
-                🏛️ जिल्हा परिषद अधिकारी
-              </option>
+          <div class="field">
+            <label>संकेतशब्द <span class="req">*</span></label>
+            <div class="input-row">
+              <i class="fa fa-lock icon"></i>
+              <input type="password" name="password" id="pwd" placeholder="संकेतशब्द प्रविष्ट करा" required/>
+              <i class="fa fa-eye eye" onclick="togglePwd()" id="eye-icon"></i>
+            </div>
+          </div>
 
-            <option value="PanchayatSamiti">
-                🏘️ पंचायत समिती अधिकारी
-              </option>
+          <div style="font-size:11.5px;font-weight:600;color:var(--navy);margin-bottom:6px;">
+            कॅप्चा सत्यापन <span class="req">*</span>
+          </div>
+          <div class="captcha-wrap">
+            <div class="captcha-box" id="cap-box">K4M7P</div>
+            <button class="refresh-btn" type="button" onclick="newCaptcha()" title="नवीन कॅप्चा"><i class="fa fa-sync-alt"></i></button>
+            <input class="captcha-input" type="text" placeholder="वरील अक्षरे टाका"/>
+          </div>
 
-            <option value="Kosh">
-                🏦 कोष विभाग अधिकारी
-            </option>
+          <div class="check-row">
+            <input type="checkbox" id="rem"/>
+            <label for="rem">लॉगिन माहिती लक्षात ठेवा</label>
+          </div>
 
-            </select>
-            <i class="fa fa-chevron-down sel-arrow"></i>
+          <button class="btn-login" type="submit">
+            <i class="fa fa-sign-in-alt"></i> प्रवेश करा
+          </button>
+
+          <div class="login-links">
+            <a href="#"><i class="fa fa-key" style="font-size:10px;"></i> संकेतशब्द विसरलात?</a>
+            <a href="#"><i class="fa fa-user-plus" style="font-size:10px;"></i> नवीन नोंदणी</a>
+            <a href="#"><i class="fa fa-unlock" style="font-size:10px;"></i> खाते अनलॉक करा</a>
           </div>
         </div>
-
-
-        <!-- User ID -->
-        <div class="field">
-          <label>वापरकर्ता आयडी / कर्मचारी क्रमांक <span class="req">*</span></label>
-          <div class="input-row">
-            <i class="fa fa-user icon"></i>
-            <input type="text" name="username" placeholder="वापरकर्ता आयडी प्रविष्ट करा" required />
-          </div>
-        </div>
-
-        <!-- Password -->
-        <div class="field">
-          <label>संकेतशब्द <span class="req">*</span></label>
-          <div class="input-row">
-            <i class="fa fa-lock icon"></i>
-            <input type="password" name="password" id="pwd" placeholder="संकेतशब्द प्रविष्ट करा" required/>
-            <i class="fa fa-eye eye" onclick="togglePwd()" id="eye-icon"></i>
-          </div>
-        </div>
-
-        <!-- Captcha -->
-        <div style="font-size:11.5px;font-weight:600;color:var(--navy);margin-bottom:6px;">
-          कॅप्चा सत्यापन <span class="req">*</span>
-        </div>
-        <div class="captcha-wrap">
-          <div class="captcha-box" id="cap-box">K4M7P</div>
-          <button class="refresh-btn" onclick="newCaptcha()" title="नवीन कॅप्चा"><i class="fa fa-sync-alt"></i></button>
-          <input class="captcha-input" type="text" placeholder="वरील अक्षरे टाका"/>
-        </div>
-
-        <!-- Remember -->
-        <div class="check-row">
-          <input type="checkbox" id="rem"/>
-          <label for="rem">लॉगिन माहिती लक्षात ठेवा</label>
-          <span style="flex:1;"></span>
-          <!-- <a href="#" style="font-size:11.5px;color:var(--link);">OTP ने लॉगिन करा</a> -->
-        </div>
-
-        <!-- Login Button -->
-        <button class="btn-login" type="submit">
-          <i class="fa fa-sign-in-alt"></i> प्रवेश करा
-        </button>
-        <div class="login-links">
-          <a href="#"><i class="fa fa-key" style="font-size:10px;"></i> संकेतशब्द विसरलात?</a>
-          <a href="#"><i class="fa fa-user-plus" style="font-size:10px;"></i> नवीन नोंदणी</a>
-          <a href="#"><i class="fa fa-unlock" style="font-size:10px;"></i> खाते अनलॉक करा</a>
+        <div class="help-strip">
+          <i class="fa fa-headset"></i>
+          <span>हेल्पडेस्क: <strong>1800-XXX-XXXX</strong></span>
+          <span class="sep">|</span>
+          <span>सोम–शनि: सकाळी १० ते सायं ५</span>
         </div>
       </div>
-      <div class="help-strip">
-        <i class="fa fa-headset"></i>
-        <span>हेल्पडेस्क: <strong>1800-XXX-XXXX</strong></span>
-        <span class="sep">|</span>
-        <!-- <i class="fa fa-envelope"></i>
-        <span><strong>pesa@maharashtra.gov.in</strong></span>
-        <span class="sep">|</span> -->
-        <span>सोम–शनि: सकाळी १० ते सायं ५</span>
+
+      <div style="background:#fff;border:1px solid #ffc107;border-left:4px solid #e67e00;border-radius:5px;padding:10px 14px;font-size:11px;color:#7d5a00;line-height:1.6;">
+        <strong><i class="fa fa-shield-alt" style="color:#e67e00;margin-right:5px;"></i> सुरक्षा सूचना:</strong>
+        आपला संकेतशब्द कोणाशीही शेअर करू नका. शासकीय अधिकारी कधीही फोनवर किंवा ईमेलद्वारे संकेतशब्द विचारत नाहीत.
       </div>
-    </div>
 
-    <!-- Security Notice -->
-    <div style="background:#fff;border:1px solid #ffc107;border-left:4px solid #e67e00;border-radius:5px;padding:10px 14px;width:100%;max-width:390px;font-size:11px;color:#7d5a00;line-height:1.6;">
-      <strong><i class="fa fa-shield-alt" style="color:#e67e00;margin-right:5px;"></i> सुरक्षा सूचना:</strong>
-      आपला संकेतशब्द कोणाशीही शेअर करू नका. शासकीय अधिकारी कधीही फोनवर किंवा ईमेलद्वारे संकेतशब्द विचारत नाहीत. संशयास्पद लिंकवर क्लिक करू नका.
-    </div>
+      <div style="background:#fff;border:1px solid var(--gray2);border-radius:5px;padding:8px 14px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:10px;">
+        <i class="fa fa-desktop" style="color:var(--navy3);"></i>
+        <span><strong style="color:var(--navy);">समर्थित ब्राउझर:</strong> Chrome ७०+, Firefox ६५+, Edge ७९+, Safari १२+</span>
+      </div>
 
-    <!-- Browser Support -->
-    <div style="background:#fff;border:1px solid var(--gray2);border-radius:5px;padding:8px 14px;width:100%;max-width:390px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:10px;">
-      <i class="fa fa-desktop" style="color:var(--navy3);"></i>
-      <span><strong style="color:var(--navy);">समर्थित ब्राउझर:</strong> Chrome ७०+, Firefox ६५+, Edge ७९+, Safari १२+</span>
-    </div>
+    </form>
+  </div>
 
-  </form>
-</div>
-
-
-  <!-- RIGHT SIDE PANEL -->
+  <!-- RIGHT SIDE PANEL — unchanged -->
   <div class="side-panel">
-
     <div>
       <h4>सूचना</h4>
       <div style="display:flex;flex-direction:column;gap:6px;">
@@ -614,7 +551,6 @@ body{
         <div class="alert-box info"><i class="fa fa-info-circle"></i> नवीन वैशिष्ट्य: ग्रामसभा थेट प्रसारण उपलब्ध</div>
       </div>
     </div>
-
     <div>
       <h4>द्रुत दुवे</h4>
       <div class="quick-links">
@@ -627,41 +563,15 @@ body{
         <a href="#" class="quick-link"><i class="fa fa-calendar-check"></i> बैठक वेळापत्रक</a>
       </div>
     </div>
-
     <div>
       <h4>वापरकर्ता प्रकार</h4>
       <div class="user-types">
-        <div class="user-type">
-          <i class="fa fa-user-tie"></i>
-          <div>
-            <span class="uname">शासकीय अधिकारी</span>
-            <span class="udesc">जिल्हा / तालुका स्तर</span>
-          </div>
-        </div>
-        <div class="user-type">
-          <i class="fa fa-home"></i>
-          <div>
-            <span class="uname">ग्रामपंचायत</span>
-            <span class="udesc">सरपंच / सचिव</span>
-          </div>
-        </div>
-        <div class="user-type">
-          <i class="fa fa-users"></i>
-          <div>
-            <span class="uname">ग्रामसभा</span>
-            <span class="udesc">ग्रामसभा अध्यक्ष</span>
-          </div>
-        </div>
-        <div class="user-type">
-          <i class="fa fa-user"></i>
-          <div>
-            <span class="uname">नागरिक</span>
-            <span class="udesc">सामान्य सेवा</span>
-          </div>
-        </div>
+        <div class="user-type"><i class="fa fa-user-tie"></i><div><span class="uname">शासकीय अधिकारी</span><span class="udesc">जिल्हा / तालुका स्तर</span></div></div>
+        <div class="user-type"><i class="fa fa-home"></i><div><span class="uname">ग्रामपंचायत</span><span class="udesc">सरपंच / सचिव</span></div></div>
+        <div class="user-type"><i class="fa fa-users"></i><div><span class="uname">ग्रामसभा</span><span class="udesc">ग्रामसभा अध्यक्ष</span></div></div>
+        <div class="user-type"><i class="fa fa-user"></i><div><span class="uname">नागरिक</span><span class="udesc">सामान्य सेवा</span></div></div>
       </div>
     </div>
-
     <div>
       <h4>संपर्क</h4>
       <div style="font-size:11px;color:var(--muted);line-height:1.8;background:#fff;border:1px solid var(--gray2);border-radius:4px;padding:8px 10px;">
@@ -671,12 +581,10 @@ body{
         <div><i class="fa fa-clock" style="color:var(--navy3);width:14px;"></i> सोम–शनि, १०:०० – १७:००</div>
       </div>
     </div>
-
   </div>
 
 </div>
 
-<!-- Footer -->
 <div class="footer">
   <div class="left">
     <strong style="color:#fff;">महाराष्ट्र शासन — PESA व्यवस्थापन प्रणाली</strong><br>
@@ -695,21 +603,14 @@ body{
 </div>
 
 <script>
-const caps = ['K4M7P','R8Z2T','B5F9W','Q3N6L','T7P1X','H2M4S','Y6K8C'];
-let ci = 0;
-function newCaptcha(){
-  ci=(ci+1)%caps.length;
-  document.getElementById('cap-box').textContent=caps[ci];
-}
+const caps=['K4M7P','R8Z2T','B5F9W','Q3N6L','T7P1X','H2M4S','Y6K8C'];
+let ci=0;
+function newCaptcha(){ci=(ci+1)%caps.length;document.getElementById('cap-box').textContent=caps[ci];}
 function togglePwd(){
   const p=document.getElementById('pwd');
   const e=document.getElementById('eye-icon');
   if(p.type==='password'){p.type='text';e.classList.replace('fa-eye','fa-eye-slash');}
   else{p.type='password';e.classList.replace('fa-eye-slash','fa-eye');}
-}
-function setTab(el,type){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
 }
 </script>
 </body>
