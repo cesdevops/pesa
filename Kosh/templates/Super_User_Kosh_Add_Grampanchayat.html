@@ -1,0 +1,189 @@
+{% extends 'Superuser-base.html' %}
+{% load static %}
+
+{% block content %}
+{% include 'process_navbar.html' %}
+
+<style>
+    .page-container{
+        max-width:900px;
+        margin:20px auto;
+        background:#fff;
+        padding:25px;
+        border-radius:10px;
+        box-shadow:0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .page-title{
+        text-align:center;
+        margin-bottom:25px;
+        color:#2c3e50;
+    }
+
+    .form-group{
+        margin-bottom:18px;
+    }
+
+    .form-label{
+        display:block;
+        margin-bottom:6px;
+        font-weight:600;
+    }
+
+    .form-control{
+        width:100%;
+        padding:10px;
+        border:1px solid #ccc;
+        border-radius:5px;
+        box-sizing:border-box;
+    }
+
+    textarea.form-control{
+        resize:vertical;
+    }
+
+    .btn-submit{
+        background:#28a745;
+        color:white;
+        border:none;
+        padding:12px 25px;
+        border-radius:5px;
+        cursor:pointer;
+        font-size:16px;
+    }
+
+    .btn-submit:hover{
+        background:#218838;
+    }
+
+    .message-success{
+        color:green;
+        margin-bottom:15px;
+    }
+
+    .message-error{
+        color:red;
+        margin-bottom:15px;
+    }
+</style>
+
+<div class="page-container">
+
+    <h2 class="page-title">ग्रामपंचायत नोंदणी फॉर्म</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="{% if message.tags == 'success' %}message-success{% else %}message-error{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label class="form-label">
+                पंचायत समिती निवडा
+            </label>
+
+            <select name="panchayat_samiti"
+                    id="panchayat_samiti"
+                    class="form-control">
+
+                <option value="">
+                    -- पंचायत समिती निवडा --
+                </option>
+
+                {% for ps in panchayat_samiti_list %}
+                    <option value="{{ ps.id }}"
+                            data-name="{{ ps.panchayat_samiti_name }}">
+                        {{ ps.panchayat_samiti_name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">
+                पंचायत समितीचे नाव
+            </label>
+
+            <input type="text"
+                   name="panchayat_samiti_name"
+                   id="panchayat_samiti_name"
+                   class="form-control"
+                   readonly>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">
+                ग्रामपंचायतीचे नाव
+            </label>
+
+            <input type="text"
+                   name="gram_panchayat_name"
+                   class="form-control"
+                   required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">
+                ग्रामपंचायत कोड
+            </label>
+
+            <input type="text"
+                   name="gram_panchayat_code"
+                   class="form-control"
+                   required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">
+                पत्ता
+            </label>
+
+            <textarea name="address"
+                      rows="4"
+                      class="form-control"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">
+                स्थिती
+            </label>
+
+            <select name="status"
+                    class="form-control">
+
+                <option value="Active">
+                    सक्रिय
+                </option>
+
+                <option value="Inactive">
+                    निष्क्रिय
+                </option>
+            </select>
+        </div>
+
+        <button type="submit"
+                class="btn-submit">
+            माहिती जतन करा
+        </button>
+
+    </form>
+
+</div>
+
+<script>
+document.getElementById('panchayat_samiti').addEventListener('change', function () {
+
+    let selectedOption = this.options[this.selectedIndex];
+
+    document.getElementById('panchayat_samiti_name').value =
+        selectedOption.getAttribute('data-name') || '';
+
+});
+</script>
+
+{% endblock %}

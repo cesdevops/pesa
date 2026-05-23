@@ -609,29 +609,7 @@ body{
 <!-- ══════════════════════════════════════
      MAIN HEADER (ADD THIS)
 ══════════════════════════════════════ -->
-<div class="main-header">
-  <div class="emblem">
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="20" cy="20" r="18" stroke="#e67e00" stroke-width="1.5" fill="none"/>
-      <circle cx="20" cy="20" r="12" stroke="#e67e00" stroke-width="1" fill="none"/>
-      <ellipse cx="20" cy="14" rx="4" ry="4" fill="#e67e00"/>
-      <path d="M9 32 C13 22 27 22 31 32" stroke="#e67e00" stroke-width="1.2" fill="none"/>
-      <line x1="15" y1="32" x2="15" y2="26" stroke="#e67e00" stroke-width="1.2"/>
-      <line x1="20" y1="32" x2="20" y2="24" stroke="#e67e00" stroke-width="1.2"/>
-      <line x1="25" y1="32" x2="25" y2="26" stroke="#e67e00" stroke-width="1.2"/>
-      <line x1="7" y1="34" x2="33" y2="34" stroke="#e67e00" stroke-width="1.2"/>
-    </svg>
-  </div>
-  <div class="header-center">
-    <div class="h1">महाराष्ट्र शासन — जिल्हा परिषद, आदिवासी विकास विभाग</div>
-    <div class="h2">PESA व्यवस्थापन प्रणाली | पंचायत (अनुसूचित क्षेत्रांवर विस्तार) अधिनियम, १९९६</div>
-    <div class="h3">Government of Maharashtra — Tribal Development Department | District Council PESA Management Portal</div>
-  </div>
-  <div class="header-right">
-    <div class="pesa-logo">PESA</div>
-    <div class="tagline">राज्य आदिवासी पोर्टल</div>
-  </div>
-</div>
+
 
 <!-- ══════════════════════════════════════
      TOP NAVBAR
@@ -728,11 +706,36 @@ body{
 
     <!-- MAIN NAVIGATION -->
     <ul class="sidebar-nav">
-      <li><a href="#" class="active" data-tooltip="डॅशबोर्ड"><i class="fa fa-tachometer-alt"></i><span class="nav-label">डॅशबोर्ड</span></a></li>
+      <li><a href="#" class="" data-tooltip="डॅशबोर्ड"><i class="fa fa-tachometer-alt"></i><span class="nav-label">डॅशबोर्ड</span></a></li>
+
+      <li>
+        
+    <a href="{% url 'Manage-District' %}"
+       data-tooltip="जिल्हा व्यवस्थापन">
+
+        <i class="fa fa-map"></i>
+
+        <span class="nav-label">
+            जिल्हा व्यवस्थापन
+        </span>
+
+    </a>
+</li>
+
+<li>
+    <a href="{% url 'Manage-Taluka' %}"
+       data-tooltip="तालुका व्यवस्थापन">
+
+        <i class="fa fa-map-marker-alt"></i>
+
+        <span class="nav-label">
+            तालुका व्यवस्थापन
+        </span>
+
+    </a>
+</li>
       <li><a href="#" data-tooltip="ग्रामसभा"><i class="fa fa-file-alt"></i><span class="nav-label">ग्रामसभा</span><span class="badge">३९</span></a></li>
       <li><a href="#" data-tooltip="लाभार्थी"><i class="fa fa-users"></i><span class="nav-label">लाभार्थी</span></a></li>
-      <li><a href="#" data-tooltip="निधी व्यवस्थापन"><i class="fa fa-money-bill-wave"></i><span class="nav-label">निधी व्यवस्थापन</span></a></li>
-      <li><a href="#" data-tooltip="योजना"><i class="fa fa-tasks"></i><span class="nav-label">योजना</span></a></li>
 
 </ul>
 
@@ -761,7 +764,7 @@ body{
 
   <!-- Gram Panchayat -->
   <li>
-    <a href="#" data-tooltip="ग्रामपंचायत">
+    <a href="{% url 'Super_User_Kosh_Add_Grampanchayat' %}" data-tooltip="ग्रामपंचायत">
       <i class="fa fa-home"></i>
       <span class="nav-label">ग्रामपंचायत</span>
     </a>

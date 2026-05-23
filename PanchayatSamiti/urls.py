@@ -10,11 +10,7 @@ urlpatterns = [
     path('api/get-talukas-by-district/<int:district_id>/', views.get_talukas_by_district, name='get_talukas_by_district'),
     
     path('PS-Manage-Users/',views.PS_Manage_Users,name='PS-Manage-Users'),
-
-
-
-
-]
+    ]
 
 
 

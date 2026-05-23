@@ -26,9 +26,11 @@ class Zilla_Parishad_User(models.Model):
     zilla_parishad = models.ForeignKey(Zilla_Parishad,on_delete=models.SET_NULL,null=True,blank=True, related_name='zp_users')
     zilla_parishad_name = models.CharField(max_length=255,null=True,blank=True)
     name = models.CharField(max_length=255,null=True,blank=True)
+    
     mobile = models.CharField(max_length=20,null=True,blank=True)
     email = models.EmailField(null=True,blank=True)
     address = models.TextField(null=True,blank=True)
+    Role = models.CharField(max_length=255,null=True,blank=True)
 
     username = models.CharField(max_length=255,unique=True,null=True,blank=True)
     password = models.CharField(max_length=255,null=True,blank=True)

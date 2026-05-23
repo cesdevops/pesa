@@ -1,0 +1,637 @@
+{% extends 'Superuser-base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+  /* Enhanced UI styles matching PESA theme */
+  :root {
+    --navy: #0d2b45;
+    --navy2: #154360;
+    --navy3: #1a5276;
+    --gold: #e67e00;
+    --gold2: #f39c12;
+    --gray1: #f0f3f5;
+    --gray2: #dce3ea;
+    --muted: #5a6a78;
+  }
+
+  .page-header-modern {
+    background: linear-gradient(135deg, #fff 0%, #fef9e7 100%);
+    padding: 1.2rem 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    border-left: 5px solid var(--gold);
+    box-shadow: 0 2px 8px rgba(13,43,69,.06);
+  }
+
+  .page-header-modern h3 {
+    font-family: 'Noto Serif Devanagari', serif;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .page-header-modern h3 i {
+    color: var(--gold);
+    font-size: 1.6rem;
+  }
+
+  .btn-gold-outline {
+    background: transparent;
+    border: 2px solid var(--gold);
+    color: var(--navy);
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 8px 20px;
+    transition: all 0.2s;
+  }
+
+  .btn-gold-outline:hover {
+    background: var(--gold);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(230,126,0,.3);
+  }
+
+  .filter-card {
+    background: white;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(13,43,69,.08);
+    margin-bottom: 1.8rem;
+    overflow: hidden;
+  }
+
+  .filter-card .card-header-custom {
+    background: var(--navy);
+    padding: 12px 20px;
+    border-bottom: 3px solid var(--gold);
+  }
+
+  .filter-card .card-header-custom h6 {
+    margin: 0;
+    color: white;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+  }
+
+  .filter-card .card-header-custom h6 i {
+    color: var(--gold);
+    margin-right: 8px;
+  }
+
+  .filter-card .card-body {
+    padding: 1.5rem;
+  }
+
+  .form-label-modern {
+    font-weight: 600;
+    color: var(--navy3);
+    font-size: 12px;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .form-control-modern, .form-select-modern {
+    border: 1.5px solid var(--gray2);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
+    transition: all 0.2s;
+    width: 100%;
+  }
+
+  .form-control-modern:focus, .form-select-modern:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(230,126,0,0.15);
+    outline: none;
+  }
+
+  .data-table-card {
+    background: white;
+    border: none;
+    border-radius: 16px;
+    overflow-x: auto;
+    box-shadow: 0 4px 14px rgba(13,43,69,.08);
+  }
+
+  .data-table-card .table-responsive {
+    padding: 0;
+  }
+
+  .data-table-card table {
+    margin-bottom: 0;
+    font-size: 13px;
+    width: 100%;
+    min-width: 700px;
+  }
+
+  .data-table-card thead th {
+    background: var(--navy);
+    color: white;
+    font-weight: 600;
+    padding: 14px 15px;
+    border-bottom: 3px solid var(--gold);
+    vertical-align: middle;
+    font-size: 12.5px;
+    letter-spacing: 0.3px;
+    text-align: center;
+  }
+
+  .data-table-card tbody td {
+    padding: 12px 15px;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--gray2);
+    text-align: center;
+  }
+
+  .data-table-card tbody tr:hover {
+    background: #fef9e7;
+    transition: background 0.2s;
+  }
+
+  /* Left align for District and Taluka Name columns */
+  .data-table-card tbody td:nth-child(2),
+  .data-table-card tbody td:nth-child(3) {
+    text-align: left;
+    font-weight: 500;
+  }
+
+  /* District name styling */
+  .district-name-cell {
+    color: var(--navy);
+    font-weight: 600;
+  }
+
+  .taluka-name-cell {
+    color: var(--navy3);
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-action {
+    padding: 5px 12px;
+    font-size: 11px;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-action i {
+    font-size: 11px;
+  }
+
+  .btn-edit {
+    background: #f39c12;
+    color: #1e2a36;
+  }
+
+  .btn-edit:hover {
+    background: #e67e22;
+    transform: translateY(-1px);
+    color: #1e2a36;
+  }
+
+  .btn-delete {
+    background: #c0392b;
+    color: white;
+  }
+
+  .btn-delete:hover {
+    background: #a93226;
+    transform: translateY(-1px);
+    color: white;
+  }
+
+  /* Modal styling matching theme */
+  .modal-modern .modal-content {
+    border-radius: 16px;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  }
+
+  .modal-modern .modal-header {
+    background: var(--navy);
+    color: white;
+    border-bottom: 3px solid var(--gold);
+    padding: 16px 20px;
+  }
+
+  .modal-modern .modal-header .modal-title {
+    font-weight: 700;
+    font-family: 'Noto Serif Devanagari', serif;
+    font-size: 1.2rem;
+  }
+
+  .modal-modern .modal-header .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: 0.8;
+  }
+
+  .modal-modern .modal-body {
+    padding: 1.8rem;
+  }
+
+  .modal-modern .modal-footer {
+    background: var(--gray1);
+    border-top: 1px solid var(--gray2);
+    padding: 1rem 1.8rem;
+  }
+
+  .btn-save {
+    background: var(--gold);
+    color: var(--navy);
+    font-weight: 700;
+    border: none;
+    padding: 8px 24px;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+
+  .btn-save:hover {
+    background: #cf6d00;
+    transform: translateY(-1px);
+  }
+
+  .btn-update {
+    background: var(--navy);
+    color: white;
+    font-weight: 700;
+    border: none;
+    padding: 8px 24px;
+    border-radius: 8px;
+  }
+
+  .btn-update:hover {
+    background: var(--navy3);
+    transform: translateY(-1px);
+  }
+
+  .alert-custom {
+    border-radius: 12px;
+    border-left: 5px solid #1e7e34;
+    padding: 12px 18px;
+    margin-bottom: 1.5rem;
+    background: #e8f5e9;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: var(--muted);
+  }
+
+  .empty-state i {
+    font-size: 3rem;
+    color: var(--gray2);
+    margin-bottom: 1rem;
+  }
+
+  .record-count {
+    background: var(--gold);
+    color: var(--navy);
+    border-radius: 30px;
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-left: 10px;
+  }
+
+  /* Pagination styling matching theme */
+  .pagination-modern {
+    margin-top: 1.8rem;
+  }
+
+  .pagination-modern .page-link {
+    background: white;
+    border: 1px solid var(--gray2);
+    color: var(--navy);
+    font-weight: 500;
+    padding: 8px 14px;
+    margin: 0 3px;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+
+  .pagination-modern .page-link:hover {
+    background: var(--gold);
+    color: var(--navy);
+    border-color: var(--gold);
+  }
+
+  .pagination-modern .page-item.active .page-link {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: white;
+  }
+
+  .pagination-modern .page-item.disabled .page-link {
+    background: var(--gray1);
+    color: var(--muted);
+  }
+
+  /* Modal form spacing */
+  .modal-body .row.g-3 {
+    margin-top: 0;
+  }
+</style>
+
+<div class="container-fluid mt-4">
+
+    <!-- HEADER - Modernized with PESA theme -->
+    <div class="page-header-modern d-flex justify-content-between align-items-center">
+        <h3>
+            <i class="fas fa-map-marker-alt"></i>
+            तालुका व्यवस्थापन
+            <span class="record-count">{{ all_talukas.paginator.count|default:all_talukas|length }} एकूण</span>
+        </h3>
+        <button class="btn btn-gold-outline" data-bs-toggle="modal" data-bs-target="#addModal">
+            <i class="fas fa-plus-circle"></i> नवीन तालुका
+        </button>
+    </div>
+
+    <!-- MESSAGES - Styled with PESA alert theme -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-custom alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- SEARCH FILTER - Enhanced Card matching theme -->
+    <div class="filter-card">
+        <div class="card-header-custom">
+            <h6><i class="fas fa-search"></i> फिल्टर / शोध</h6>
+        </div>
+        <div class="card-body">
+            <form method="GET">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-5">
+                        <label class="form-label-modern">
+                            <i class="fas fa-search me-1"></i> शोधा
+                        </label>
+                        <input type="text"
+                               name="search"
+                               class="form-control-modern"
+                               placeholder="तालुका किंवा जिल्ह्याचे नाव प्रविष्ट करा..."
+                               value="{{ search|default:'' }}">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100" style="background: var(--navy); border-radius: 8px;">
+                            <i class="fas fa-search"></i> शोधा
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="{% url 'Manage-Taluka' %}" class="btn btn-secondary w-100" style="border-radius: 8px; background: var(--gray2); color: var(--navy);">
+                            <i class="fas fa-undo-alt"></i> रीसेट
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TABLE - Enhanced with PESA styling -->
+    <div class="data-table-card">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th width="60">#</th>
+                        <th>जिल्हा</th>
+                        <th>तालुका नाव</th>
+                        <th width="180">क्रिया</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for taluka in all_talukas %}
+                    <tr>
+                        <td class="text-center">{{ forloop.counter }}</td>
+                        <td class="district-name-cell">{{ taluka.district.name }}</td>
+                        <td class="taluka-name-cell">{{ taluka.name }}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-action btn-edit"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editModal{{ taluka.id }}">
+                                    <i class="fas fa-edit"></i> संपादन
+                                </button>
+                                <a href="?delete_id={{ taluka.id }}"
+                                   class="btn-action btn-delete"
+                                   onclick="return confirm('खात्री आहे? हा तालुका हटवला जाईल!')">
+                                    <i class="fas fa-trash-alt"></i> हटवा
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="empty-state">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <p class="mt-2 mb-0">कोणताही डेटा सापडला नाही</p>
+                            <small class="text-muted">कृपया नवीन तालुका जोडण्यासाठी वरील बटण वापरा</small>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- PAGINATION - Enhanced with theme styling -->
+    {% if all_talukas.has_other_pages %}
+    <nav class="pagination-modern">
+        <ul class="pagination justify-content-center">
+            {% if all_talukas.has_previous %}
+                <li class="page-item">
+                    <a class="page-link"
+                       href="?page={{ all_talukas.previous_page_number }}&search={{ search }}">
+                        <i class="fas fa-chevron-left"></i> मागील
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link"><i class="fas fa-chevron-left"></i> मागील</span>
+                </li>
+            {% endif %}
+
+            {% for num in all_talukas.paginator.page_range %}
+                {% if all_talukas.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                {% elif num > all_talukas.number|add:'-3' and num < all_talukas.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}&search={{ search }}">{{ num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if all_talukas.has_next %}
+                <li class="page-item">
+                    <a class="page-link"
+                       href="?page={{ all_talukas.next_page_number }}&search={{ search }}">
+                        पुढील <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">पुढील <i class="fas fa-chevron-right"></i></span>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+</div>
+
+<!-- ========================================================= -->
+<!-- ADD MODAL - Enhanced with PESA theme -->
+<!-- ========================================================= -->
+<div class="modal fade modal-modern"
+     id="addModal"
+     tabindex="-1"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-plus-circle me-2"></i> नवीन तालुका
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <!-- DISTRICT -->
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label-modern">
+                                जिल्हा <span class="text-danger">*</span>
+                            </label>
+                            <select name="district"
+                                    class="form-select-modern"
+                                    required>
+                                <option value="">-- जिल्हा निवडा --</option>
+                                {% for district in all_districts %}
+                                    <option value="{{ district.id }}">
+                                        {{ district.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- TALUKA NAME -->
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label-modern">
+                                तालुका नाव <span class="text-danger">*</span>
+                            </label>
+                            <input type="text"
+                                   name="name"
+                                   class="form-control-modern"
+                                   placeholder="उदा. हवेली, मावळ, खेड"
+                                   required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius: 8px; background: var(--gray2); color: var(--navy); border: none;">
+                        <i class="fas fa-times"></i> रद्द करा
+                    </button>
+                    <button type="submit" class="btn-save">
+                        <i class="fas fa-save"></i> जतन करा
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================= -->
+<!-- EDIT MODALS - Enhanced with PESA theme -->
+<!-- ========================================================= -->
+{% for taluka in all_talukas %}
+<div class="modal fade modal-modern"
+     id="editModal{{ taluka.id }}"
+     tabindex="-1"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="edit">
+                <input type="hidden" name="edit_id" value="{{ taluka.id }}">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-edit me-2"></i> तालुका संपादन
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <!-- DISTRICT -->
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label-modern">
+                                जिल्हा <span class="text-danger">*</span>
+                            </label>
+                            <select name="district"
+                                    class="form-select-modern"
+                                    required>
+                                {% for district in all_districts %}
+                                    <option value="{{ district.id }}"
+                                    {% if taluka.district.id == district.id %}selected{% endif %}>
+                                        {{ district.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- TALUKA NAME -->
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label-modern">
+                                तालुका नाव <span class="text-danger">*</span>
+                            </label>
+                            <input type="text"
+                                   name="name"
+                                   class="form-control-modern"
+                                   value="{{ taluka.name }}"
+                                   required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius: 8px; background: var(--gray2); color: var(--navy); border: none;">
+                        <i class="fas fa-times"></i> रद्द करा
+                    </button>
+                    <button type="submit" class="btn-update">
+                        <i class="fas fa-sync-alt"></i> अद्यतनित करा
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% endblock %}

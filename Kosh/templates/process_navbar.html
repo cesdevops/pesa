@@ -1,0 +1,107 @@
+<style>.process-navbar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+    padding: 10px;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 90px;
+}
+
+.circle {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: 1px solid #bdbdbd;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #555;
+}
+
+.step.active .circle {
+    border-color: #1fa67a;
+    color: #1fa67a;
+    font-weight: 600;
+}
+
+.label {
+    margin-top: 8px;
+    font-size: 13px;
+    color: #444;
+    text-align: center;
+}
+
+.line {
+    flex: 1;
+    max-width: 80px;
+    height: 1px;
+    background: #bdbdbd;
+    margin: 0 5px;
+    margin-bottom: 25px;
+}
+
+.step.active + .line {
+    background: #1fa67a;
+}
+
+@media (max-width: 768px) {
+    .process-navbar {
+        overflow-x: auto;
+        justify-content: flex-start;
+    }
+
+    .step {
+        min-width: 80px;
+    }
+}
+</style>
+
+<div class="process-navbar">
+    <div class="step active">
+        <span class="circle">1</span>
+        <span class="label">ग्रामपंचायत</span>
+    </div>
+
+    <div class="line"></div>
+
+    <div class="step">
+        <span class="circle">2</span>
+        <span class="label">कोष</span>
+    </div>
+
+    <div class="line"></div>
+
+    <div class="step">
+        <span class="circle">3</span>
+        <span class="label">लोकसंख्या</span>
+    </div>
+
+    <div class="line"></div>
+
+    <div class="step">
+        <span class="circle">4</span>
+        <span class="label">बँक तपशील</span>
+    </div>
+
+    <div class="line"></div>
+
+    <div class="step">
+        <span class="circle">5</span>
+        <span class="label">वापरकर्ता</span>
+    </div>
+
+    <div class="line"></div>
+
+    <div class="step">
+        <span class="circle">6</span>
+        <span class="label">समिती</span>
+    </div>
+</div>

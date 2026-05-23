@@ -8,7 +8,6 @@ import uuid
 import requests
 from PIL import Image
 from PyPDF2 import PdfReader
-from cryptography.fernet import Fernet
 
 # ── Django ────────────────────────────────────────────────
 from django.contrib import messages
