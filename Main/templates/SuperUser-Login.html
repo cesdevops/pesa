@@ -1,218 +1,439 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="mr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SuperUser Login</title>
+    <title>PESA प्रणाली | SuperUser लॉगिन</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Noto+Serif+Devanagari:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
-
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        body{
-            font-family:Arial, sans-serif;
-            background:#f4f7fb;
-            min-height:100vh;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            padding:20px;
+        :root {
+            --navy: #0d2b45;
+            --navy2: #154360;
+            --navy3: #1a5276;
+            --gold: #e67e00;
+            --gold2: #f39c12;
+            --gold-light: #fef5e7;
+            --gray1: #f0f3f5;
+            --gray2: #dce3ea;
+            --text-dark: #1c2b38;
+            --text-muted: #5a6a78;
+            --white: #ffffff;
         }
 
-        .login-container{
-            width:100%;
-            max-width:420px;
-            background:#fff;
-            border-radius:16px;
-            padding:35px;
-            box-shadow:0 10px 30px rgba(0,0,0,0.08);
+        body {
+            font-family: 'Noto Sans Devanagari', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #e8f0f7 0%, #dce6ef 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
         }
 
-        .login-header{
-            text-align:center;
-            margin-bottom:30px;
+        /* Background pattern - subtle PESA style */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230d2b45' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
         }
 
-        .login-icon{
-            width:70px;
-            height:70px;
-            background:#2563eb;
-            color:#fff;
-            border-radius:50%;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            margin:0 auto 15px;
-            font-size:28px;
+        /* Tricolor strip at top */
+        .strip-tricolor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(to right, #ff9933 33%, #ffffff 33% 66%, #138808 66%);
+            z-index: 100;
         }
 
-        .login-header h2{
-            font-size:28px;
-            color:#1e293b;
-            margin-bottom:8px;
+        .login-container {
+            width: 100%;
+            max-width: 460px;
+            background: var(--white);
+            border-radius: 24px;
+            padding: 0;
+            box-shadow: 0 20px 40px rgba(13, 43, 69, 0.15);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
         }
 
-        .login-header p{
-            color:#64748b;
-            font-size:14px;
+        /* Gold accent border top */
+        .login-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--gold) 0%, var(--gold2) 100%);
         }
 
-        .form-group{
-            margin-bottom:20px;
+        /* Header Section with PESA branding */
+        .login-header {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+            padding: 30px 30px 25px;
+            text-align: center;
+            border-bottom: 3px solid var(--gold);
         }
 
-        .form-group label{
-            display:block;
-            margin-bottom:8px;
-            font-size:14px;
-            font-weight:600;
-            color:#334155;
+        .logo-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1px;
         }
 
-        .input-box{
-            position:relative;
+        .emblem-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--gold);
         }
 
-        .input-box i{
-            position:absolute;
-            top:50%;
-            left:15px;
-            transform:translateY(-50%);
-            color:#94a3b8;
-            font-size:15px;
+        .emblem-icon svg {
+            width: 38px;
+            height: 38px;
         }
 
-        .form-control{
-            width:100%;
-            height:50px;
-            border:1px solid #cbd5e1;
-            border-radius:10px;
-            padding:0 15px 0 45px;
-            font-size:15px;
-            outline:none;
-            transition:0.3s;
+        .pesa-badge {
+            background: var(--gold);
+            color: var(--navy);
+            font-family: 'Noto Serif Devanagari', serif;
+            font-size: 24px;
+            font-weight: 800;
+            padding: 8px 18px;
+            border-radius: 40px;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
-        .form-control:focus{
-            border-color:#2563eb;
-            box-shadow:0 0 0 3px rgba(37,99,235,0.1);
+        .login-header h2 {
+            font-family: 'Noto Serif Devanagari', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 18px 0 8px;
+            letter-spacing: 0.5px;
         }
 
-        .login-btn{
-            width:100%;
-            height:50px;
-            border:none;
-            background:#2563eb;
-            color:#fff;
-            font-size:16px;
-            font-weight:600;
-            border-radius:10px;
-            cursor:pointer;
-            transition:0.3s;
+        .login-header p {
+            color: #b8d4e8;
+            font-size: 12.5px;
+            margin: 0;
+            font-weight: 500;
         }
 
-        .login-btn:hover{
-            background:#1d4ed8;
+        .login-header .sub-line {
+            font-size: 11px;
+            color: #8aaec2;
+            margin-top: 6px;
         }
 
-        .footer-text{
-            text-align:center;
-            margin-top:20px;
-            font-size:13px;
-            color:#94a3b8;
+        /* Form Body */
+        .login-body {
+            padding: 12px 30px 29px;
+            background: var(--white);
         }
 
-        @media(max-width:480px){
+        .form-group {
+            margin-bottom: 22px;
+        }
 
-            .login-container{
-                padding:25px;
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--navy3);
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .input-box {
+            position: relative;
+        }
+
+        .input-box i {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            color: var(--gold);
+            font-size: 14px;
+            width: 18px;
+            text-align: center;
+            transition: color 0.2s;
+        }
+
+        .form-control {
+            width: 100%;
+            height: 52px;
+            border: 1.5px solid var(--gray2);
+            border-radius: 12px;
+            padding: 0 16px 0 48px;
+            font-size: 13.5px;
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            outline: none;
+            transition: all 0.25s ease;
+            background: var(--white);
+            color: var(--text-dark);
+        }
+
+        .form-control:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 4px rgba(230, 126, 0, 0.1);
+        }
+
+        .form-control:focus + i {
+            color: var(--gold2);
+        }
+
+        /* Login Button - Gold theme */
+        .login-btn {
+            width: 100%;
+            height: 52px;
+            border: none;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold2) 100%);
+            color: var(--navy);
+            font-size: 14px;
+            font-weight: 800;
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            margin-top: 8px;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .login-btn i {
+            font-size: 15px;
+        }
+
+        .login-btn:hover {
+            background: linear-gradient(135deg, #cf6d00 0%, #e67e00 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(230, 126, 0, 0.3);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        .footer-text {
+            text-align: center;
+            padding: 18px 30px 22px;
+            border-top: 1px solid var(--gray2);
+            background: #fafcfd;
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .footer-text i {
+            color: var(--gold2);
+            font-size: 10px;
+        }
+
+        .footer-text .sep {
+            color: var(--gray3);
+        }
+
+        /* Help text / additional info */
+        .info-note {
+            background: var(--gold-light);
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-top: 20px;
+            font-size: 11px;
+            color: var(--navy3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 3px solid var(--gold);
+        }
+
+        .info-note i {
+            font-size: 14px;
+            color: var(--gold);
+        }
+
+        /* Alert messages (if any from Django) */
+        .alert-message {
+            margin: 0 30px 20px 30px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #fef2e8;
+            border-left: 4px solid var(--gold);
+            color: #8a4b00;
+        }
+
+        .alert-message i {
+            color: var(--gold);
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 500px) {
+            .login-container {
+                max-width: 94%;
             }
-
-            .login-header h2{
-                font-size:24px;
+            .login-header {
+                padding: 22px 20px;
             }
-
+            .login-body {
+                padding: 25px 22px;
+            }
+            .pesa-badge {
+                font-size: 18px;
+                padding: 6px 14px;
+            }
+            .login-header h2 {
+                font-size: 20px;
+            }
         }
 
+        /* Additional PESA style touch - keyframe pulse for icon */
+        @keyframes gentlePulse {
+            0% { opacity: 0.9; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.02); }
+        }
+        .emblem-icon {
+            animation: gentlePulse 2s ease-in-out infinite alternate;
+        }
     </style>
 </head>
 <body>
 
+<div class="strip-tricolor"></div>
+
 <div class="login-container">
 
     <div class="login-header">
-
-        <div class="login-icon">
-            <i class="fas fa-user-shield"></i>
+        <div class="logo-wrapper">
+            <div class="pesa-badge">PESA</div>
         </div>
-
-        <h2>SuperUser Login</h2>
-
-        <p>
-            Login to access the PESA Fund Management System
-        </p>
-
+        <h2>SuperUser लॉगिन</h2>
+        <p>PESA निधी व्यवस्थापन प्रणालीमध्ये प्रवेश करा</p>
+        <div class="sub-line">ग्रामसभा सक्षमीकरण पोर्टल</div>
     </div>
 
-    <form method="POST">
+    <div class="login-body">
+        <!-- Django messages will appear here if any (styled properly) -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert-message">
+                    <i class="fas {% if message.tags == 'error' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %}"></i>
+                    <span>{{ message }}</span>
+                </div>
+            {% endfor %}
+        {% endif %}
 
-        {% csrf_token %}
+        <form method="POST">
+            {% csrf_token %}
 
-        <div class="form-group">
-
-            <label>Username</label>
-
-            <div class="input-box">
-
-                <i class="fas fa-user"></i>
-
-                <input
-                    type="text"
-                    name="username"
-                    class="form-control"
-                    placeholder="Enter Username"
-                    required
-                >
-
+            <div class="form-group">
+                <label><i class="fas fa-user-circle" style="margin-right: 6px;"></i> यूजरनेम</label>
+                <div class="input-box">
+                    <i class="fas fa-user"></i>
+                    <input type="text"
+                           name="username"
+                           class="form-control"
+                           placeholder="आपले यूजरनेम प्रविष्ट करा"
+                           required
+                           autocomplete="off">
+                </div>
             </div>
 
-        </div>
-        <div class="form-group">
-
-            <label>Password</label>
-
-            <div class="input-box">
-
-                <i class="fas fa-lock"></i>
-
-                <input
-                    type="password"
-                    name="password"
-                    class="form-control"
-                    placeholder="Enter Password"
-                    required
-                >
-
+            <div class="form-group">
+                <label><i class="fas fa-key" style="margin-right: 6px;"></i> पासवर्ड</label>
+                <div class="input-box">
+                    <i class="fas fa-lock"></i>
+                    <input type="password"
+                           name="password"
+                           class="form-control"
+                           placeholder="गुप्तांक प्रविष्ट करा"
+                           required
+                           autocomplete="off">
+                </div>
             </div>
 
+            <button type="submit" class="login-btn">
+                <i class="fas fa-arrow-right-to-bracket"></i> लॉगिन करा
+            </button>
+        </form>
+
+        <div class="info-note">
+            <i class="fas fa-shield-alt"></i>
+            <span>केवळ अधिकृत प्रशासकांसाठी प्रवेश | सुरक्षित लॉगिन</span>
         </div>
-
-        <button type="submit" class="login-btn">
-            Login
-        </button>
-
-    </form>
+    </div>
 
     <div class="footer-text">
-        © 2026 Chankya E-Services. All rights reserved.
+        <i class="fas fa-copyright"></i> <span>२०२६ चाणक्य ई-सर्विसेस</span>
+        <span class="sep">|</span>
+        <i class="fas fa-building"></i> <span>आदिवासी विकास विभाग, महाराष्ट्र</span>
+        <span class="sep">|</span>
+        <i class="fas fa-code-branch"></i> <span>v३.२</span>
     </div>
 </div>
+
+<!-- Tiny script for any additional UI polish (optional) -->
+<script>
+    // Add any client-side enhancement if needed, no functional change
+    (function() {
+        // Pre-fill background smoothness
+        const inputs = document.querySelectorAll('.form-control');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.querySelector('i')?.style.setProperty('color', '#e67e00');
+            });
+            input.addEventListener('blur', function() {
+                if (!this.value) {
+                    this.parentElement.querySelector('i')?.style.setProperty('color', '#e67e00');
+                } else {
+                    this.parentElement.querySelector('i')?.style.setProperty('color', '#e67e00');
+                }
+            });
+        });
+    })();
+</script>
 
 </body>
 </html>
