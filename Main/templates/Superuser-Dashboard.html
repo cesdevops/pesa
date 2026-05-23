@@ -1,0 +1,239 @@
+{% extends 'Superuser-base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+  /* Dashboard specific styles */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px -12px rgba(74,134,212,0.2);
+    border-color: var(--fb-medium);
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--fb-strong);
+    border-radius: 20px 20px 0 0;
+  }
+
+  .stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+  .stat-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+  }
+  .stat-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--fb-light);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: var(--fb-strong);
+  }
+  .stat-value {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--fb-deepest);
+    margin: 0.5rem 0 0.25rem;
+  }
+  .stat-trend {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .trend-up { color: #10B981; }
+  .trend-down { color: #EF4444; }
+
+  /* Charts row */
+  .charts-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .chart-card {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 1.5rem;
+  }
+  .chart-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--fb-deepest);
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .chart-title i { color: var(--fb-strong); font-size: 1rem; }
+
+  /* Recent activity table */
+  .recent-table {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+  .table-header {
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .table-header h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--fb-deepest);
+  }
+  .view-all {
+    font-size: 0.75rem;
+    color: var(--fb-strong);
+    text-decoration: none;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th, td {
+    padding: 1rem 1.5rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+  }
+  th {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    background: var(--fb-lightest);
+  }
+  td {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+  .status-approved { background: #DCF7E3; color: #2D6A4F; }
+  .status-pending { background: #FEF3C7; color: #92400E; }
+  .status-rejected { background: #FEE2E2; color: #991B1B; }
+
+  /* Quick actions */
+  .quick-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+  }
+  .action-btn {
+    background: var(--fb-lightest);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0.8rem 1.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+  .action-btn:hover {
+    background: var(--fb-light);
+    color: var(--fb-deep);
+    border-color: var(--fb-medium);
+  }
+
+  /* Welcome banner */
+  .welcome-banner {
+    background: linear-gradient(135deg, var(--fb-light) 0%, #fff 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 1.8rem 2rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .welcome-text h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--fb-deepest);
+    margin-bottom: 0.3rem;
+  }
+  .welcome-text p {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+  }
+  .date-badge {
+    background: rgba(74,134,212,0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    color: var(--fb-strong);
+  }
+
+  @media (max-width: 768px) {
+    .charts-row { grid-template-columns: 1fr; }
+    th, td { padding: 0.8rem 1rem; }
+  }
+</style>
+
+
+
+<!-- Welcome Banner -->
+<div class="welcome-banner">
+    <div class="welcome-text">
+        <h2>Welcome back, {{ user.name|default:"Superuser" }} ok👋</h2>
+        <p>Here's what's happening with PESA Fund Management System today.</p>
+    </div>
+    <div class="date-badge">
+        <i class="fas fa-calendar-alt"></i> 
+        <span id="currentDate"></span>
+    </div>
+</div>
+
+
+{% endblock %}
