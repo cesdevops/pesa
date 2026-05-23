@@ -71,3 +71,6 @@ class Taluka(models.Model):
 
 
 
+
+
+

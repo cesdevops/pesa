@@ -328,8 +328,6 @@ def get_talukas_by_district(request, district_id):
 
 
 
-
-
 def PS_Manage_Users(request):
     if not request.session.get('superuser_id'):
         return redirect('SuperUser-Login')
@@ -352,6 +350,7 @@ def PS_Manage_Users(request):
             # Get raw values
             raw_panchayat_samiti_id = request.POST.get('panchayat_samiti_id', '').strip()
             raw_name = request.POST.get('name', '').strip()
+            role = request.POST.get('role', '').strip()
             raw_mobile = request.POST.get('mobile', '').strip()
             raw_email = request.POST.get('email', '').strip()
             raw_address = request.POST.get('address', '').strip()
@@ -359,66 +358,79 @@ def PS_Manage_Users(request):
             raw_password = request.POST.get('password', '').strip()
             status = request.POST.get('status', 'Active')
 
-            # Validate using your validation functions
-            name = validate_clean_text(raw_name)
-            username = validate_clean_text(raw_username)
-            password = validate_clean_text(raw_password)
-            address = validate_clean_text(raw_address)
-            
-            # Validate email if provided
-            email = ""
-            if raw_email:
-                email = validate_email_field(raw_email)
-            
-            # Validate mobile if provided
+            # Validate required fields
+            if not raw_name:
+                messages.error(request, 'नाव आवश्यक आहे')
+                return redirect('PS-Manage-Users')
+
+            if not raw_username:
+                messages.error(request, 'यूजरनेम आवश्यक आहे')
+                return redirect('PS-Manage-Users')
+
+            if not raw_password:
+                messages.error(request, 'पासवर्ड आवश्यक आहे')
+                return redirect('PS-Manage-Users')
+
+            # Clean text fields
+            name = raw_name.strip()
+            username = raw_username.strip()
+            password = raw_password
+            address = raw_address.strip() if raw_address else ""
+
+            # Handle mobile number - store as is or empty string
             mobile = ""
             if raw_mobile:
-                mobile = validate_mobile_number(raw_mobile)
+                # Remove any non-digit characters
+                mobile = ''.join(filter(str.isdigit, raw_mobile))
+                # Validate 10 digits starting with 6-9
+                if len(mobile) == 10 and mobile[0] in '6789':
+                    pass  # Valid mobile
+                else:
+                    messages.warning(request, 'कृपया 10 अंकी वैध मोबाइल क्रमांक प्रविष्ट करा (सुरुवात 6,7,8,9 ने)')
+                    return redirect('PS-Manage-Users')
+            
+            # Handle email - validate format
+            email = ""
+            if raw_email:
+                import re
+                email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+                if re.match(email_pattern, raw_email):
+                    email = raw_email.strip().lower()
+                else:
+                    messages.warning(request, 'कृपया वैध ईमेल पत्ता प्रविष्ट करा')
+                    return redirect('PS-Manage-Users')
 
-        except ValidationError as ve:
-            messages.warning(request, f"⚠ Validation Warning: {ve}")
+            # Check duplicate username
+            if Panchayat_Samiti_User.objects.filter(username=username).exists():
+                messages.error(request, 'हा यूजरनेम आधीपासून अस्तित्वात आहे')
+                return redirect('PS-Manage-Users')
+
+            # Get Panchayat Samiti
+            panchayat_samiti = None
+            if raw_panchayat_samiti_id:
+                try:
+                    panchayat_samiti = Panchayat_Samiti.objects.get(id=raw_panchayat_samiti_id)
+                except Panchayat_Samiti.DoesNotExist:
+                    pass
+
+            # Create Record
+            Panchayat_Samiti_User.objects.create(
+                panchayat_samiti=panchayat_samiti,
+                name=name,
+                mobile=mobile,
+                email=email,
+                address=address,
+                username=username,
+                password=password,
+                status=status
+            )
+
+            messages.success(request, 'यूजर यशस्वीरित्या जोडला')
             return redirect('PS-Manage-Users')
 
-        # Validation
-        if not name:
-            messages.error(request, 'नाव आवश्यक आहे')
+        except Exception as e:
+            messages.error(request, f'त्रुटी: {str(e)}')
             return redirect('PS-Manage-Users')
-
-        if not username:
-            messages.error(request, 'यूजरनेम आवश्यक आहे')
-            return redirect('PS-Manage-Users')
-
-        if not password:
-            messages.error(request, 'पासवर्ड आवश्यक आहे')
-            return redirect('PS-Manage-Users')
-
-        # Check duplicate username
-        if Panchayat_Samiti_User.objects.filter(username=username).exists():
-            messages.error(request, 'हा यूजरनेम आधीपासून अस्तित्वात आहे')
-            return redirect('PS-Manage-Users')
-
-        # Get Panchayat Samiti
-        panchayat_samiti = None
-        if raw_panchayat_samiti_id:
-            try:
-                panchayat_samiti = Panchayat_Samiti.objects.get(id=raw_panchayat_samiti_id)
-            except Panchayat_Samiti.DoesNotExist:
-                pass
-
-        # Create Record
-        Panchayat_Samiti_User.objects.create(
-            panchayat_samiti=panchayat_samiti,
-            name=name,
-            mobile=mobile,
-            email=email,
-            address=address,
-            username=username,
-            password=password,
-            status=status
-        )
-
-        messages.success(request, 'यूजर यशस्वीरित्या जोडला')
-        return redirect('PS-Manage-Users')
 
     # ================= EDIT =================
     if request.method == 'POST' and 'edit_user' in request.POST:
@@ -445,64 +457,77 @@ def PS_Manage_Users(request):
             raw_password = request.POST.get('password', '').strip()
             status = request.POST.get('status', 'Active')
 
-            # Validate using your validation functions
-            name = validate_clean_text(raw_name)
-            username = validate_clean_text(raw_username)
-            address = validate_clean_text(raw_address)
-            
-            # Validate email if provided
-            email = ""
-            if raw_email:
-                email = validate_email_field(raw_email)
-            
-            # Validate mobile if provided
+            # Validate required fields
+            if not raw_name:
+                messages.error(request, 'नाव आवश्यक आहे')
+                return redirect('PS-Manage-Users')
+
+            if not raw_username:
+                messages.error(request, 'यूजरनेम आवश्यक आहे')
+                return redirect('PS-Manage-Users')
+
+            # Clean text fields
+            name = raw_name.strip()
+            username = raw_username.strip()
+            address = raw_address.strip() if raw_address else ""
+
+            # Handle mobile number
             mobile = ""
             if raw_mobile:
-                mobile = validate_mobile_number(raw_mobile)
+                # Remove any non-digit characters
+                mobile = ''.join(filter(str.isdigit, raw_mobile))
+                # Validate 10 digits starting with 6-9
+                if len(mobile) == 10 and mobile[0] in '6789':
+                    pass  # Valid mobile
+                else:
+                    messages.warning(request, 'कृपया 10 अंकी वैध मोबाइल क्रमांक प्रविष्ट करा (सुरुवात 6,7,8,9 ने)')
+                    return redirect('PS-Manage-Users')
+            
+            # Handle email
+            email = ""
+            if raw_email:
+                import re
+                email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+                if re.match(email_pattern, raw_email):
+                    email = raw_email.strip().lower()
+                else:
+                    messages.warning(request, 'कृपया वैध ईमेल पत्ता प्रविष्ट करा')
+                    return redirect('PS-Manage-Users')
 
-        except ValidationError as ve:
-            messages.warning(request, f"⚠ Validation Warning: {ve}")
+            # Check duplicate username (exclude current)
+            if Panchayat_Samiti_User.objects.filter(username=username).exclude(id=user_id).exists():
+                messages.error(request, 'हा यूजरनेम आधीपासून अस्तित्वात आहे')
+                return redirect('PS-Manage-Users')
+
+            # Get Panchayat Samiti
+            panchayat_samiti = None
+            if raw_panchayat_samiti_id:
+                try:
+                    panchayat_samiti = Panchayat_Samiti.objects.get(id=raw_panchayat_samiti_id)
+                except Panchayat_Samiti.DoesNotExist:
+                    pass
+
+            # Update Record
+            user_obj.panchayat_samiti = panchayat_samiti
+            user_obj.name = name
+            user_obj.mobile = mobile
+            user_obj.email = email
+            user_obj.address = address
+            user_obj.username = username
+            
+            # Only update password if provided
+            if raw_password:
+                user_obj.password = raw_password
+            
+            user_obj.status = status
+            user_obj.save()
+
+            messages.success(request, 'यूजर यशस्वीरित्या अद्यतनित केला')
             return redirect('PS-Manage-Users')
 
-        # Validation
-        if not name:
-            messages.error(request, 'नाव आवश्यक आहे')
+        except Exception as e:
+            messages.error(request, f'त्रुटी: {str(e)}')
             return redirect('PS-Manage-Users')
-
-        if not username:
-            messages.error(request, 'यूजरनेम आवश्यक आहे')
-            return redirect('PS-Manage-Users')
-
-        # Check duplicate username (exclude current)
-        if Panchayat_Samiti_User.objects.filter(username=username).exclude(id=user_id).exists():
-            messages.error(request, 'हा यूजरनेम आधीपासून अस्तित्वात आहे')
-            return redirect('PS-Manage-Users')
-
-        # Get Panchayat Samiti
-        panchayat_samiti = None
-        if raw_panchayat_samiti_id:
-            try:
-                panchayat_samiti = Panchayat_Samiti.objects.get(id=raw_panchayat_samiti_id)
-            except Panchayat_Samiti.DoesNotExist:
-                pass
-
-        # Update Record
-        user_obj.panchayat_samiti = panchayat_samiti
-        user_obj.name = name
-        user_obj.mobile = mobile
-        user_obj.email = email
-        user_obj.address = address
-        user_obj.username = username
-        
-        # Only update password if provided
-        if raw_password:
-            user_obj.password = raw_password
-        
-        user_obj.status = status
-        user_obj.save()
-
-        messages.success(request, 'यूजर यशस्वीरित्या अद्यतनित केला')
-        return redirect('PS-Manage-Users')
 
     # ================= DELETE =================
     if request.method == 'POST' and 'delete_user' in request.POST:
@@ -568,6 +593,21 @@ def PS_Manage_Users(request):
     users_page = paginator.get_page(page_number)
     start_index = (users_page.number - 1) * paginator.per_page + 1
 
+    # Create pagination range with ellipsis
+    pagination_range = []
+    current_page = users_page.number
+    total_pages = paginator.num_pages
+
+    if total_pages <= 7:
+        pagination_range = list(range(1, total_pages + 1))
+    else:
+        if current_page <= 3:
+            pagination_range = list(range(1, 6)) + ['...', total_pages]
+        elif current_page >= total_pages - 2:
+            pagination_range = [1, '...'] + list(range(total_pages - 4, total_pages + 1))
+        else:
+            pagination_range = [1, '...'] + list(range(current_page - 1, current_page + 2)) + ['...', total_pages]
+
     context = {
         'user': user,
         'users': users_page,
@@ -581,6 +621,8 @@ def PS_Manage_Users(request):
         'panchayat_samiti_filter': panchayat_samiti_filter,
         'status_filter': status_filter,
         'panchayat_samitis': panchayat_samitis,
+        'pagination_range': pagination_range,
+        'total_pages': total_pages,
     }
 
     return render(request, 'PS-Manage-Users.html', context)
