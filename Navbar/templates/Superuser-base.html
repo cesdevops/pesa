@@ -609,10 +609,7 @@ body{
 <!-- ══════════════════════════════════════
      MAIN HEADER (ADD THIS)
 ══════════════════════════════════════ -->
-<div class="main-header">
- 
 
-</div>
 
 <!-- ══════════════════════════════════════
      TOP NAVBAR
@@ -709,11 +706,36 @@ body{
 
     <!-- MAIN NAVIGATION -->
     <ul class="sidebar-nav">
-      <li><a href="#" class="active" data-tooltip="डॅशबोर्ड"><i class="fa fa-tachometer-alt"></i><span class="nav-label">डॅशबोर्ड</span></a></li>
+      <li><a href="#" class="" data-tooltip="डॅशबोर्ड"><i class="fa fa-tachometer-alt"></i><span class="nav-label">डॅशबोर्ड</span></a></li>
+
+      <li>
+        
+    <a href="{% url 'Manage-District' %}"
+       data-tooltip="जिल्हा व्यवस्थापन">
+
+        <i class="fa fa-map"></i>
+
+        <span class="nav-label">
+            जिल्हा व्यवस्थापन
+        </span>
+
+    </a>
+</li>
+
+<li>
+    <a href="{% url 'Manage-Taluka' %}"
+       data-tooltip="तालुका व्यवस्थापन">
+
+        <i class="fa fa-map-marker-alt"></i>
+
+        <span class="nav-label">
+            तालुका व्यवस्थापन
+        </span>
+
+    </a>
+</li>
       <li><a href="#" data-tooltip="ग्रामसभा"><i class="fa fa-file-alt"></i><span class="nav-label">ग्रामसभा</span><span class="badge">३९</span></a></li>
       <li><a href="#" data-tooltip="लाभार्थी"><i class="fa fa-users"></i><span class="nav-label">लाभार्थी</span></a></li>
-      <li><a href="#" data-tooltip="निधी व्यवस्थापन"><i class="fa fa-money-bill-wave"></i><span class="nav-label">निधी व्यवस्थापन</span></a></li>
-      <li><a href="#" data-tooltip="योजना"><i class="fa fa-tasks"></i><span class="nav-label">योजना</span></a></li>
 
 </ul>
 

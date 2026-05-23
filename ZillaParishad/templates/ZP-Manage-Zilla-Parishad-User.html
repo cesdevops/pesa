@@ -442,6 +442,7 @@
                         <th>Username</th>
                         <th>मोबाइल</th>
                         <th>ईमेल</th>
+                        <th>भूमिका</th>
                         <th width="100">स्थिती</th>
                         <th width="150">क्रिया</th>
                     </tr>
@@ -461,7 +462,7 @@
                         <td>{{ obj.name|default:"-" }}</td>
                         <td>{{ obj.username|default:"-" }}</td>
                         <td>{{ obj.mobile|default:"-" }}</td>
-                        <td>{{ obj.email|default:"-" }}</td>
+                        <td>{{ obj.Role|default:"-" }}</td>
                         <td>
                             {% if obj.status == 'Active' %}
                                 <span class="badge-active"><i class="fas fa-check-circle me-1"></i> सक्रिय</span>
@@ -560,6 +561,16 @@
                             </label>
                             <input type="email" name="email" class="form-control-modern" placeholder="email@example.com">
                         </div>
+                        <div class="col-md-6">
+    <label class="form-label-modern">
+        भूमिका
+    </label>
+
+    <input type="text"
+           name="Role"
+           class="form-control-modern"
+           placeholder="उदा. मुख्य अधिकारी">
+</div>
                         <div class="col-md-6">
                             <label class="form-label-modern">
                                 पत्ता
@@ -669,6 +680,17 @@
                             </label>
                             <input type="email" name="email" class="form-control-modern" value="{{ obj.email }}">
                         </div>
+                        <div class="col-md-6">
+    <label class="form-label-modern">
+        भूमिका
+    </label>
+
+    <input type="text"
+           name="Role"
+           class="form-control-modern"
+           value="{{ obj.Role }}"
+           placeholder="उदा. मुख्य अधिकारी">
+</div>
                         <div class="col-md-6">
                             <label class="form-label-modern">
                                 पत्ता
