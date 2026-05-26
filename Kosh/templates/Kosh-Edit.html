@@ -421,116 +421,232 @@
 <div class="modal fade" id="addPopulationModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content rounded-4 border-0">
+
       <div class="modal-header bg-dark text-white rounded-top-4 border-0">
         <h5 class="modal-title">
           <i class="fas fa-plus-circle me-2"></i> नवीन लोकसंख्या जोडा
         </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+
+        <button type="button"
+                class="btn-close btn-close-white"
+                data-bs-dismiss="modal"
+                aria-label="Close">
+        </button>
       </div>
-      <form method="POST" action="{% url 'Kosh-Population-Manage' gram_panchayat.id edit_kosh.id %}">
+
+      <!-- ADD FORM -->
+      <form method="POST"
+            action="{% url 'Kosh-Population-Manage' edit_kosh.grampanchayat.id edit_kosh.id %}">
+
         {% csrf_token %}
         <input type="hidden" name="add_population" value="1">
+
         <div class="modal-body p-4">
+
           <div class="mb-3">
-            <label class="form-label fw-semibold">जात श्रेणी <span class="text-danger">*</span></label>
-            <select name="cast_category_id" class="form-select rounded-3" required>
+            <label class="form-label fw-semibold">
+              जात श्रेणी <span class="text-danger">*</span>
+            </label>
+
+            <select name="cast_category_id"
+                    class="form-select rounded-3"
+                    required>
+
               <option value="">-- जात श्रेणी निवडा --</option>
+
               {% for category in cast_categories %}
-                <option value="{{ category.id }}">{{ category.category_name }}</option>
+                <option value="{{ category.id }}">
+                  {{ category.category_name }}
+                </option>
               {% endfor %}
+
             </select>
           </div>
-          
+
           <div class="mb-3">
-            <label class="form-label fw-semibold">आर्थिक वर्ष <span class="text-danger">*</span></label>
-            <select name="financial_year_id" class="form-select rounded-3" required>
+            <label class="form-label fw-semibold">
+              आर्थिक वर्ष <span class="text-danger">*</span>
+            </label>
+
+            <select name="financial_year_id"
+                    class="form-select rounded-3"
+                    required>
+
               <option value="">-- आर्थिक वर्ष निवडा --</option>
+
               {% for year in financial_years %}
-                <option value="{{ year.id }}">{{ year.year }}</option>
+                <option value="{{ year.id }}">
+                  {{ year.year }}
+                </option>
               {% endfor %}
+
             </select>
           </div>
-          
+
           <div class="mb-3">
-            <label class="form-label fw-semibold">लोकसंख्या <span class="text-danger">*</span></label>
-            <input type="number" name="population_count" class="form-control rounded-3" 
-                   placeholder="लोकसंख्या प्रविष्ट करा..." required>
+            <label class="form-label fw-semibold">
+              लोकसंख्या <span class="text-danger">*</span>
+            </label>
+
+            <input type="number"
+                   name="population_count"
+                   class="form-control rounded-3"
+                   placeholder="लोकसंख्या प्रविष्ट करा..."
+                   required>
           </div>
-          
+
           <div class="mb-3">
             <label class="form-label fw-semibold">स्थिती</label>
-            <select name="status" class="form-select rounded-3">
+
+            <select name="status"
+                    class="form-select rounded-3">
+
               <option value="Active">सक्रिय</option>
               <option value="Inactive">निष्क्रिय</option>
+
             </select>
           </div>
+
         </div>
+
         <div class="modal-footer bg-light rounded-bottom-4 border-0">
-          <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">रद्द करा</button>
-          <button type="submit" class="btn btn-success rounded-pill px-4">जतन करा</button>
+
+          <button type="button"
+                  class="btn btn-secondary rounded-pill px-4"
+                  data-bs-dismiss="modal">
+            रद्द करा
+          </button>
+
+          <button type="submit"
+                  class="btn btn-success rounded-pill px-4">
+            जतन करा
+          </button>
+
         </div>
       </form>
     </div>
   </div>
 </div>
 
+
+
 <!-- ==================== EDIT POPULATION MODALS ==================== -->
 {% for pop in population_list %}
-<div class="modal fade" id="editPopulationModal{{ pop.id }}" tabindex="-1" aria-hidden="true">
+<div class="modal fade"
+     id="editPopulationModal{{ pop.id }}"
+     tabindex="-1"
+     aria-hidden="true">
+
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content rounded-4 border-0">
+
       <div class="modal-header bg-dark text-white rounded-top-4 border-0">
         <h5 class="modal-title">
           <i class="fas fa-edit me-2"></i> लोकसंख्या संपादित करा
         </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+
+        <button type="button"
+                class="btn-close btn-close-white"
+                data-bs-dismiss="modal"
+                aria-label="Close">
+        </button>
       </div>
-      <form method="POST" action="{% url 'Kosh-Population-Manage' gram_panchayat.id edit_kosh.id pop.id %}">
+
+      <!-- EDIT FORM -->
+      <form method="POST" action="{% url 'Kosh-Population-Manage' edit_kosh.grampanchayat.id edit_kosh.id pop.id %}">
         {% csrf_token %}
         <input type="hidden" name="edit_population" value="1">
         <div class="modal-body p-4">
           <div class="mb-3">
-            <label class="form-label fw-semibold">जात श्रेणी <span class="text-danger">*</span></label>
-            <select name="cast_category_id" class="form-select rounded-3" required>
+            <label class="form-label fw-semibold">
+              जात श्रेणी <span class="text-danger">*</span>
+            </label>
+
+            <select name="cast_category_id"
+                    class="form-select rounded-3"
+                    required>
+
               <option value="">-- जात श्रेणी निवडा --</option>
+
               {% for category in cast_categories %}
-                <option value="{{ category.id }}" {% if pop.cast_category.id == category.id %}selected{% endif %}>
+                <option value="{{ category.id }}"
+                        {% if pop.cast_category.id == category.id %}selected{% endif %}>
                   {{ category.category_name }}
                 </option>
               {% endfor %}
+
             </select>
           </div>
-          
+
           <div class="mb-3">
-            <label class="form-label fw-semibold">आर्थिक वर्ष <span class="text-danger">*</span></label>
-            <select name="financial_year_id" class="form-select rounded-3" required>
+            <label class="form-label fw-semibold">
+              आर्थिक वर्ष <span class="text-danger">*</span>
+            </label>
+
+            <select name="financial_year_id"
+                    class="form-select rounded-3"
+                    required>
+
               <option value="">-- आर्थिक वर्ष निवडा --</option>
+
               {% for year in financial_years %}
-                <option value="{{ year.id }}" {% if pop.financial_year.id == year.id %}selected{% endif %}>
+                <option value="{{ year.id }}"
+                        {% if pop.financial_year.id == year.id %}selected{% endif %}>
                   {{ year.year }}
                 </option>
               {% endfor %}
+
             </select>
           </div>
-          
+
           <div class="mb-3">
-            <label class="form-label fw-semibold">लोकसंख्या <span class="text-danger">*</span></label>
-            <input type="number" name="population_count" class="form-control rounded-3" 
-                   value="{{ pop.population_count|default:'' }}" required>
+            <label class="form-label fw-semibold">
+              लोकसंख्या <span class="text-danger">*</span>
+            </label>
+
+            <input type="number"
+                   name="population_count"
+                   class="form-control rounded-3"
+                   value="{{ pop.population_count }}"
+                   required>
           </div>
-          
+
           <div class="mb-3">
             <label class="form-label fw-semibold">स्थिती</label>
-            <select name="status" class="form-select rounded-3">
-              <option value="Active" {% if pop.status == 'Active' %}selected{% endif %}>सक्रिय</option>
-              <option value="Inactive" {% if pop.status == 'Inactive' %}selected{% endif %}>निष्क्रिय</option>
+
+            <select name="status"
+                    class="form-select rounded-3">
+
+              <option value="Active"
+                      {% if pop.status == 'Active' %}selected{% endif %}>
+                सक्रिय
+              </option>
+
+              <option value="Inactive"
+                      {% if pop.status == 'Inactive' %}selected{% endif %}>
+                निष्क्रिय
+              </option>
+
             </select>
           </div>
+
         </div>
+
         <div class="modal-footer bg-light rounded-bottom-4 border-0">
-          <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">रद्द करा</button>
-          <button type="submit" class="btn btn-primary rounded-pill px-4">अद्यतनित करा</button>
+
+          <button type="button"
+                  class="btn btn-secondary rounded-pill px-4"
+                  data-bs-dismiss="modal">
+            रद्द करा
+          </button>
+
+          <button type="submit"
+                  class="btn btn-primary rounded-pill px-4">
+            अद्यतनित करा
+          </button>
+
         </div>
+
       </form>
     </div>
   </div>
@@ -668,10 +784,26 @@
           </div>
           
           <div class="row">
-            <div class="col-md-4 mb-3">
-              <label class="form-label fw-semibold">IFSC कोड</label>
-              <input type="text" name="ifsc_code" class="form-control rounded-3" placeholder="IFSC कोड">
-            </div>
+
+          <div class="col-md-4 mb-3">
+            <label class="form-label fw-semibold">
+              IFSC कोड
+            </label>
+
+            <input type="text"
+                  name="ifsc_code"
+                  class="form-control rounded-3 text-uppercase"
+                  placeholder="उदा. SBIN0001234"
+                  maxlength="11"
+                  pattern="^[A-Z]{4}0[A-Z0-9]{6}$"
+                  oninput="this.value = this.value.toUpperCase()"
+                  autocomplete="off">
+
+            <small class="text-muted">
+              IFSC कोड 11 अक्षरांचा असावा
+            </small>
+          </div>
+
             <div class="col-md-4 mb-3">
               <label class="form-label fw-semibold">खाते प्रकार</label>
               <select name="account_type" class="form-select rounded-3">

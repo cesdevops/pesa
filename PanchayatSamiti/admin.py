@@ -18,7 +18,6 @@ class PanchayatSamitiAdmin(admin.ModelAdmin):
     search_fields = (
         'panchayat_samiti_name',
         'panchayat_samiti_code',
-        'zilla_parishad_name',
     )
     list_filter = ('status', 'zilla_parishad', 'taluka')
 

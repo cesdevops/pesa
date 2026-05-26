@@ -10,7 +10,7 @@ class Panchayat_Samiti(models.Model):
     )
 
     zilla_parishad = models.ForeignKey(Zilla_Parishad,on_delete=models.SET_NULL,null=True,blank=True, related_name='panchayat_samitis')
-    zilla_parishad_name = models.CharField(max_length=255,null=True,blank=True)
+    # zilla_parishad_name = models.CharField(max_length=255,null=True,blank=True)
     panchayat_samiti_name = models.CharField(max_length=255,null=True,blank=True)
     panchayat_samiti_code = models.CharField(max_length=255,unique=True,null=True,blank=True)
     taluka = models.ForeignKey(Taluka,on_delete=models.SET_NULL,null=True,blank=True,related_name='panchayat_samitis')

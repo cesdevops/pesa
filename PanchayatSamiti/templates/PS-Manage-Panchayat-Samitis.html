@@ -189,7 +189,7 @@
             {% for samiti in samitis %}
             <tr>
               <td class="ps-4">{{ forloop.counter0|add:start_index|default:forloop.counter }}</td>
-              <td class="fw-semibold">{{ samiti.panchayat_samiti_name|default:"—" }}</td>
+              <!-- <td class="fw-semibold">{{ samiti.panchayat_samiti_name|default:"—" }}</td> -->
               <td>{{ samiti.zilla_parishad_name|default:"—" }}</td>
               <td>{{ samiti.taluka.district.name|default:"—" }}</td>
               <td>{{ samiti.taluka.name|default:"—" }}</td>
