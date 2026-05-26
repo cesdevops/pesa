@@ -9,11 +9,13 @@ from django.shortcuts import render
 from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.db.models import Q, Sum
+
 from ZillaParishad.models import Zilla_Parishad_User
 from PanchayatSamiti.models import Panchayat_Samiti, Panchayat_Samiti_User
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from Main.models import District, Super_User, Taluka
+from Main.models import District, Head_Percentage, Kosh_Head, Super_User, Taluka
 from ZillaParishad.models import Zilla_Parishad
 from django.core.paginator import Paginator
 from django.http import JsonResponse
@@ -175,15 +177,6 @@ def Superuser_Logout(request):
     return redirect('SuperUser-Login')
 
 
-
-
-
-
-
-
-# =========================================================
-# MANAGE DISTRICT
-# =========================================================
 
 def Manage_District(request):
 
@@ -463,9 +456,7 @@ def Manage_District(request):
     )
 
 
-# =========================================================
-# MANAGE TALUKA
-# =========================================================
+
 
 def Manage_Taluka(request):
 
@@ -823,3 +814,244 @@ def Manage_Taluka(request):
     )
 
 
+
+
+
+
+def Manage_Kosh_Head(request):
+
+    # =====================================================
+    # ADD
+    # =====================================================
+
+    if request.method == "POST" and request.POST.get("action") == "add":
+
+        name = request.POST.get("name", "").strip()
+        status = request.POST.get("status", "Active").strip()
+
+        if not name:
+            messages.error(request, "Head name is required.")
+            return redirect("Manage-Kosh-Head")
+
+        try:
+            validate_clean_text(name, "Head Name")
+
+        except ValidationError as e:
+            messages.error(request, str(e))
+            return redirect("Manage-Kosh-Head")
+
+        if Kosh_Head.objects.filter(name=name).exists():
+            messages.error(request, "Head already exists.")
+            return redirect("Manage-Kosh-Head")
+
+        Kosh_Head.objects.create(
+            name=name,
+            status=status
+        )
+
+        messages.success(request, "Kosh Head added successfully.")
+        return redirect("Manage-Kosh-Head")
+
+    # =====================================================
+    # EDIT
+    # =====================================================
+
+    if request.method == "POST" and request.POST.get("action") == "edit":
+
+        edit_id = request.POST.get("edit_id")
+
+        obj = get_object_or_404(Kosh_Head, id=edit_id)
+
+        name = request.POST.get("name", "").strip()
+        status = request.POST.get("status", "Active").strip()
+
+        if not name:
+            messages.error(request, "Head name is required.")
+            return redirect("Manage-Kosh-Head")
+
+        try:
+            validate_clean_text(name, "Head Name")
+
+        except ValidationError as e:
+            messages.error(request, str(e))
+            return redirect("Manage-Kosh-Head")
+
+        if Kosh_Head.objects.filter(
+            name=name
+        ).exclude(id=edit_id).exists():
+
+            messages.error(request, "Head already exists.")
+            return redirect("Manage-Kosh-Head")
+
+        obj.name = name
+        obj.status = status
+        obj.save()
+
+        messages.success(request, "Kosh Head updated successfully.")
+        return redirect("Manage-Kosh-Head")
+
+    # =====================================================
+    # DELETE
+    # =====================================================
+
+    if request.GET.get("delete_id"):
+
+        delete_id = request.GET.get("delete_id")
+
+        obj = get_object_or_404(Kosh_Head, id=delete_id)
+
+        obj.delete()
+
+        messages.success(request, "Kosh Head deleted successfully.")
+        return redirect("Manage-Kosh-Head")
+
+    # =====================================================
+    # SEARCH
+    # =====================================================
+
+    search = request.GET.get("search", "").strip()
+
+    heads = Kosh_Head.objects.all().order_by("-id")
+
+    if search:
+        heads = heads.filter(
+            Q(name__icontains=search)
+        )
+
+    paginator = Paginator(heads, 10)
+
+    page_number = request.GET.get("page")
+
+    heads = paginator.get_page(page_number)
+
+    context = {
+        "heads": heads,
+        "search": search,
+    }
+
+    return render(
+        request,
+        "Manage-Kosh-Head.html",
+        context
+    )
+
+
+# =====================================================
+# MANAGE HEAD PERCENTAGE
+# =====================================================
+
+def Manage_Head_Percentage(request):
+
+    heads = Kosh_Head.objects.filter(
+        status="Active"
+    ).order_by("name")
+
+    # =====================================================
+    # SAVE PERCENTAGES
+    # =====================================================
+
+    if request.method == "POST":
+
+        total = 0
+
+        percentage_data = []
+
+        # =====================================================
+        # VALIDATE
+        # =====================================================
+
+        for head in heads:
+
+            percentage = request.POST.get(
+                f"percentage_{head.id}",
+                "0"
+            ).strip()
+
+            try:
+                percentage = float(percentage)
+
+            except:
+                messages.error(
+                    request,
+                    f"Invalid percentage for {head.name}"
+                )
+
+                return redirect("Manage-Head-Percentage")
+
+            if percentage < 0:
+
+                messages.error(
+                    request,
+                    "Percentage cannot be negative."
+                )
+
+                return redirect("Manage-Head-Percentage")
+
+            total += percentage
+
+            percentage_data.append({
+                "head": head,
+                "percentage": percentage
+            })
+
+        # =====================================================
+        # TOTAL MUST BE 100
+        # =====================================================
+
+        if total != 100:
+
+            messages.error(
+                request,
+                f"Total percentage must be exactly 100%. Current Total: {total}%"
+            )
+
+            return redirect("Manage-Head-Percentage")
+
+        # =====================================================
+        # SAVE DATA
+        # =====================================================
+
+        for item in percentage_data:
+
+            Head_Percentage.objects.update_or_create(
+                kosh_head=item["head"],
+                defaults={
+                    "percentage": item["percentage"]
+                }
+            )
+
+        messages.success(
+            request,
+            "Head percentages saved successfully."
+        )
+
+        return redirect("Manage-Head-Percentage")
+
+    # =====================================================
+    # GET EXISTING DATA
+    # =====================================================
+
+    percentage_dict = {}
+
+    for obj in Head_Percentage.objects.all():
+
+        percentage_dict[obj.kosh_head_id] = obj.percentage
+
+    total_percentage = Head_Percentage.objects.aggregate(
+        total=Sum("percentage")
+    )["total"] or 0
+
+    remaining_percentage = 100 - total_percentage
+
+    context = {
+        "heads": heads,
+        "percentage_dict": percentage_dict,
+        "total_percentage": total_percentage,
+        "remaining_percentage": remaining_percentage,
+    }
+
+    return render(
+        request,
+        "Manage-Head-Percentage.html",
+        context
+    )
