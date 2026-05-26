@@ -21,7 +21,6 @@ class PanchayatSamitiAdmin(admin.ModelAdmin):
     )
     list_filter = ('status', 'zilla_parishad', 'taluka')
 
-
 @admin.register(Panchayat_Samiti_User)
 class PanchayatSamitiUserAdmin(admin.ModelAdmin):
     list_display = (

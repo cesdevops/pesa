@@ -82,27 +82,7 @@
     </button>
   </div>
   
-  <!-- आकडेवारी कार्ड्स -->
-  <div class="row g-4 mb-4">
-    {% if filtered_count and filtered_count != total_users %}
-    <div class="col-md-6 col-lg-4">
-      <div class="card border-0 shadow-sm rounded-4 h-100">
-        <div class="card-body p-4">
-          <div class="d-flex align-items-center justify-content-between">
-            <div>
-              <div class="display-1 mb-2">🔍</div>
-              <div class="h1 fw-bold text-dark mb-0">{{ filtered_count }}</div>
-              <div class="text-secondary small mt-1">फिल्टर केलेले निकाल</div>
-            </div>
-            <div class="bg-info bg-opacity-10 rounded-circle p-3">
-              <i class="fas fa-filter text-info fs-2"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    {% endif %}
-  </div>
+
   
   <!-- फिल्टर कार्ड -->
   <div class="card shadow-sm border-0 rounded-4 mb-3">
@@ -161,16 +141,7 @@
     </div>
   </div>
   
-  <!-- Django संदेश -->
-  {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-3 mb-4" role="alert">
-        <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %} me-2"></i>
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    {% endfor %}
-  {% endif %}
+
   
   <!-- डेटा सारणी -->
   <div class="card border-0 shadow-sm rounded-4">
@@ -389,27 +360,37 @@
         {% csrf_token %}
         <input type="hidden" name="add_user" value="1">
         <div class="modal-body p-4">
-          <div class="mb-3">
-            <label class="form-label fw-semibold">नाव <span class="text-danger">*</span></label>
-            <input type="text" name="name" class="form-control rounded-3" 
-                   placeholder="पूर्ण नाव प्रविष्ट करा..." required>
-          </div>
-          
-          <div class="mb-3">
-            <label class="form-label fw-semibold">पंचायत समिती</label>
-            <select name="panchayat_samiti_id" class="form-select rounded-3">
-              <option value="">-- पंचायत समिती निवडा --</option>
-              {% for ps in panchayat_samitis %}
-                <option value="{{ ps.id }}">{{ ps.panchayat_samiti_name }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          
-          <div class="mb-3">
-            <label class="form-label fw-semibold">रोल <span class="text-danger">*</span></label>
-            <input type="text" name="role" class="form-control rounded-3" 
-                   placeholder="उदा. Admin, Manager, User, Operator" required>
-            <small class="text-muted">रोल प्रविष्ट करा (Admin, Manager, User, Operator इ.)</small>
+          <div class="row">
+            
+            <!-- नाव -->
+            <div class="col-md-4 mb-3">
+              <label class="form-label fw-semibold">
+                नाव <span class="text-danger">*</span>
+              </label>
+              <input type="text" name="name" class="form-control rounded-3"
+                    placeholder="पूर्ण नाव प्रविष्ट करा..." required>
+            </div>
+
+            <!-- पंचायत समिती -->
+            <div class="col-md-4 mb-3">
+              <label class="form-label fw-semibold">पंचायत समिती</label>
+              <select name="panchayat_samiti_id" class="form-select rounded-3">
+                <option value="">-- पंचायत समिती निवडा --</option>
+                {% for ps in panchayat_samitis %}
+                  <option value="{{ ps.id }}">{{ ps.panchayat_samiti_name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- रोल -->
+            <div class="col-md-4 mb-3">
+              <label class="form-label fw-semibold">
+                रोल <span class="text-danger">*</span>
+              </label>
+              <input type="text" name="role" class="form-control rounded-3"
+                    placeholder="उदा. Admin, Manager, User" required>
+            </div>
+
           </div>
           
           <div class="row">
@@ -479,30 +460,32 @@
         <input type="hidden" name="edit_user" value="1">
         <input type="hidden" name="user_id" value="{{ user_obj.id }}">
         <div class="modal-body p-4">
-          <div class="mb-3">
-            <label class="form-label fw-semibold">नाव <span class="text-danger">*</span></label>
-            <input type="text" name="name" class="form-control rounded-3" 
-                   value="{{ user_obj.name|default:'' }}" required>
+          <div class="row">
+
+            <div class="col-md-4 mb-3"">
+              <label class="form-label fw-semibold">नाव <span class="text-danger">*</span></label>
+              <input type="text" name="name" class="form-control rounded-3" 
+                    value="{{ user_obj.name|default:'' }}" required>
+            </div>
+            
+            <div class="col-md-4 mb-3"">
+              <label class="form-label fw-semibold">पंचायत समिती</label>
+              <select name="panchayat_samiti_id" class="form-select rounded-3">
+                <option value="">-- पंचायत समिती निवडा --</option>
+                {% for ps in panchayat_samitis %}
+                  <option value="{{ ps.id }}" {% if user_obj.panchayat_samiti and user_obj.panchayat_samiti.id == ps.id %}selected{% endif %}>
+                    {{ ps.panchayat_samiti_name }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+            
+            <div class="col-md-4 mb-3"">
+              <label class="form-label fw-semibold">रोल</label>
+              <input type="text" name="role" class="form-control rounded-3" 
+                    value="{{ user_obj.role|default:'' }}" placeholder="उदा. Admin, Manager, User, Operator">
+            </div>
           </div>
-          
-          <div class="mb-3">
-            <label class="form-label fw-semibold">पंचायत समिती</label>
-            <select name="panchayat_samiti_id" class="form-select rounded-3">
-              <option value="">-- पंचायत समिती निवडा --</option>
-              {% for ps in panchayat_samitis %}
-                <option value="{{ ps.id }}" {% if user_obj.panchayat_samiti and user_obj.panchayat_samiti.id == ps.id %}selected{% endif %}>
-                  {{ ps.panchayat_samiti_name }}
-                </option>
-              {% endfor %}
-            </select>
-          </div>
-          
-          <div class="mb-3">
-            <label class="form-label fw-semibold">रोल</label>
-            <input type="text" name="role" class="form-control rounded-3" 
-                   value="{{ user_obj.role|default:'' }}" placeholder="उदा. Admin, Manager, User, Operator">
-          </div>
-          
           <div class="row">
             <div class="col-md-6 mb-3">
               <label class="form-label fw-semibold">मोबाइल क्रमांक</label>
@@ -554,3 +537,6 @@
 {% endfor %}
 
 {% endblock %}
+
+
+
