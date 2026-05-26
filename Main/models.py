@@ -71,3 +71,34 @@ class Taluka(models.Model):
 
 
 
+
+
+class Kosh_Head(models.Model):
+    STATUS_CHOICES = (
+        ('Active', 'Active'),
+        ('Inactive', 'Inactive'),
+    )
+
+    name = models.CharField(max_length=255)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Active')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Head_Percentage(models.Model):
+    kosh_head = models.ForeignKey(
+        Kosh_Head,
+        on_delete=models.CASCADE,
+        related_name='head_percentages'
+    )
+    percentage = models.DecimalField(max_digits=5, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.kosh_head.name} - {self.percentage}%"
+
+

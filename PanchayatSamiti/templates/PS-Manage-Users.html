@@ -1,800 +1,556 @@
 {% extends 'Superuser-base.html' %}
 {% load static %}
 
-{% block title %}PESA FMS — Manage Panchayat Samiti Users{% endblock %}
-
-{% block extra_head %}
-<style>
-  .filter-bar {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 24px;
-    border: 1px solid #e0e8f0;
-  }
-  
-  .page-title-block {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  
-  .page-title-block h1 {
-    font-size: 24px;
-    font-weight: 700;
-    color: #1A2C3E;
-    margin: 0;
-  }
-  
-  .btn-add {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: linear-gradient(135deg, #1E88E5, #0D47A1);
-    color: white;
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.2s;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .btn-add:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(30,136,229,0.3);
-    color: white;
-  }
-  
-  .filter-row {
-    display: flex;
-    gap: 15px;
-    align-items: flex-end;
-    flex-wrap: wrap;
-  }
-  
-  .filter-group {
-    flex: 1;
-    min-width: 160px;
-  }
-  
-  .filter-group label {
-    display: block;
-    font-size: 11px;
-    font-weight: 600;
-    color: #5C6F87;
-    text-transform: uppercase;
-    margin-bottom: 5px;
-    letter-spacing: 0.5px;
-  }
-  
-  .filter-group label i {
-    margin-right: 4px;
-  }
-  
-  .filter-group input,
-  .filter-group select {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #e0e8f0;
-    border-radius: 8px;
-    font-size: 13px;
-    transition: all 0.2s;
-    background: white;
-  }
-  
-  .filter-group input:focus,
-  .filter-group select:focus {
-    border-color: #1E88E5;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(30,136,229,0.1);
-  }
-  
-  .filter-actions {
-    display: flex;
-    gap: 10px;
-  }
-  
-  .btn-primary-custom {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 8px 18px;
-    background: #1E88E5;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 12.5px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-decoration: none;
-  }
-  
-  .btn-primary-custom:hover {
-    background: #0D47A1;
-    transform: translateY(-1px);
-    color: white;
-  }
-  
-  .btn-reset-custom {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 8px 18px;
-    background: #e2e8f0;
-    color: #475569;
-    border: none;
-    border-radius: 8px;
-    font-size: 12.5px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-decoration: none;
-  }
-  
-  .btn-reset-custom:hover {
-    background: #cbd5e1;
-    color: #1e293b;
-  }
-  
-  .table-container {
-    background: white;
-    border-radius: 12px;
-    border: 1px solid #e0e8f0;
-    overflow: hidden;
-  }
-  
-  .data-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
-  
-  .data-table th {
-    text-align: left;
-    padding: 14px 16px;
-    background: #F8FAFE;
-    font-weight: 600;
-    color: #1A2C3E;
-    border-bottom: 2px solid #e0e8f0;
-  }
-  
-  .data-table td {
-    padding: 12px 16px;
-    border-bottom: 1px solid #F0F0F0;
-    vertical-align: middle;
-  }
-  
-  .data-table tbody tr:hover {
-    background: #F8FAFE;
-  }
-  
-  .data-table tbody tr:last-child td {
-    border-bottom: none;
-  }
-  
-  .status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-  }
-  
-  .status-active {
-    background: #ECFDF5;
-    color: #10B981;
-  }
-  
-  .status-inactive {
-    background: #FEF2F2;
-    color: #EF4444;
-  }
-  
-  .action-btns {
-    display: flex;
-    gap: 8px;
-  }
-  
-  .edit-btn, .delete-btn {
-    background: none;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 6px;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-  }
-  
-  .edit-btn {
-    color: #1E88E5;
-  }
-  
-  .edit-btn:hover {
-    background: #E8F0FE;
-  }
-  
-  .delete-btn {
-    color: #EF4444;
-  }
-  
-  .delete-btn:hover {
-    background: #FEF2F2;
-  }
-  
-  .empty-state {
-    text-align: center;
-    padding: 60px 20px;
-  }
-  
-  .empty-state i {
-    font-size: 64px;
-    color: #cbd5e1;
-    margin-bottom: 20px;
-  }
-  
-  .empty-state h5 {
-    font-size: 16px;
-    font-weight: 600;
-    color: #1A2C3E;
-    margin-bottom: 8px;
-  }
-  
-  .empty-state p {
-    color: #5C6F87;
-    font-size: 13px;
-  }
-  
-  .pagination-wrapper {
-    padding: 20px;
-    background: #fff;
-    border-top: 1px solid #e5e7eb;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 15px;
-  }
-  
-  .pagination {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-    flex-wrap: wrap;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .pagination-btn {
-    padding: 6px 12px;
-    border: 1px solid #d1d5db;
-    background: white;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 500;
-    color: #475569;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-  }
-  
-  .pagination-btn:hover {
-    background: #f1f5f9;
-    border-color: #1E88E5;
-    color: #1E88E5;
-  }
-  
-  .pagination-btn.active {
-    background: linear-gradient(135deg, #1E88E5, #0D47A1);
-    color: white;
-    border-color: #1E88E5;
-  }
-  
-  .pagination-btn.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
-  }
-  
-  .pagination-ellipsis {
-    padding: 6px 10px;
-    color: #94a3b8;
-  }
-  
-  .pagination-info {
-    font-size: 12px;
-    color: #64748b;
-  }
-  
-  .modal-content {
-    border-radius: 16px;
-    border: none;
-  }
-  
-  .modal-header {
-    border-bottom: 1px solid #e0e8f0;
-    padding: 18px 24px;
-  }
-  
-  .modal-body {
-    padding: 24px;
-  }
-  
-  .modal-footer {
-    border-top: 1px solid #e0e8f0;
-    padding: 16px 24px;
-  }
-  
-  .form-group {
-    margin-bottom: 18px;
-  }
-  
-  .form-group label {
-    display: block;
-    font-size: 12px;
-    font-weight: 600;
-    color: #475569;
-    margin-bottom: 6px;
-  }
-  
-  .form-group label span {
-    color: #ef4444;
-  }
-  
-  .form-group input, 
-  .form-group select, 
-  .form-group textarea {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 13px;
-  }
-  
-  .form-group input:focus, 
-  .form-group select:focus, 
-  .form-group textarea:focus {
-    border-color: #1E88E5;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(30,136,229,0.1);
-  }
-  
-  .form-row {
-    display: flex;
-    gap: 15px;
-  }
-  
-  .form-row .form-group {
-    flex: 1;
-  }
-  
-  @media (max-width: 768px) {
-    .data-table th,
-    .data-table td {
-      padding: 8px 10px;
-      font-size: 12px;
-    }
-    
-    .filter-row {
-      flex-direction: column;
-    }
-    
-    .filter-group {
-      min-width: 100%;
-    }
-    
-    .pagination-wrapper {
-      flex-direction: column;
-    }
-    
-    .page-title-block {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    
-    .form-row {
-      flex-direction: column;
-      gap: 0;
-    }
-  }
-</style>
-{% endblock %}
-
 {% block content %}
+<style>
+  /* Pagination Styles */
+.pagination-wrapper {
+  padding: 20px;
+  background: #fff;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
 
-<!-- Page Header -->
-<div class="page-title-block">
-  <div style="display: flex; align-items: center; gap: 15px;">
-    <div style="width: 50px; height: 50px; background: #E8F0FE; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-      <i class="bi bi-people-fill" style="font-size: 24px; color: #1E88E5;"></i>
-    </div>
-    <div>
-      <h1>Manage Panchayat Samiti Users</h1>
-    </div>
+.pagination {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+}
+
+.pagination-btn {
+  padding: 6px 12px;
+  border: 1px solid #d1d5db;
+  background: white;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pagination-btn:hover {
+  background: #f1f5f9;
+  border-color: #1e88e5;
+  color: #1e88e5;
+}
+
+.pagination-btn.active {
+  background: linear-gradient(135deg, #1e88e5, #1565c0);
+  color: white;
+  border-color: #1e88e5;
+}
+
+.pagination-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.pagination-ellipsis {
+  padding: 6px 10px;
+  color: #94a3b8;
+}
+
+.pagination-info {
+  font-size: 12px;
+  color: #64748b;
+}
+</style>
+
+<div class="container-fluid px-4 py-3">
+  
+  <!-- पृष्ठ शीर्षक -->
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <h2 class="h3 mb-0 text-dark">
+      <i class="fas fa-users text-warning me-2"></i>
+      पंचायत समिती यूजर व्यवस्थापन
+    </h2>
+    <button type="button" class="btn btn-primary text-white fw-semibold px-4 py-2" data-bs-toggle="modal" data-bs-target="#addModal">
+      <i class="fas fa-plus me-1"></i> नवीन यूजर जोडा
+    </button>
   </div>
   
-  <button type="button" class="btn-add" data-bs-toggle="modal" data-bs-target="#addModal">
-    <i class="bi bi-plus-lg"></i> Add New User
-  </button>
-</div>
-
-<!-- Filter Bar -->
-<div class="filter-bar">
-  <form method="GET" action="{% url 'PS-Manage-Users' %}">
-    <div class="filter-row">
-      <div class="filter-group">
-        <label><i class="bi bi-person"></i> NAME</label>
-        <input type="text" name="name" placeholder="Search by name..." value="{{ name }}">
-      </div>
-      
-      <div class="filter-group">
-        <label><i class="bi bi-telephone"></i> MOBILE</label>
-        <input type="text" name="mobile" placeholder="Search by mobile..." value="{{ mobile }}">
-      </div>
-      
-      <div class="filter-group">
-        <label><i class="bi bi-envelope"></i> EMAIL</label>
-        <input type="text" name="email" placeholder="Search by email..." value="{{ email }}">
-      </div>
-      
-      <div class="filter-group">
-        <label><i class="bi bi-person-badge"></i> USERNAME</label>
-        <input type="text" name="username" placeholder="Search by username..." value="{{ username }}">
-      </div>
-      
-      <div class="filter-group">
-        <label><i class="bi bi-building"></i> PANCHAYAT SAMITI</label>
-        <select name="panchayat_samiti">
-          <option value="">All Samitis</option>
-          {% for ps in panchayat_samitis %}
-            <option value="{{ ps.id }}" {% if panchayat_samiti_filter == ps.id|stringformat:"s" %}selected{% endif %}>
-              {{ ps.panchayat_samiti_name }}
-            </option>
-          {% endfor %}
-        </select>
-      </div>
-      
-      <div class="filter-group">
-        <label><i class="bi bi-funnel"></i> STATUS</label>
-        <select name="status">
-          <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Status</option>
-          <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active Only</option>
-          <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive Only</option>
-        </select>
-      </div>
-      
-      <div class="filter-actions">
-        <button type="submit" class="btn-primary-custom">
-          <i class="bi bi-funnel"></i> Apply Filters
-        </button>
-        <a href="{% url 'PS-Manage-Users' %}?reset=1" class="btn-reset-custom">
-          <i class="bi bi-arrow-repeat"></i> Reset
-        </a>
-      </div>
-      
-      <div class="filter-group" style="flex: 0 0 auto; min-width: 140px;">
-        <div style="padding: 8px 12px; background: #f8fafc; border-radius: 8px; font-size: 13px;">
-          <strong>{{ filtered_count }}</strong> of <strong>{{ total_users }}</strong> users
+  <!-- आकडेवारी कार्ड्स -->
+  <div class="row g-4 mb-4">
+    {% if filtered_count and filtered_count != total_users %}
+    <div class="col-md-6 col-lg-4">
+      <div class="card border-0 shadow-sm rounded-4 h-100">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <div class="display-1 mb-2">🔍</div>
+              <div class="h1 fw-bold text-dark mb-0">{{ filtered_count }}</div>
+              <div class="text-secondary small mt-1">फिल्टर केलेले निकाल</div>
+            </div>
+            <div class="bg-info bg-opacity-10 rounded-circle p-3">
+              <i class="fas fa-filter text-info fs-2"></i>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </form>
-</div>
-
-<!-- Table View -->
-<div class="table-container">
-  <div class="table-responsive">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th width="5%">#</th>
-          <th width="15%">Name</th>
-          <th width="12%">Username</th>
-          <th width="15%">Panchayat Samiti</th>
-          <th width="12%">Mobile</th>
-          <th width="15%">Email</th>
-          <th width="8%">Status</th>
-          <th width="8%">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% if users %}
-          {% for user_obj in users %}
-          <tr>
-            <td>{{ start_index|add:forloop.counter0 }}</td>
-            <td>
-              <strong style="color: #1A2C3E;">{{ user_obj.name|default:"—" }}</strong>
-            </td>
-            <td class="text-muted">{{ user_obj.username|default:"—" }}</td>
-            <td class="text-muted">
-              {% if user_obj.panchayat_samiti %}
-                {{ user_obj.panchayat_samiti.panchayat_samiti_name }}
-              {% else %}
-                —
-              {% endif %}
-            </td>
-            <td class="text-muted">{{ user_obj.mobile|default:"—" }}</td>
-            <td class="text-muted">{{ user_obj.email|default:"—" }}</td>
-            <td>
-              {% if user_obj.status == 'Active' %}
-                <span class="status-badge status-active">
-                  <i class="bi bi-check-circle-fill" style="font-size: 10px;"></i> Active
-                </span>
-              {% else %}
-                <span class="status-badge status-inactive">
-                  <i class="bi bi-x-circle-fill" style="font-size: 10px;"></i> Inactive
-                </span>
-              {% endif %}
-            </td>
-            <td>
-              <div class="action-btns">
-                <a href="?edit_id={{ user_obj.id }}&page={{ users.number }}&name={{ name }}&mobile={{ mobile }}&email={{ email }}&username={{ username }}&panchayat_samiti={{ panchayat_samiti_filter }}&status={{ status_filter }}" class="edit-btn">
-                  <i class="bi bi-pencil"></i> Edit
-                </a>
-                <form method="POST" action="{% url 'PS-Manage-Users' %}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete {{ user_obj.name }}?');">
-                  {% csrf_token %}
-                  <input type="hidden" name="delete_user" value="1">
-                  <input type="hidden" name="user_id" value="{{ user_obj.id }}">
-                  <button type="submit" class="delete-btn">
-                    <i class="bi bi-trash"></i> Delete
-                  </button>
-                </form>
-              </div>
-            </td>
-          </tr>
-          {% endfor %}
-        {% else %}
-          <tr>
-            <td colspan="8" class="text-center">
-              <div class="empty-state">
-                <i class="bi bi-people"></i>
-                <h5>No Users Found</h5>
-                <p class="text-muted">
-                  {% if name or mobile or email or username or panchayat_samiti_filter or status_filter != 'all' %}
-                    Try changing your filter criteria.
-                  {% else %}
-                    Click "Add New User" to create your first record.
-                  {% endif %}
-                </p>
-              </div>
-            </td>
-          </tr>
-        {% endif %}
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<!-- Pagination -->
-{% if users and users.paginator.num_pages > 1 %}
-<div class="pagination-wrapper">
-  <div class="pagination-info">
-    <i class="bi bi-table"></i> 
-    Showing {{ users.start_index }} - {{ users.end_index }} of {{ users.paginator.count }} users
-  </div>
-  
-  <div class="pagination">
-    {% if users.has_previous %}
-      <a href="?page=1&name={{ name }}&mobile={{ mobile }}&email={{ email }}&username={{ username }}&panchayat_samiti={{ panchayat_samiti_filter }}&status={{ status_filter }}" class="pagination-btn">
-        <i class="bi bi-chevron-double-left"></i>
-      </a>
-      <a href="?page={{ users.previous_page_number }}&name={{ name }}&mobile={{ mobile }}&email={{ email }}&username={{ username }}&panchayat_samiti={{ panchayat_samiti_filter }}&status={{ status_filter }}" class="pagination-btn">
-        <i class="bi bi-chevron-left"></i>
-      </a>
-    {% else %}
-      <span class="pagination-btn disabled"><i class="bi bi-chevron-double-left"></i></span>
-      <span class="pagination-btn disabled"><i class="bi bi-chevron-left"></i></span>
-    {% endif %}
-
-    {% for page_num in pagination_range %}
-      {% if page_num == '...' %}
-        <span class="pagination-ellipsis">...</span>
-      {% else %}
-        {% if page_num == users.number %}
-          <span class="pagination-btn active">{{ page_num }}</span>
-        {% else %}
-          <a href="?page={{ page_num }}&name={{ name }}&mobile={{ mobile }}&email={{ email }}&username={{ username }}&panchayat_samiti={{ panchayat_samiti_filter }}&status={{ status_filter }}" class="pagination-btn">
-            {{ page_num }}
-          </a>
-        {% endif %}
-      {% endif %}
-    {% endfor %}
-
-    {% if users.has_next %}
-      <a href="?page={{ users.next_page_number }}&name={{ name }}&mobile={{ mobile }}&email={{ email }}&username={{ username }}&panchayat_samiti={{ panchayat_samiti_filter }}&status={{ status_filter }}" class="pagination-btn">
-        <i class="bi bi-chevron-right"></i>
-      </a>
-      <a href="?page={{ users.paginator.num_pages }}&name={{ name }}&mobile={{ mobile }}&email={{ email }}&username={{ username }}&panchayat_samiti={{ panchayat_samiti_filter }}&status={{ status_filter }}" class="pagination-btn">
-        <i class="bi bi-chevron-double-right"></i>
-      </a>
-    {% else %}
-      <span class="pagination-btn disabled"><i class="bi bi-chevron-right"></i></span>
-      <span class="pagination-btn disabled"><i class="bi bi-chevron-double-right"></i></span>
     {% endif %}
   </div>
   
-  <div class="pagination-info">
-    <i class="bi bi-files"></i> 
-    Page {{ users.number }} of {{ users.paginator.num_pages }}
+  <!-- फिल्टर कार्ड -->
+  <div class="card shadow-sm border-0 rounded-4 mb-3">
+    <div class="card-body p-3">
+      <form method="GET" action="{% url 'PS-Manage-Users' %}">
+        <div class="row g-2 align-items-end">
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold mb-1">नाव</label>
+            <input type="text" name="name" class="form-control form-control-sm rounded-3"
+                   placeholder="नाव" value="{{ name|default:'' }}">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold mb-1">मोबाइल</label>
+            <input type="text" name="mobile" class="form-control form-control-sm rounded-3"
+                   placeholder="मोबाइल" value="{{ mobile|default:'' }}">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold mb-1">ईमेल</label>
+            <input type="text" name="email" class="form-control form-control-sm rounded-3"
+                   placeholder="ईमेल" value="{{ email|default:'' }}">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold mb-1">यूजरनेम</label>
+            <input type="text" name="username" class="form-control form-control-sm rounded-3"
+                   placeholder="यूजरनेम" value="{{ username|default:'' }}">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold mb-1">पंचायत समिती</label>
+            <select name="panchayat_samiti" class="form-select form-select-sm rounded-3">
+              <option value="">सर्व</option>
+              {% for ps in panchayat_samitis %}
+                <option value="{{ ps.id }}" {% if panchayat_samiti_filter|stringformat:"s" == ps.id|stringformat:"s" %}selected{% endif %}>
+                  {{ ps.panchayat_samiti_name }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-1">
+            <label class="form-label small fw-semibold mb-1">स्थिती</label>
+            <select name="status" class="form-select form-select-sm rounded-3">
+              <option value="all" {% if status_filter == 'all' %}selected{% endif %}>सर्व</option>
+              <option value="active" {% if status_filter == 'active' %}selected{% endif %}>सक्रिय</option>
+              <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>निष्क्रिय</option>
+            </select>
+          </div>
+          <div class="col-md-1 d-flex gap-1">
+            <button type="submit" class="btn btn-primary btn-sm rounded-3 w-100">
+              <i class="fas fa-search me-1"></i> शोधा
+            </button>
+            <a href="{% url 'PS-Manage-Users' %}?reset=1" class="btn btn-outline-secondary btn-sm rounded-3">
+              <i class="fas fa-undo-alt me-1"></i> रीसेट
+            </a>
+          </div>
+        </div>
+      </form>
+    </div>
   </div>
-</div>
-{% endif %}
-
-<!-- ADD MODAL -->
-<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title" id="addModalLabel">
-          <i class="bi bi-plus-circle"></i> Add New User
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  
+  <!-- Django संदेश -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-3 mb-4" role="alert">
+        <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %} me-2"></i>
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
-      <form method="POST" action="{% url 'PS-Manage-Users' %}">
+    {% endfor %}
+  {% endif %}
+  
+  <!-- डेटा सारणी -->
+  <div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-0 overflow-auto">
+      <table class="table table-hover mb-0">
+        <thead class="bg-light">
+          <tr>
+            <th class="ps-4 py-3" style="width: 50px;">#</th>
+            <th class="py-3">नाव</th>
+            <th class="py-3">पंचायत समिती</th>
+            <th class="py-3">रोल</th>
+            <th class="py-3">मोबाइल</th>
+            <th class="py-3">ईमेल</th>
+            <th class="py-3">यूजरनेम</th>
+            <th class="py-3">स्थिती</th>
+            <th class="pe-4 py-3" style="width: 180px;">क्रिया</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if users %}
+            {% for user_obj in users %}
+            <tr>
+              <td class="ps-4">{{ forloop.counter0|add:start_index|default:forloop.counter }}</td>
+              <td class="fw-semibold">{{ user_obj.name|default:"—" }}</td>
+              <td>{{ user_obj.panchayat_samiti.panchayat_samiti_name|default:"—" }}</td>
+              <td>
+                {% if user_obj.role %}
+                  <span class="badge bg-info bg-opacity-10 text-info px-3 py-2 rounded-pill">
+                    <i class="fas fa-user-tag me-1"></i> {{ user_obj.role }}
+                  </span>
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+              <td>{{ user_obj.mobile|default:"—" }}</td>
+              <td>{{ user_obj.email|default:"—" }}</td>
+              <td><code class="bg-light px-2 py-1 rounded">{{ user_obj.username|default:"—" }}</code></td>
+              <td>
+                {% if user_obj.status == 'Active' %}
+                  <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
+                    <i class="fas fa-circle fs-10 me-1"></i> सक्रिय
+                  </span>
+                {% else %}
+                  <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill">
+                    <i class="fas fa-circle fs-10 me-1"></i> निष्क्रिय
+                  </span>
+                {% endif %}
+              </td>
+              <td class="pe-4">
+                <div class="d-flex gap-2">
+                  <button class="btn btn-sm btn-outline-primary rounded-pill px-3" 
+                          data-bs-toggle="modal" data-bs-target="#editModal{{ user_obj.id }}">
+                    <i class="fas fa-edit me-1"></i> संपादित करा
+                  </button>
+                  <form method="POST" action="{% url 'PS-Manage-Users' %}" 
+                        style="display: inline;" 
+                        onsubmit="return confirm('⚠️ कृपया खात्री करा? हा यूजर कायमचा हटविला जाईल!');">
+                    {% csrf_token %}
+                    <input type="hidden" name="delete_user" value="1">
+                    <input type="hidden" name="user_id" value="{{ user_obj.id }}">
+                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                      <i class="fas fa-trash-alt me-1"></i> हटवा
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="9" class="text-center py-5">
+                <div class="py-5">
+                  <i class="fas fa-users fa-3x text-secondary mb-3 d-block"></i>
+                  <p class="text-secondary mb-3">यूजर आढळला नाही</p>
+                  <button type="button" class="btn btn-warning text-white rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#addModal">
+                    <i class="fas fa-plus me-1"></i> प्रथम यूजर जोडा
+                  </button>
+                </div>
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Modern Pagination Section -->
+    {% if users and users.paginator and users.paginator.num_pages > 1 %}
+    <div class="pagination-wrapper">
+      <div class="pagination-info">
+        <i class="fas fa-table me-1"></i> 
+        Showing {{ users.start_index }} - {{ users.end_index }} of {{ users.paginator.count }} users
+      </div>
+      
+      <div class="pagination">
+        <!-- First Page -->
+        {% if users.has_previous %}
+          <a href="?page=1{% if name %}&name={{ name }}{% endif %}{% if mobile %}&mobile={{ mobile }}{% endif %}{% if email %}&email={{ email }}{% endif %}{% if username %}&username={{ username }}{% endif %}{% if panchayat_samiti_filter %}&panchayat_samiti={{ panchayat_samiti_filter }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" 
+             class="pagination-btn" title="First Page">
+            <i class="fas fa-angle-double-left"></i> First
+          </a>
+        {% else %}
+          <span class="pagination-btn disabled">
+            <i class="fas fa-angle-double-left"></i> First
+          </span>
+        {% endif %}
+        
+        <!-- Previous Page -->
+        {% if users.has_previous %}
+          <a href="?page={{ users.previous_page_number }}{% if name %}&name={{ name }}{% endif %}{% if mobile %}&mobile={{ mobile }}{% endif %}{% if email %}&email={{ email }}{% endif %}{% if username %}&username={{ username }}{% endif %}{% if panchayat_samiti_filter %}&panchayat_samiti={{ panchayat_samiti_filter }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" 
+             class="pagination-btn" title="Previous Page">
+            <i class="fas fa-angle-left"></i> Prev
+          </a>
+        {% else %}
+          <span class="pagination-btn disabled">
+            <i class="fas fa-angle-left"></i> Prev
+          </span>
+        {% endif %}
+        
+        <!-- Page Numbers with Ellipsis -->
+        {% with current_page=users.number total_pages=users.paginator.num_pages %}
+          {% if total_pages <= 7 %}
+            {% for page_num in users.paginator.page_range %}
+              {% if page_num == current_page %}
+                <span class="pagination-btn active">{{ page_num }}</span>
+              {% else %}
+                <a href="?page={{ page_num }}{% if name %}&name={{ name }}{% endif %}{% if mobile %}&mobile={{ mobile }}{% endif %}{% if email %}&email={{ email }}{% endif %}{% if username %}&username={{ username }}{% endif %}{% if panchayat_samiti_filter %}&panchayat_samiti={{ panchayat_samiti_filter }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ page_num }}</a>
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            {% if current_page <= 3 %}
+              {% for page_num in users.paginator.page_range|slice:":5" %}
+                {% if page_num == current_page %}
+                  <span class="pagination-btn active">{{ page_num }}</span>
+                {% else %}
+                  <a href="?page={{ page_num }}{% if name %}&name={{ name }}{% endif %}{% if mobile %}&mobile={{ mobile }}{% endif %}{% if email %}&email={{ email }}{% endif %}{% if username %}&username={{ username }}{% endif %}{% if panchayat_samiti_filter %}&panchayat_samiti={{ panchayat_samiti_filter }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ page_num }}</a>
+                {% endif %}
+              {% endfor %}
+              <span class="pagination-ellipsis">...</span>
+              <a href="?page={{ total_pages }}{% if name %}&name={{ name }}{% endif %}{% if mobile %}&mobile={{ mobile }}{% endif %}{% if email %}&email={{ email }}{% endif %}{% if username %}&username={{ username }}{% endif %}{% if panchayat_samiti_filter %}&panchayat_samiti={{ panchayat_samiti_filter }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ total_pages }}</a>
+            {% elif current_page >= total_pages|add:-2 %}
+              <a href="?page=1{% if name %}&name={{ name }}{% endif %}{% if mobile %}&mobile={{ mobile }}{% endif %}{% if email %}&email={{ email }}{% endif %}{% if username %}&username={{ username }}{% endif %}{% if panchayat_samiti_filter %}&panchayat_samiti={{ panchayat_samiti_filter }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">1</a>
+              <span class="pagination-ellipsis">...</span>
+              {% for page_num in users.paginator.page_range|slice:total_pages|add:-5 %}
+                {% if page_num == current_page %}
+                  <span class="pagination-btn active">{{ page_num }}</span>
+                {% else %}
+                  <a href="?page={{ page_num }}{% if name %}&name={{ name }}{% endif %}{% if mobile %}&mobile={{ mobile }}{% endif %}{% if email %}&email={{ email }}{% endif %}{% if username %}&username={{ username }}{% endif %}{% if panchayat_samiti_filter %}&panchayat_samiti={{ panchayat_samiti_filter }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ page_num }}</a>
+                {% endif %}
+              {% endfor %}
+            {% else %}
+              <a href="?page=1{% if name %}&name={{ name }}{% endif %}{% if mobile %}&mobile={{ mobile }}{% endif %}{% if email %}&email={{ email }}{% endif %}{% if username %}&username={{ username }}{% endif %}{% if panchayat_samiti_filter %}&panchayat_samiti={{ panchayat_samiti_filter }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">1</a>
+              <span class="pagination-ellipsis">...</span>
+              {% for page_num in users.paginator.page_range %}
+                {% if page_num >= current_page|add:-1 and page_num <= current_page|add:1 %}
+                  {% if page_num == current_page %}
+                    <span class="pagination-btn active">{{ page_num }}</span>
+                  {% else %}
+                    <a href="?page={{ page_num }}{% if name %}&name={{ name }}{% endif %}{% if mobile %}&mobile={{ mobile }}{% endif %}{% if email %}&email={{ email }}{% endif %}{% if username %}&username={{ username }}{% endif %}{% if panchayat_samiti_filter %}&panchayat_samiti={{ panchayat_samiti_filter }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ page_num }}</a>
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+              <span class="pagination-ellipsis">...</span>
+              <a href="?page={{ total_pages }}{% if name %}&name={{ name }}{% endif %}{% if mobile %}&mobile={{ mobile }}{% endif %}{% if email %}&email={{ email }}{% endif %}{% if username %}&username={{ username }}{% endif %}{% if panchayat_samiti_filter %}&panchayat_samiti={{ panchayat_samiti_filter }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ total_pages }}</a>
+            {% endif %}
+          {% endif %}
+        {% endwith %}
+        
+        <!-- Next Page -->
+        {% if users.has_next %}
+          <a href="?page={{ users.next_page_number }}{% if name %}&name={{ name }}{% endif %}{% if mobile %}&mobile={{ mobile }}{% endif %}{% if email %}&email={{ email }}{% endif %}{% if username %}&username={{ username }}{% endif %}{% if panchayat_samiti_filter %}&panchayat_samiti={{ panchayat_samiti_filter }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" 
+             class="pagination-btn" title="Next Page">
+            Next <i class="fas fa-angle-right"></i>
+          </a>
+        {% else %}
+          <span class="pagination-btn disabled">
+            Next <i class="fas fa-angle-right"></i>
+          </span>
+        {% endif %}
+        
+        <!-- Last Page -->
+        {% if users.has_next %}
+          <a href="?page={{ users.paginator.num_pages }}{% if name %}&name={{ name }}{% endif %}{% if mobile %}&mobile={{ mobile }}{% endif %}{% if email %}&email={{ email }}{% endif %}{% if username %}&username={{ username }}{% endif %}{% if panchayat_samiti_filter %}&panchayat_samiti={{ panchayat_samiti_filter }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" 
+             class="pagination-btn" title="Last Page">
+            Last <i class="fas fa-angle-double-right"></i>
+          </a>
+        {% else %}
+          <span class="pagination-btn disabled">
+            Last <i class="fas fa-angle-double-right"></i>
+          </span>
+        {% endif %}
+      </div>
+      
+      <div class="pagination-info">
+        <i class="fas fa-file-alt me-1"></i> 
+        Page {{ users.number }} of {{ users.paginator.num_pages }}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  
+</div>
+
+<!-- ================================================= -->
+<!-- जोडा मॉडल -->
+<!-- ================================================= -->
+<div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content rounded-4 border-0">
+      <div class="modal-header bg-dark text-white rounded-top-4 border-0">
+        <h5 class="modal-title">
+          <i class="fas fa-plus-circle me-2"></i> नवीन यूजर जोडा
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" action="{% url 'PS-Manage-Users' %}" id="addUserForm">
         {% csrf_token %}
         <input type="hidden" name="add_user" value="1">
-        <div class="modal-body">
-          <div class="form-row">
-            <div class="form-group">
-              <label>Full Name <span>*</span></label>
-              <input type="text" name="name" class="form-control" required placeholder="Enter full name">
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">नाव <span class="text-danger">*</span></label>
+            <input type="text" name="name" class="form-control rounded-3" 
+                   placeholder="पूर्ण नाव प्रविष्ट करा..." required>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label fw-semibold">पंचायत समिती</label>
+            <select name="panchayat_samiti_id" class="form-select rounded-3">
+              <option value="">-- पंचायत समिती निवडा --</option>
+              {% for ps in panchayat_samitis %}
+                <option value="{{ ps.id }}">{{ ps.panchayat_samiti_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label fw-semibold">रोल <span class="text-danger">*</span></label>
+            <input type="text" name="role" class="form-control rounded-3" 
+                   placeholder="उदा. Admin, Manager, User, Operator" required>
+            <small class="text-muted">रोल प्रविष्ट करा (Admin, Manager, User, Operator इ.)</small>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-semibold">मोबाइल क्रमांक</label>
+              <input type="tel" name="mobile" class="form-control rounded-3" 
+                     placeholder="10 अंकी मोबाइल क्रमांक" pattern="[6-9][0-9]{9}">
             </div>
-            <div class="form-group">
-              <label>Username <span>*</span></label>
-              <input type="text" name="username" class="form-control" required placeholder="Enter username">
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-semibold">ईमेल</label>
+              <input type="email" name="email" class="form-control rounded-3" 
+                     placeholder="example@domain.com">
             </div>
           </div>
           
-          <div class="form-row">
-            <div class="form-group">
-              <label>Password <span>*</span></label>
-              <input type="password" name="password" class="form-control" required placeholder="Enter password">
-            </div>
-            <div class="form-group">
-              <label>Mobile Number</label>
-              <input type="text" name="mobile" class="form-control" placeholder="Enter mobile number">
-            </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">पत्ता</label>
+            <textarea name="address" class="form-control rounded-3" rows="2" 
+                      placeholder="संपूर्ण पत्ता..."></textarea>
           </div>
           
-          <div class="form-row">
-            <div class="form-group">
-              <label>Email Address</label>
-              <input type="email" name="email" class="form-control" placeholder="Enter email address">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-semibold">यूजरनेम <span class="text-danger">*</span></label>
+              <input type="text" name="username" class="form-control rounded-3" 
+                     placeholder="अद्वितीय यूजरनेम" required>
             </div>
-            <div class="form-group">
-              <label>Panchayat Samiti</label>
-              <select name="panchayat_samiti_id" class="form-control">
-                <option value="">-- Select Panchayat Samiti --</option>
-                {% for ps in panchayat_samitis %}
-                  <option value="{{ ps.id }}">{{ ps.panchayat_samiti_name }}</option>
-                {% endfor %}
-              </select>
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-semibold">पासवर्ड <span class="text-danger">*</span></label>
+              <input type="password" name="password" class="form-control rounded-3" 
+                     placeholder="मजबूत पासवर्ड" required>
             </div>
           </div>
-          
-          <div class="form-group">
-            <label>Address</label>
-            <textarea name="address" class="form-control" rows="3" placeholder="Enter address"></textarea>
-          </div>
-          
-          <div class="form-group">
-            <label>Status</label>
-            <select name="status" class="form-control">
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">स्थिती</label>
+            <select name="status" class="form-select rounded-3">
+              <option value="Active">सक्रिय</option>
+              <option value="Inactive">निष्क्रिय</option>
             </select>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save User</button>
+        <div class="modal-footer bg-light rounded-bottom-4 border-0">
+          <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">रद्द करा</button>
+          <button type="submit" class="btn btn-warning text-white rounded-pill px-4">जतन करा</button>
         </div>
       </form>
     </div>
   </div>
 </div>
 
-<!-- EDIT MODAL -->
-{% if edit_user %}
-<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true" style="display: block;">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title" id="editModalLabel">
-          <i class="bi bi-pencil-square"></i> Edit User
+<!-- ================================================= -->
+<!-- संपादित करा मॉडल (प्रत्येक यूजरसाठी डायनॅमिक) -->
+<!-- ================================================= -->
+{% for user_obj in users %}
+<div class="modal fade" id="editModal{{ user_obj.id }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content rounded-4 border-0">
+      <div class="modal-header bg-dark text-white rounded-top-4 border-0">
+        <h5 class="modal-title">
+          <i class="fas fa-edit me-2"></i> यूजर संपादित करा
         </h5>
-        <a href="{% url 'PS-Manage-Users' %}?page={{ users.number }}&name={{ name }}&mobile={{ mobile }}&email={{ email }}&username={{ username }}&panchayat_samiti={{ panchayat_samiti_filter }}&status={{ status_filter }}" class="btn-close"></a>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form method="POST" action="{% url 'PS-Manage-Users' %}">
+      <form method="POST" action="{% url 'PS-Manage-Users' %}" class="editUserForm">
         {% csrf_token %}
         <input type="hidden" name="edit_user" value="1">
-        <input type="hidden" name="user_id" value="{{ edit_user.id }}">
-        <div class="modal-body">
-          <div class="form-row">
-            <div class="form-group">
-              <label>Full Name <span>*</span></label>
-              <input type="text" name="name" class="form-control" required value="{{ edit_user.name|default:'' }}">
+        <input type="hidden" name="user_id" value="{{ user_obj.id }}">
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">नाव <span class="text-danger">*</span></label>
+            <input type="text" name="name" class="form-control rounded-3" 
+                   value="{{ user_obj.name|default:'' }}" required>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label fw-semibold">पंचायत समिती</label>
+            <select name="panchayat_samiti_id" class="form-select rounded-3">
+              <option value="">-- पंचायत समिती निवडा --</option>
+              {% for ps in panchayat_samitis %}
+                <option value="{{ ps.id }}" {% if user_obj.panchayat_samiti and user_obj.panchayat_samiti.id == ps.id %}selected{% endif %}>
+                  {{ ps.panchayat_samiti_name }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label fw-semibold">रोल</label>
+            <input type="text" name="role" class="form-control rounded-3" 
+                   value="{{ user_obj.role|default:'' }}" placeholder="उदा. Admin, Manager, User, Operator">
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-semibold">मोबाइल क्रमांक</label>
+              <input type="tel" name="mobile" class="form-control rounded-3" 
+                     value="{{ user_obj.mobile|default:'' }}" pattern="[6-9][0-9]{9}">
             </div>
-            <div class="form-group">
-              <label>Username <span>*</span></label>
-              <input type="text" name="username" class="form-control" required value="{{ edit_user.username|default:'' }}">
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-semibold">ईमेल</label>
+              <input type="email" name="email" class="form-control rounded-3" 
+                     value="{{ user_obj.email|default:'' }}">
             </div>
           </div>
           
-          <div class="form-row">
-            <div class="form-group">
-              <label>Password <span>(Leave blank to keep current)</span></label>
-              <input type="password" name="password" class="form-control" placeholder="Enter new password to change">
-            </div>
-            <div class="form-group">
-              <label>Mobile Number</label>
-              <input type="text" name="mobile" class="form-control" value="{{ edit_user.mobile|default:'' }}">
-            </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">पत्ता</label>
+            <textarea name="address" class="form-control rounded-3" rows="2">{{ user_obj.address|default:'' }}</textarea>
           </div>
           
-          <div class="form-row">
-            <div class="form-group">
-              <label>Email Address</label>
-              <input type="email" name="email" class="form-control" value="{{ edit_user.email|default:'' }}">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-semibold">यूजरनेम <span class="text-danger">*</span></label>
+              <input type="text" name="username" class="form-control rounded-3" 
+                     value="{{ user_obj.username|default:'' }}" required>
             </div>
-            <div class="form-group">
-              <label>Panchayat Samiti</label>
-              <select name="panchayat_samiti_id" class="form-control">
-                <option value="">-- Select Panchayat Samiti --</option>
-                {% for ps in panchayat_samitis %}
-                  <option value="{{ ps.id }}" {% if edit_user.panchayat_samiti and edit_user.panchayat_samiti.id == ps.id %}selected{% endif %}>
-                    {{ ps.panchayat_samiti_name }}
-                  </option>
-                {% endfor %}
-              </select>
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-semibold">पासवर्ड</label>
+              <input type="password" name="password" class="form-control rounded-3" 
+                     placeholder="नवीन पासवर्ड (बदलण्यासाठी भरा)">
+              <small class="text-muted">पासवर्ड बदलायचा असेल तरच भरा</small>
             </div>
           </div>
-          
-          <div class="form-group">
-            <label>Address</label>
-            <textarea name="address" class="form-control" rows="3">{{ edit_user.address|default:'' }}</textarea>
-          </div>
-          
-          <div class="form-group">
-            <label>Status</label>
-            <select name="status" class="form-control">
-              <option value="Active" {% if edit_user.status == 'Active' %}selected{% endif %}>Active</option>
-              <option value="Inactive" {% if edit_user.status == 'Inactive' %}selected{% endif %}>Inactive</option>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">स्थिती</label>
+            <select name="status" class="form-select rounded-3">
+              <option value="Active" {% if user_obj.status == 'Active' %}selected{% endif %}>सक्रिय</option>
+              <option value="Inactive" {% if user_obj.status == 'Inactive' %}selected{% endif %}>निष्क्रिय</option>
             </select>
           </div>
         </div>
-        <div class="modal-footer">
-          <a href="{% url 'PS-Manage-Users' %}?page={{ users.number }}&name={{ name }}&mobile={{ mobile }}&email={{ email }}&username={{ username }}&panchayat_samiti={{ panchayat_samiti_filter }}&status={{ status_filter }}" class="btn btn-secondary">Cancel</a>
-          <button type="submit" class="btn btn-primary">Update User</button>
+        <div class="modal-footer bg-light rounded-bottom-4 border-0">
+          <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">रद्द करा</button>
+          <button type="submit" class="btn btn-warning text-white rounded-pill px-4">अद्यतनित करा</button>
         </div>
       </form>
     </div>
   </div>
 </div>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    {% if edit_user %}
-      var editModal = new bootstrap.Modal(document.getElementById('editModal'));
-      editModal.show();
-    {% endif %}
-  });
-</script>
-{% endif %}
+{% endfor %}
 
 {% endblock %}

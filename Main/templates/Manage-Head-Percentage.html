@@ -1,0 +1,297 @@
+{% extends 'Superuser-base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  /* Percentage stats cards styling */
+.stats-card {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 16px;
+  padding: 1rem 1.5rem;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.stats-card .stats-value {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.stats-card .stats-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #64748b;
+  margin-bottom: 0.25rem;
+}
+
+.stats-card.total .stats-value { color: #1e88e5; }
+.stats-card.remaining .stats-value { color: #f59e0b; }
+
+/* Progress bar styling */
+.progress-custom {
+  height: 8px;
+  border-radius: 10px;
+  background-color: #e2e8f0;
+}
+
+.progress-custom .progress-bar {
+  border-radius: 10px;
+  background: linear-gradient(90deg, #1e88e5, #1565c0);
+}
+</style>
+
+<div class="container-fluid px-4 py-3 bg-white">
+  
+  <!-- पृष्ठ शीर्षक (Page Header) -->
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <div class="d-inline-block">
+      <h3 class="h3 mb-1 fw-bold text-dark">
+        <i class="fas fa-chart-pie text-warning me-2"></i>
+        खर्च शीर्ष टक्केवारी व्यवस्थापन
+      </h3>
+      <!-- Underline -->
+      <div class="rounded-pill"
+          style="height: 2px; width: 100%; background: linear-gradient(90deg, #f59e0b, #fbbf24);">
+      </div>
+      <p class="text-muted small mt-2 mb-0">
+        <i class="fas fa-info-circle me-1"></i> प्रत्येक खर्च शीर्षासाठी टक्केवारी निश्चित करा
+      </p>
+    </div>
+
+    <!-- Back Button -->
+    <a href="{% url 'Manage-Kosh-Head' %}"
+       class="btn btn-outline-secondary d-flex align-items-center fw-semibold px-4 py-2 shadow-sm rounded-pill">
+      <i class="fas fa-arrow-left me-2"></i>
+      <span>मागे जा</span>
+    </a>
+  </div>
+
+  <!-- Percentage Summary Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-6">
+      <div class="stats-card total shadow-sm border-0 h-100">
+        <div class="stats-label">एकूण टक्केवारी</div>
+        <div class="stats-value" id="totalPercentage">{{ total_percentage|default:"0" }}%</div>
+        <div class="small text-muted mt-1">सर्व खर्च शीर्षांची बेरीज</div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="stats-card remaining shadow-sm border-0 h-100">
+        <div class="stats-label">उर्वरित टक्केवारी</div>
+        <div class="stats-value" id="remainingPercentage">{{ remaining_percentage|default:"0" }}%</div>
+        <div class="small text-muted mt-1">100% - एकूण टक्केवारी</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="mb-4">
+    <div class="d-flex justify-content-between small mb-1">
+      <span>वाटप प्रगती</span>
+      <span id="progressText">{{ total_percentage|default:"0" }}% / 100%</span>
+    </div>
+    <div class="progress-custom">
+      <div class="progress-bar" id="progressBar" role="progressbar" 
+           style="width: {{ total_percentage|default:'0' }}%"></div>
+    </div>
+  </div>
+
+  <!-- Django संदेश (Messages) -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-3 mb-4" role="alert">
+        <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %} me-2"></i>
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Percentage Form -->
+  <form method="POST" id="percentageForm">
+    {% csrf_token %}
+    
+    <div class="card border-0 shadow-sm rounded-4">
+      <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+        <div class="d-flex align-items-center gap-2">
+          <i class="fas fa-percent text-warning fs-5"></i>
+          <h5 class="fw-semibold mb-0">खर्च शीर्ष टक्केवारी सेट करा</h5>
+          <span class="badge bg-light text-dark ms-2 rounded-pill">प्रत्येक खर्च शीर्षासाठी टक्केवारी निश्चित करा</span>
+        </div>
+      </div>
+      <div class="card-body p-0 overflow-auto">
+        <table class="table table-hover mb-0">
+          <thead class="bg-light">
+            <tr>
+              <th class="ps-4 py-3" style="width: 70px;">#</th>
+              <th class="py-3">खर्च शीर्षाचे नाव</th>
+              <th class="pe-4 py-3" style="width: 280px;">टक्केवारी (%)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for head in heads %}
+            <tr>
+              <td class="ps-4 fw-semibold">{{ forloop.counter }}</td>
+              <td class="fw-semibold text-dark">
+                <i class="fas fa-tag text-warning me-2"></i>
+                {{ head.name|default:"—" }}
+              </td>
+              <td class="pe-4">
+                <div class="d-flex align-items-center gap-2">
+                  <input type="number"
+                         step="0.01"
+                         min="0"
+                         max="100"
+                         name="percentage_{{ head.id }}"
+                         data-head-id="{{ head.id }}"
+                         value="{% for obj in head.head_percentages.all %}{{ obj.percentage }}{% endfor %}"
+                         class="form-control rounded-3 percentage-input"
+                         style="max-width: 180px;"
+                         oninput="updateTotals()">
+                  <span class="text-muted small">%</span>
+                </div>
+                <div class="small text-muted mt-1">
+                  <i class="fas fa-info-circle fa-xs"></i> 
+                  {% for obj in head.head_percentages.all %}
+                    {% if obj.percentage %}सध्याची: {{ obj.percentage }}%{% endif %}
+                  {% empty %}
+                    सेट केलेली नाही
+                  {% endfor %}
+                </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="3" class="text-center py-5">
+                <div class="py-5">
+                  <i class="fas fa-layer-group fa-3x text-secondary mb-3 d-block"></i>
+                  <p class="text-secondary mb-0">कोणतेही खर्च शीर्ष आढळले नाही</p>
+                  <p class="text-muted small mt-2">कृपया प्रथम <a href="{% url 'Manage-Kosh-Head' %}">खर्च शीर्ष</a> तयार करा</p>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="mt-4 d-flex justify-content-end gap-3">
+      <button type="reset" class="btn btn-outline-secondary rounded-pill px-4 py-2" onclick="resetPercentages()">
+        <i class="fas fa-undo-alt me-2"></i>रीसेट करा
+      </button>
+      <button type="submit" class="btn btn-warning text-dark d-flex align-items-center fw-semibold px-5 py-2 shadow-sm rounded-pill">
+        <i class="fas fa-save me-2"></i>
+        <span>टक्केवारी जतन करा</span>
+      </button>
+    </div>
+  </form>
+
+  <!-- Warning Note -->
+  <div class="alert alert-light border rounded-3 mt-4 p-3 d-flex align-items-start gap-3">
+    <i class="fas fa-info-circle text-warning fs-5 mt-1"></i>
+    <div class="small text-muted">
+      <strong>सूचना:</strong>
+      <ul class="mb-0 mt-1 ps-3">
+        <li>सर्व खर्च शीर्षांच्या टक्केवारीची बेरीज <strong>100% पेक्षा जास्त असू शकत नाही</strong></li>
+        <li>उर्वरित टक्केवारी (100% - एकूण) पुढील वाटपासाठी उपलब्ध राहील</li>
+        <li>प्रत्येक खर्च शीर्षासाठी <strong>0% ते 100%</strong> दरम्यान टक्केवारी सेट करा</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript for dynamic total calculation -->
+<script>
+  function updateTotals() {
+    const inputs = document.querySelectorAll('.percentage-input');
+    let total = 0;
+    
+    inputs.forEach(input => {
+      let val = parseFloat(input.value);
+      if (isNaN(val)) val = 0;
+      if (val < 0) {
+        input.value = 0;
+        val = 0;
+      }
+      if (val > 100) {
+        input.value = 100;
+        val = 100;
+      }
+      total += val;
+    });
+    
+    // Round to 2 decimal places
+    total = Math.round(total * 100) / 100;
+    const remaining = Math.max(0, Math.round((100 - total) * 100) / 100);
+    
+    // Update displays
+    const totalEl = document.getElementById('totalPercentage');
+    const remainingEl = document.getElementById('remainingPercentage');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    
+    if (totalEl) totalEl.innerText = total + '%';
+    if (remainingEl) {
+      remainingEl.innerText = remaining + '%';
+      // Change color if exceeds 100
+      if (total > 100) {
+        remainingEl.style.color = '#dc3545';
+        remainingEl.parentElement.parentElement.classList.add('border-danger');
+      } else {
+        remainingEl.style.color = '#f59e0b';
+        remainingEl.parentElement.parentElement.classList.remove('border-danger');
+      }
+    }
+    
+    // Update progress bar
+    if (progressBar) {
+      let percent = total > 100 ? 100 : total;
+      progressBar.style.width = percent + '%';
+      if (total > 100) {
+        progressBar.style.background = '#dc3545';
+      } else {
+        progressBar.style.background = 'linear-gradient(90deg, #1e88e5, #1565c0)';
+      }
+    }
+    if (progressText) {
+      progressText.innerText = total + '% / 100%';
+      if (total > 100) {
+        progressText.style.color = '#dc3545';
+      } else {
+        progressText.style.color = 'inherit';
+      }
+    }
+  }
+  
+  function resetPercentages() {
+    const inputs = document.querySelectorAll('.percentage-input');
+    inputs.forEach(input => {
+      input.value = '';
+    });
+    updateTotals();
+  }
+  
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    updateTotals();
+    
+    // Add event listeners to all percentage inputs
+    const inputs = document.querySelectorAll('.percentage-input');
+    inputs.forEach(input => {
+      input.addEventListener('input', updateTotals);
+      input.addEventListener('change', function() {
+        let val = parseFloat(this.value);
+        if (isNaN(val)) val = 0;
+        if (val > 100) this.value = 100;
+        if (val < 0) this.value = 0;
+        updateTotals();
+      });
+    });
+  });
+</script>
+
+{% endblock %}

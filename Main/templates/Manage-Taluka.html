@@ -1,0 +1,355 @@
+{% extends 'Superuser-base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  /* Pagination Styles */
+.pagination-wrapper {
+  padding: 20px;
+  background: #fff;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.pagination {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+}
+
+.pagination-btn {
+  padding: 6px 12px;
+  border: 1px solid #d1d5db;
+  background: white;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pagination-btn:hover {
+  background: #f1f5f9;
+  border-color: #1e88e5;
+  color: #1e88e5;
+}
+
+.pagination-btn.active {
+  background: linear-gradient(135deg, #1e88e5, #1565c0);
+  color: white;
+  border-color: #1e88e5;
+}
+
+.pagination-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.pagination-ellipsis {
+  padding: 6px 10px;
+  color: #94a3b8;
+}
+
+.pagination-info {
+  font-size: 12px;
+  color: #64748b;
+}
+</style>
+<div class="container-fluid px-4 py-3 bg-white">
+  
+  <!-- पृष्ठ शीर्षक -->
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+
+    <div class="d-inline-block">
+      <h3 class="h3 mb-1 fw-bold text-dark">
+        <i class="fas fa-map-marker-alt text-warning me-2"></i>
+        तालुका व्यवस्थापन
+      </h3>
+      <!-- Underline -->
+      <div class="rounded-pill"
+          style="height: 2px; width: 100%; background: linear-gradient(90deg, #f59e0b, #fbbf24);">
+      </div>
+    </div>
+
+    <!-- Right Side Buttons -->
+    <div class="d-flex flex-wrap gap-3 ms-auto">
+      <!-- Add Taluka Button -->
+      <button type="button"
+              class="btn btn-warning text-dark d-flex align-items-center fw-semibold px-4 py-2 shadow-sm rounded-pill"
+              data-bs-toggle="modal"
+              data-bs-target="#addModal">
+        <i class="fas fa-plus-circle me-2"></i>
+        <span>नवीन तालुका जोडा</span>
+      </button>
+    </div>
+
+  </div>
+  
+
+  
+  <!-- फिल्टर कार्ड -->
+  <div class="card shadow-sm border-0 rounded-4 mb-3">
+    <div class="card-body p-3">
+      <form method="GET" action="{% url 'Manage-Taluka' %}">
+        <div class="row g-2 align-items-end">
+          <div class="col-md-5">
+            <label class="form-label small fw-semibold mb-1">तालुका / जिल्हा शोधा</label>
+            <input type="text" name="search" class="form-control form-control-sm rounded-3"
+                   placeholder="तालुका किंवा जिल्ह्याचे नाव..." value="{{ search|default:'' }}">
+          </div>
+          <div class="col-md-3 d-flex gap-1">
+            <button type="submit" class="btn btn-primary btn-sm rounded-3 w-100">
+              <i class="fas fa-search me-1"></i> शोधा
+            </button>
+            <a href="{% url 'Manage-Taluka' %}?reset=1" class="btn btn-outline-secondary btn-sm rounded-3 w-100">
+              <i class="fas fa-undo-alt me-1"></i> रीसेट करा
+            </a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Django संदेश -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-3 mb-4" role="alert">
+        <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %} me-2"></i>
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+  
+  <!-- डेटा सारणी -->
+  <div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-0 overflow-auto">
+      <table class="table table-hover mb-0">
+        <thead class="bg-light">
+          <tr>
+            <th class="ps-4 py-3" style="width: 50px;">#</th>
+            <th class="py-3">जिल्हा</th>
+            <th class="py-3">तालुका नाव</th>
+            <th class="pe-4 py-3" style="width: 160px;">क्रिया</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if all_talukas %}
+            {% for taluka in all_talukas %}
+            <tr>
+              <td class="ps-4">{{ forloop.counter|default:forloop.counter }}</td>
+              <td class="fw-semibold">{{ taluka.district.name|default:"—" }}</td>
+              <td>{{ taluka.name|default:"—" }}</td>
+              <td class="pe-4">
+                <div class="d-flex gap-2">
+                  <button class="btn btn-sm btn-outline-primary rounded-pill px-3" 
+                          data-bs-toggle="modal" data-bs-target="#editModal{{ taluka.id }}">
+                    <i class="fas fa-edit me-1"></i> संपादित करा
+                  </button>
+                  <a href="?delete_id={{ taluka.id }}{% if search %}&search={{ search }}{% endif %}"
+                     class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                     onclick="return confirm('⚠️ कृपया खात्री करा? हा तालुका कायमचा हटविला जाईल!');">
+                    <i class="fas fa-trash-alt me-1"></i> हटवा
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="4" class="text-center py-5">
+                <div class="py-5">
+                  <i class="fas fa-map-marker-alt fa-3x text-secondary mb-3 d-block"></i>
+                  <p class="text-secondary mb-3">तालुका आढळला नाही</p>
+                  <button type="button" class="btn btn-warning text-white rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#addModal">
+                    <i class="fas fa-plus me-1"></i> प्रथम तालुका जोडा
+                  </button>
+                </div>
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Pagination Section -->
+    {% if all_talukas.has_other_pages %}
+    <div class="pagination-wrapper">
+      <div class="pagination-info">
+        <i class="fas fa-table me-1"></i> 
+        Showing page {{ all_talukas.number }} of {{ all_talukas.paginator.num_pages }} ({{ all_talukas.paginator.count }} total talukas)
+      </div>
+      
+      <div class="pagination">
+        <!-- First Page -->
+        {% if all_talukas.has_previous %}
+          <a href="?page=1{% if search %}&search={{ search }}{% endif %}" 
+            class="pagination-btn" title="First Page">
+            <i class="fas fa-angle-double-left"></i> First
+          </a>
+        {% else %}
+          <span class="pagination-btn disabled">
+            <i class="fas fa-angle-double-left"></i> First
+          </span>
+        {% endif %}
+        
+        <!-- Previous Page -->
+        {% if all_talukas.has_previous %}
+          <a href="?page={{ all_talukas.previous_page_number }}{% if search %}&search={{ search }}{% endif %}" 
+            class="pagination-btn" title="Previous Page">
+            <i class="fas fa-angle-left"></i> Prev
+          </a>
+        {% else %}
+          <span class="pagination-btn disabled">
+            <i class="fas fa-angle-left"></i> Prev
+          </span>
+        {% endif %}
+        
+        <!-- Page Numbers -->
+        {% for page_num in all_talukas.paginator.page_range %}
+          {% if page_num == all_talukas.number %}
+            <span class="pagination-btn active">{{ page_num }}</span>
+          {% elif page_num >= all_talukas.number|add:'-2' and page_num <= all_talukas.number|add:'2' %}
+            <a href="?page={{ page_num }}{% if search %}&search={{ search }}{% endif %}" class="pagination-btn">{{ page_num }}</a>
+          {% elif page_num == 1 or page_num == all_talukas.paginator.num_pages %}
+            <span class="pagination-ellipsis">...</span>
+            <a href="?page={{ page_num }}{% if search %}&search={{ search }}{% endif %}" class="pagination-btn">{{ page_num }}</a>
+          {% endif %}
+        {% endfor %}
+        
+        <!-- Next Page -->
+        {% if all_talukas.has_next %}
+          <a href="?page={{ all_talukas.next_page_number }}{% if search %}&search={{ search }}{% endif %}" 
+            class="pagination-btn" title="Next Page">
+            Next <i class="fas fa-angle-right"></i>
+          </a>
+        {% else %}
+          <span class="pagination-btn disabled">
+            Next <i class="fas fa-angle-right"></i>
+          </span>
+        {% endif %}
+        
+        <!-- Last Page -->
+        {% if all_talukas.has_next %}
+          <a href="?page={{ all_talukas.paginator.num_pages }}{% if search %}&search={{ search }}{% endif %}" 
+            class="pagination-btn" title="Last Page">
+            Last <i class="fas fa-angle-double-right"></i>
+          </a>
+        {% else %}
+          <span class="pagination-btn disabled">
+            Last <i class="fas fa-angle-double-right"></i>
+          </span>
+        {% endif %}
+      </div>
+      
+      <div class="pagination-info">
+        <i class="fas fa-file-alt me-1"></i> 
+        Page {{ all_talukas.number }} of {{ all_talukas.paginator.num_pages }}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  
+</div>
+
+<!-- ================================================= -->
+<!-- जोडा मॉडल -->
+<!-- ================================================= -->
+<div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0">
+      <div class="modal-header bg-dark text-white rounded-top-4 border-0">
+        <h5 class="modal-title">
+          <i class="fas fa-plus-circle me-2"></i> नवीन तालुका जोडा
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" action="{% url 'Manage-Taluka' %}">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add">
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">जिल्हा <span class="text-danger">*</span></label>
+            <select name="district" class="form-select rounded-3" required>
+              <option value="">-- जिल्हा निवडा --</option>
+              {% for district in all_districts %}
+                <option value="{{ district.id }}">{{ district.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label fw-semibold">तालुका नाव <span class="text-danger">*</span></label>
+            <input type="text" name="name" class="form-control rounded-3" 
+                   placeholder="तालुका नाव प्रविष्ट करा..." required>
+          </div>
+        </div>
+        <div class="modal-footer bg-light rounded-bottom-4 border-0">
+          <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">रद्द करा</button>
+          <button type="submit" class="btn btn-warning text-white rounded-pill px-4">जतन करा</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================= -->
+<!-- संपादित करा मॉडल (प्रत्येक तालुक्यासाठी डायनॅमिक) -->
+<!-- ================================================= -->
+{% for taluka in all_talukas %}
+<div class="modal fade" id="editModal{{ taluka.id }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0">
+      <div class="modal-header bg-dark text-white rounded-top-4 border-0">
+        <h5 class="modal-title">
+          <i class="fas fa-edit me-2"></i> तालुका संपादित करा
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" action="{% url 'Manage-Taluka' %}">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="edit">
+        <input type="hidden" name="edit_id" value="{{ taluka.id }}">
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">जिल्हा <span class="text-danger">*</span></label>
+            <select name="district" class="form-select rounded-3" required>
+              <option value="">-- जिल्हा निवडा --</option>
+              {% for district in all_districts %}
+                <option value="{{ district.id }}" {% if taluka.district.id == district.id %}selected{% endif %}>
+                  {{ district.name }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label fw-semibold">तालुका नाव <span class="text-danger">*</span></label>
+            <input type="text" name="name" class="form-control rounded-3" 
+                   value="{{ taluka.name|default:'' }}" required>
+          </div>
+        </div>
+        <div class="modal-footer bg-light rounded-bottom-4 border-0">
+          <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">रद्द करा</button>
+          <button type="submit" class="btn btn-warning text-white rounded-pill px-4">अद्यतनित करा</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+{% endblock %}
