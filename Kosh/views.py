@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, redirect, render
-from Main.models import Financial_Year, Super_User
+from Main.models import Financial_Year, Head_Percentage, Kosh_Head, Super_User
 from Main.utils import validate_clean_text, validate_file, validate_mobile_number
 from PanchayatSamiti.models import Panchayat_Samiti
 from django.contrib import messages
@@ -46,29 +46,44 @@ def Kosh_Dashboard(request):
         messages.error(request, "User Not Found")
         return redirect('Login')
 
-    # Get all kosh assigned to this user (for switcher)
-    all_kosh = kosh_user.kosh.filter(status='Active', is_deleted=False)
-
-    # Get currently active kosh from session
-    active_kosh_id = request.session.get('active_kosh_id')
-    active_kosh = None
-
-    if active_kosh_id:
-        try:
-            active_kosh = Kosh.objects.get(id=active_kosh_id, status='Active', is_deleted=False)
-        except Kosh.DoesNotExist:
-            pass
+    # Get all active Kosh Heads
+    all_heads = Kosh_Head.objects.filter(status='Active')
+    
+    # Prepare heads with their percentages
+    heads_with_percentages = []
+    total_percentage = 0
+    
+    for head in all_heads:
+        # Get percentage for this head
+        percentage_obj = Head_Percentage.objects.filter(kosh_head=head).first()
+        percentage = float(percentage_obj.percentage) if percentage_obj else 0
+        total_percentage += percentage
+        
+        heads_with_percentages.append({
+            'head': head,
+            'percentage': percentage
+        })
+    
+    # Calculate remaining percentage
+    remaining_percentage = max(0, 100 - total_percentage)
+    
+    # Calculate statistics
+    total_heads = all_heads.count()
+    active_heads = all_heads.filter(status='Active').count()
 
     context = {
         'user_type': 'Kosh',
         'kosh_user': kosh_user,
-        'all_kosh': all_kosh,
-        'active_kosh': active_kosh,
-        'active_kosh_id': active_kosh_id,
-        'show_switcher': all_kosh.count() > 1,  # Only show switcher if user has multiple kosh
+        'heads_with_percentages': heads_with_percentages,
+        'total_percentage': round(total_percentage, 2),
+        'remaining_percentage': round(remaining_percentage, 2),
+        'total_heads': total_heads,
+        'active_heads': active_heads,
+        **switch_kosh(request),
     }
 
     return render(request, 'Kosh_dashboard.html', context)
+
 
 def Kosh_Manage_Grampanchayat(request):
     if not request.session.get('superuser_id'):
@@ -1518,6 +1533,12 @@ def Kosh_Manage_Kosh_Committee(request):
         try:
             validate_clean_text(name, "Name")
 
+            if address:
+                validate_clean_text(address, "Address")
+
+            if role:
+                validate_clean_text(role, "Role")
+
             if mobile:
                 validate_mobile_number(mobile)
 
@@ -1583,6 +1604,12 @@ def Kosh_Manage_Kosh_Committee(request):
         # ── Field validation ──
         try:
             validate_clean_text(name, "Name")
+
+            if address:
+                validate_clean_text(address, "Address")
+
+            if role:
+                validate_clean_text(role, "Role")
 
             if mobile:
                 validate_mobile_number(mobile)

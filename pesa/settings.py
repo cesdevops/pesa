@@ -57,7 +57,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'pesa.urls'
+ROOT_URLCONF = 'PESA.urls'
 
 TEMPLATES = [
     {
@@ -73,7 +73,7 @@ TEMPLATES = [
         },
     },
 ]
-WSGI_APPLICATION = 'pesa.wsgi.application'
+WSGI_APPLICATION = 'PESA.wsgi.application'
 
 
 # Database
