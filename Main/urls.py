@@ -11,6 +11,5 @@ urlpatterns = [
     path('Manage-District/',views.Manage_District,name='Manage-District'),
     path('Manage-Taluka/',views.Manage_Taluka,name='Manage-Taluka'),
     path('Manage-Kosh-Head/',views.Manage_Kosh_Head,name='Manage-Kosh-Head'),
-    path('Manage-Head-Percentage/',views.Manage_Head_Percentage,name='Manage-Head-Percentage'),
 
 ]   

@@ -1,7 +1,6 @@
 from django.contrib import admin
 from .models import (
     Financial_Year,
-    Head_Percentage,
     Kosh_Head,
     Super_User,
     District,
@@ -45,8 +44,3 @@ class KoshHeadAdmin(admin.ModelAdmin):
     ordering = ('-created_at',)
 
 
-@admin.register(Head_Percentage)
-class HeadPercentageAdmin(admin.ModelAdmin):
-    list_display = ('id', 'kosh_head', 'percentage', 'created_at', 'updated_at')
-    search_fields = ('kosh_head__name',)
-    ordering = ('-created_at',)

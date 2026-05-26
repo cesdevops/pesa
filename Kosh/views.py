@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, redirect, render
-from Main.models import Financial_Year, Head_Percentage, Kosh_Head, Super_User
+from Main.models import Financial_Year, Kosh_Head, Super_User
 from Main.utils import validate_clean_text, validate_file, validate_mobile_number
 from PanchayatSamiti.models import Panchayat_Samiti
 from django.contrib import messages
