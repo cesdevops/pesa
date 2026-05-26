@@ -107,6 +107,42 @@
             <i class="fas fa-plus-circle me-2"></i>
             <span>नवीन जिल्हा परिषद जोडा</span>
 
+<<<<<<< HEAD
+=======
+    <!-- HEADER -->
+<div class="page-header-modern d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+    <h3 class="mb-0">
+        <i class="fas fa-building"></i>
+        जिल्हा परिषद व्यवस्थापन
+
+        <span class="record-count">
+            {{ all_zilla_parishad|length }} एकूण
+        </span>
+    </h3>
+
+    <div class="d-flex align-items-center gap-2">
+
+        <!-- ADD USER -->
+
+        <a href="{% url 'ZP-Manage-Zilla-Parishad-User' %}"
+           class="btn btn-success">
+
+            <i class="fas fa-user-plus"></i>
+            वापरकर्ता व्यवस्थापन
+
+        </a>
+
+        <!-- ADD ZP -->
+
+        <button class="btn btn-gold-outline"
+                data-bs-toggle="modal"
+                data-bs-target="#addModal">
+
+            <i class="fas fa-plus-circle"></i>
+            नवीन जिल्हा परिषद
+
+>>>>>>> cd5031cf3fc80bf4132c04891d12b8579c4f819b
         </button>
 
     </div>

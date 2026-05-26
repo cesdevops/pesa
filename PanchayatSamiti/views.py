@@ -350,8 +350,6 @@ def get_talukas_by_zilla_parishad(request, zilla_parishad_id):
 
 
 
-
-
 def PS_Manage_Users(request):
     if not request.session.get('superuser_id'):
         return redirect('SuperUser-Login')

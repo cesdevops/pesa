@@ -36,9 +36,15 @@ body{
 }
 
 /* TOP STRIPS */
+<<<<<<< HEAD
 .strip-tricolor{height:4px;background:linear-gradient(to right,#ff9933 33%,#fff 33% 66%,#138808 66%);}
 .strip-navy{background:var(--navy);color:#cde;font-size:10.5px;padding:4px 20px;display:flex;justify-content:space-between;align-items:center;}
 .strip-navy a{color:#aed6f1;text-decoration:none;font-size:10px;}
+=======
+.strip-tricolor{height:5px;background:linear-gradient(to right,#ff9933 33%,#fff 33% 66%,#138808 66%);}
+.strip-navy{background:var(--navy);color:#cde;font-size:11px;padding:3px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.strip-navy a{color:#aed6f1;text-decoration:none;font-size:10.5px;}
+>>>>>>> cd5031cf3fc80bf4132c04891d12b8579c4f819b
 .strip-navy a:hover{text-decoration:underline;}
 .strip-nav-links{display:flex;gap:12px;align-items:center;}
 
@@ -544,14 +550,19 @@ body{
     <span class="marquee-inner">
       ग्रामसभा अहवाल सादर करण्याची अंतिम तारीख ३० जून २०२५ आहे &nbsp;|&nbsp;
       नवीन PESA नियम २०२२ अंतर्गत नोंदणी सुरू &nbsp;|&nbsp;
+<<<<<<< HEAD
       आदिवासी महिला बचत गट अनुदान अर्ज स्वीकारले जात आहेत
+=======
+      आदिवासी महिला बचत गट अनुदान अर्ज स्वीकारले जात आहेत &nbsp;|&nbsp;
+      तांत्रिक अडचणींसाठी १८०० *** **** वर संपर्क करा
+>>>>>>> cd5031cf3fc80bf4132c04891d12b8579c4f819b
     </span>
   </div>
 </div>
 
 <div class="body-wrap">
 
-  <!-- LEFT INFO PANEL -->
+  <!-- LEFT INFO PANEL — unchanged -->
   <div class="info-panel">
     <div>
       <h3><i class="fa fa-info-circle"></i> PESA विषयी</h3>
@@ -571,9 +582,28 @@ body{
     <div>
       <h3><i class="fa fa-newspaper"></i> ताज्या बातम्या</h3>
       <ul class="news-list">
+<<<<<<< HEAD
         <li><div class="dot"><i class="fa fa-circle"></i></div><div><a href="#">ग्रामसभा निधी वितरण सुरू</a><span class="date">०३ जून २०२५</span></div></li>
         <li><div class="dot"><i class="fa fa-circle"></i></div><div><a href="#">नवीन आदिवासी शाळा निर्माण मंजूर</a><span class="date">२८ मे २०२५</span></div></li>
         <li><div class="dot"><i class="fa fa-circle"></i></div><div><a href="#">वनहक्क पट्टे वितरण</a><span class="date">२० मे २०२५</span></div></li>
+=======
+        <li>
+          <div class="dot"><i class="fa fa-circle" style="font-size:6px;"></i></div>
+          <div><a href="#">ग्रामसभा निधी वितरण २०२५-२६ सुरू</a><span class="date">०३ जून २०२५</span></div>
+        </li>
+        <li>
+          <div class="dot"><i class="fa fa-circle" style="font-size:6px;"></i></div>
+          <div><a href="#">नवीन आदिवासी शाळा निर्माण योजना मंजूर</a><span class="date">२८ मे २०२५</span></div>
+        </li>
+        <li>
+          <div class="dot"><i class="fa fa-circle" style="font-size:6px;"></i></div>
+          <div><a href="#">वनहक्क पट्टे वितरण कार्यक्रम — जिल्हास्तरीय</a><span class="date">२० मे २०२५</span></div>
+        </li>
+        <li>
+          <div class="dot"><i class="fa fa-circle" style="font-size:6px;"></i></div>
+          <div><a href="#">PESA प्रशिक्षण शिबीर — सर्व तालुके</a><span class="date">१५ मे २०२५</span></div>
+        </li>
+>>>>>>> cd5031cf3fc80bf4132c04891d12b8579c4f819b
       </ul>
     </div>
     <div>
@@ -586,15 +616,26 @@ body{
     </div>
   </div>
 
+<<<<<<< HEAD
   <!-- CENTER LOGIN -->
   <div class="login-area">
     <form method="post" action="{% url 'Login' %}" style="width:100%;max-width:360px;">
+=======
+  <!-- CENTER LOGIN — top aligned, no dead space -->
+  <div class="login-area">
+    <form method="post" action="{% url 'Login' %}" style="width:100%;max-width:390px;display:flex;flex-direction:column;gap:10px;">
+>>>>>>> cd5031cf3fc80bf4132c04891d12b8579c4f819b
       {% csrf_token %}
 
       <div class="login-card">
         <div class="login-card-header">
+<<<<<<< HEAD
           <div class="title">🔒 PESA प्रणाली — अधिकृत प्रवेश</div>
           <div class="sub">केवळ अधिकृत शासकीय कर्मचारी / ग्रामपंचायत सदस्य</div>
+=======
+          <div class="title">&#128274; PESA प्रणाली — अधिकृत प्रवेश</div>
+          <div class="sub">केवळ अधिकृत शासकीय कर्मचारी / ग्रामपंचायत सदस्य लॉगिन करू शकतात</div>
+>>>>>>> cd5031cf3fc80bf4132c04891d12b8579c4f819b
         </div>
         <div class="login-card-body">
 
@@ -613,7 +654,11 @@ body{
           </div>
 
           <div class="field">
+<<<<<<< HEAD
             <label>वापरकर्ता आयडी <span class="req">*</span></label>
+=======
+            <label>वापरकर्ता आयडी / कर्मचारी क्रमांक <span class="req">*</span></label>
+>>>>>>> cd5031cf3fc80bf4132c04891d12b8579c4f819b
             <div class="input-row">
               <i class="fa fa-user icon"></i>
               <input type="text" name="username" placeholder="वापरकर्ता आयडी प्रविष्ट करा" required/>
@@ -629,7 +674,13 @@ body{
             </div>
           </div>
 
+<<<<<<< HEAD
           <div style="font-size:10.5px;font-weight:600;color:var(--navy);margin-bottom:4px;">कॅप्चा सत्यापन <span class="req">*</span></div>
+=======
+          <div style="font-size:11.5px;font-weight:600;color:var(--navy);margin-bottom:6px;">
+            कॅप्चा सत्यापन <span class="req">*</span>
+          </div>
+>>>>>>> cd5031cf3fc80bf4132c04891d12b8579c4f819b
           <div class="captcha-wrap">
             <div class="captcha-box" id="cap-box">K4M7P</div>
             <button class="refresh-btn" type="button" onclick="newCaptcha()" title="नवीन कॅप्चा"><i class="fa fa-sync-alt"></i></button>
@@ -646,18 +697,29 @@ body{
           </button>
 
           <div class="login-links">
+<<<<<<< HEAD
             <a href="#"><i class="fa fa-key"></i> संकेतशब्द विसरलात?</a>
             <a href="#"><i class="fa fa-user-plus"></i> नवीन नोंदणी</a>
             <a href="#"><i class="fa fa-unlock"></i> खाते अनलॉक</a>
+=======
+            <a href="#"><i class="fa fa-key" style="font-size:10px;"></i> संकेतशब्द विसरलात?</a>
+            <a href="#"><i class="fa fa-user-plus" style="font-size:10px;"></i> नवीन नोंदणी</a>
+            <a href="#"><i class="fa fa-unlock" style="font-size:10px;"></i> खाते अनलॉक करा</a>
+>>>>>>> cd5031cf3fc80bf4132c04891d12b8579c4f819b
           </div>
         </div>
         <div class="help-strip">
           <i class="fa fa-headset"></i>
           <span>हेल्पडेस्क: <strong>1800-XXX-XXXX</strong></span>
+<<<<<<< HEAD
+=======
+          <span class="sep">|</span>
+>>>>>>> cd5031cf3fc80bf4132c04891d12b8579c4f819b
           <span>सोम–शनि: सकाळी १० ते सायं ५</span>
         </div>
       </div>
 
+<<<<<<< HEAD
       <div style="background:#fff;border:1px solid #ffc107;border-left:3px solid #e67e00;border-radius:4px;padding:8px 12px;font-size:10px;color:#7d5a00;margin-top:8px;">
         <strong><i class="fa fa-shield-alt"></i> सुरक्षा सूचना:</strong> आपला संकेतशब्द कोणाशीही शेअर करू नका.
       </div>
@@ -665,6 +727,22 @@ body{
   </div>
 
   <!-- RIGHT SIDE PANEL -->
+=======
+      <div style="background:#fff;border:1px solid #ffc107;border-left:4px solid #e67e00;border-radius:5px;padding:10px 14px;font-size:11px;color:#7d5a00;line-height:1.6;">
+        <strong><i class="fa fa-shield-alt" style="color:#e67e00;margin-right:5px;"></i> सुरक्षा सूचना:</strong>
+        आपला संकेतशब्द कोणाशीही शेअर करू नका. शासकीय अधिकारी कधीही फोनवर किंवा ईमेलद्वारे संकेतशब्द विचारत नाहीत.
+      </div>
+
+      <div style="background:#fff;border:1px solid var(--gray2);border-radius:5px;padding:8px 14px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:10px;">
+        <i class="fa fa-desktop" style="color:var(--navy3);"></i>
+        <span><strong style="color:var(--navy);">समर्थित ब्राउझर:</strong> Chrome ७०+, Firefox ६५+, Edge ७९+, Safari १२+</span>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- RIGHT SIDE PANEL — unchanged -->
+>>>>>>> cd5031cf3fc80bf4132c04891d12b8579c4f819b
   <div class="side-panel">
     <div>
       <h4>सूचना</h4>
@@ -684,8 +762,14 @@ body{
     <div>
       <h4>वापरकर्ता प्रकार</h4>
       <div class="user-types">
+<<<<<<< HEAD
         <div class="user-type"><i class="fa fa-user-tie"></i><div><span class="uname">शासकीय अधिकारी</span><span class="udesc">जिल्हा / तालुका</span></div></div>
         <div class="user-type"><i class="fa fa-home"></i><div><span class="uname">ग्रामपंचायत</span><span class="udesc">सरपंच / सचिव</span></div></div>
+=======
+        <div class="user-type"><i class="fa fa-user-tie"></i><div><span class="uname">शासकीय अधिकारी</span><span class="udesc">जिल्हा / तालुका स्तर</span></div></div>
+        <div class="user-type"><i class="fa fa-home"></i><div><span class="uname">ग्रामपंचायत</span><span class="udesc">सरपंच / सचिव</span></div></div>
+        <div class="user-type"><i class="fa fa-users"></i><div><span class="uname">ग्रामसभा</span><span class="udesc">ग्रामसभा अध्यक्ष</span></div></div>
+>>>>>>> cd5031cf3fc80bf4132c04891d12b8579c4f819b
         <div class="user-type"><i class="fa fa-user"></i><div><span class="uname">नागरिक</span><span class="udesc">सामान्य सेवा</span></div></div>
       </div>
     </div>
@@ -701,7 +785,10 @@ body{
 
 </div>
 
+<<<<<<< HEAD
 <!-- FOOTER - FIXED WITH PROPER SPACING -->
+=======
+>>>>>>> cd5031cf3fc80bf4132c04891d12b8579c4f819b
 <div class="footer">
   <div class="footer-left">
     <div class="main-text">महाराष्ट्र शासन — जिल्हा परिषद, आदिवासी विकास विभाग</div>
