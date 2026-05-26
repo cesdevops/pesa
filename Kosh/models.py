@@ -9,7 +9,6 @@ class GramPanchayat(models.Model):
         ('Inactive', 'Inactive'),
     )
     panchayat_samiti = models.ForeignKey(Panchayat_Samiti,on_delete=models.SET_NULL,null=True,blank=True, related_name='gram_panchayats')
-    # panchayat_samiti_name = models.CharField(max_length=255,null=True,blank=True)
     gram_panchayat_name = models.CharField(max_length=255,null=True,blank=True)
     gram_panchayat_code = models.CharField(max_length=50,unique=True,null=True,blank=True)
     address = models.TextField(null=True,blank=True)
