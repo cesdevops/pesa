@@ -762,7 +762,9 @@ def ZP_Manage_Zilla_Parishad_User(request):
     all_zilla_parishad = Zilla_Parishad.objects.all().order_by(
         "zillaParishad_name"
     )
-
+    selected_zp = None
+    if zilla_parishad_id:
+        selected_zp = Zilla_Parishad.objects.filter(id=zilla_parishad_id).first()
     # =====================================================
     # CONTEXT
     # =====================================================
@@ -776,6 +778,8 @@ def ZP_Manage_Zilla_Parishad_User(request):
         "total_users": total_users,
         "filtered_count": filtered_count,
         "all_zilla_parishad": all_zilla_parishad,
+        "selected_zp": selected_zp,
+
     }
 
     return render(
