@@ -1,0 +1,645 @@
+{% extends 'Base.html' %}
+{% load static %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #0d2b45;
+    --navy2: #154360;
+    --navy3: #1a5276;
+    --gold: #e67e00;
+    --gold2: #f39c12;
+    --surface: #F6F8FA;
+    --border: rgba(0,0,0,0.08);
+    --border-md: rgba(0,0,0,0.12);
+    --text-1: #0B1628;
+    --text-2: #4A5568;
+    --text-3: #8A97A8;
+    --white: #ffffff;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.07);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.14);
+    --red: #E53E3E;
+    --red-50: #FFF5F5;
+    --red-100: #FED7D7;
+    --yellow: #B7791F;
+    --yellow-50: #FFFFF0;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--text-1); }
+
+  .km-page { padding: 28px; }
+
+  .km-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 14px; }
+  .km-header-left h1 { font-size: 20px; font-weight: 600; color: var(--text-1); letter-spacing: -0.02em; }
+  .km-header-left p  { font-size: 13px; color: var(--text-3); margin-top: 4px; }
+  .km-btn-add {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--gold); color: #fff;
+    border: none; border-radius: var(--radius-md);
+    padding: 9px 18px; font-size: 13px; font-weight: 500;
+    cursor: pointer; font-family: inherit; text-decoration: none;
+    transition: background 0.15s;
+  }
+  .km-btn-add:hover { background: var(--navy); }
+  .km-btn-add svg { width: 15px; height: 15px; }
+
+  .km-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 12px; margin-bottom: 22px; }
+  .km-stat {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 16px 18px;
+    box-shadow: var(--shadow-sm);
+  }
+  .km-stat .st-label { font-size: 12px; color: var(--text-3); font-weight: 500; margin-bottom: 6px; }
+  .km-stat .st-val   { font-size: 24px; font-weight: 600; color: var(--text-1); letter-spacing: -0.02em; }
+
+  .km-messages { margin-bottom: 16px; }
+  .km-msg {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 14px; border-radius: var(--radius-md);
+    font-size: 13px; font-weight: 500; margin-bottom: 8px;
+  }
+  .km-msg.success { background: #E1F5EE; color: #085041; border: 1px solid #9FE1CB; }
+  .km-msg.error   { background: var(--red-50); color: var(--red); border: 1px solid var(--red-100); }
+
+  .km-filter-bar {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 14px 16px;
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+    margin-bottom: 18px; box-shadow: var(--shadow-sm);
+  }
+  .km-filter-bar input,
+  .km-filter-bar select {
+    border: 1px solid var(--border-md); border-radius: var(--radius-md);
+    padding: 7px 12px; font-size: 13px; font-family: inherit;
+    color: var(--text-1); background: var(--surface); outline: none;
+    transition: border-color 0.15s;
+  }
+  .km-filter-bar input:focus,
+  .km-filter-bar select:focus { border-color: var(--gold); background: var(--white); }
+  .km-filter-bar input { flex: 1; min-width: 180px; }
+  .km-filter-btn {
+    background: var(--gold); color: #fff; border: none;
+    border-radius: var(--radius-md); padding: 7px 16px;
+    font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit;
+    transition: background 0.15s;
+  }
+  .km-filter-btn:hover { background: var(--navy); }
+  .km-clear-btn {
+    background: var(--white); color: var(--text-2); border: 1px solid var(--border-md);
+    border-radius: var(--radius-md); padding: 7px 14px;
+    font-size: 13px; cursor: pointer; font-family: inherit; text-decoration: none;
+    display: inline-flex; align-items: center;
+  }
+  .km-clear-btn:hover { background: var(--surface); }
+
+  .km-table-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden;
+  }
+  .km-table-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px; border-bottom: 1px solid var(--border);
+  }
+  .km-table-head .th-title { font-size: 14px; font-weight: 600; color: var(--text-1); }
+  .km-table-head .th-count { font-size: 12px; color: var(--text-3); }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { background: var(--surface); }
+  thead th {
+    text-align: left; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--text-3); padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface); }
+  tbody td { padding: 12px 16px; font-size: 13px; color: var(--text-1); vertical-align: middle; }
+
+  .td-member { display: flex; align-items: center; gap: 10px; }
+  .td-avatar {
+    width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
+    border: 1.5px solid var(--border-md); flex-shrink: 0;
+  }
+  .td-avatar-init {
+    width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+    background: #E1F5EE; border: 1.5px solid #9FE1CB;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600; color: #085041;
+  }
+  .td-name  { font-weight: 500; color: var(--text-1); }
+  .td-email { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+
+  .badge {
+    display: inline-flex; align-items: center;
+    padding: 3px 10px; border-radius: 99px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.03em;
+  }
+  .badge-chairman { background: #EBF4FF; color: #2B6CB0; border: 1px solid #BEE3F8; }
+  .badge-member   { background: #E1F5EE; color: #085041; border: 1px solid #9FE1CB; }
+  .badge-active   { background: #E1F5EE; color: #085041; border: 1px solid #9FE1CB; }
+  .badge-inactive { background: #F7FAFC; color: var(--text-3); border: 1px solid var(--border-md); }
+
+  .td-actions { display: flex; align-items: center; gap: 6px; }
+  .btn-icon {
+    width: 30px; height: 30px; border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--border-md); background: var(--white);
+    cursor: pointer; transition: all 0.13s; color: var(--text-2);
+  }
+  .btn-icon:hover { background: var(--surface); }
+  .btn-icon.edit:hover  { border-color: #9FE1CB; color: #085041; background: #E1F5EE; }
+  .btn-icon.del:hover   { border-color: var(--red-100); color: var(--red); background: var(--red-50); }
+  .btn-icon svg { width: 14px; height: 14px; }
+
+  .km-empty { text-align: center; padding: 48px 20px; color: var(--text-3); }
+  .km-empty svg { width: 40px; height: 40px; margin-bottom: 12px; opacity: 0.35; }
+  .km-empty p { font-size: 14px; }
+
+  .km-pagination { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
+  .km-pagination .pg-info { font-size: 12px; color: var(--text-3); }
+  .pg-links { display: flex; gap: 5px; }
+  .pg-links a, .pg-links span {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: var(--radius-sm);
+    font-size: 12px; font-weight: 500; text-decoration: none;
+    border: 1px solid var(--border-md); color: var(--text-2);
+    transition: all 0.12s;
+  }
+  .pg-links a:hover { background: var(--surface); }
+  .pg-links .current { background: var(--gold); color: #fff; border-color: var(--gold); }
+
+  .km-modal-bg {
+    display: none; position: fixed; inset: 0; z-index: 500;
+    background: rgba(11,22,40,0.45); backdrop-filter: blur(3px);
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .km-modal-bg.open { display: flex; }
+
+  .km-modal {
+    background: var(--white); border-radius: var(--radius-lg);
+    width: 100%; max-width: 560px; box-shadow: var(--shadow-lg);
+    animation: slideUp 0.2s ease;
+    max-height: 90vh; overflow-y: auto;
+  }
+  @keyframes slideUp { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+  .km-modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 22px 14px; border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; background: var(--white); z-index: 1;
+  }
+  .km-modal-header h2 { font-size: 16px; font-weight: 600; color: var(--text-1); }
+  .km-modal-close {
+    width: 30px; height: 30px; border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--border-md); background: var(--white);
+    cursor: pointer; color: var(--text-3); font-size: 18px; line-height: 1;
+  }
+  .km-modal-close:hover { background: var(--surface); color: var(--text-1); }
+
+  .km-modal-body { padding: 20px 22px; }
+
+  .km-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .km-form-grid .full { grid-column: 1 / -1; }
+  .fm-group { display: flex; flex-direction: column; gap: 5px; }
+  .fm-label {
+    font-size: 12px; font-weight: 500; color: var(--text-2); letter-spacing: 0.02em;
+  }
+  .fm-label .req { color: var(--red); margin-left: 2px; }
+  .fm-input, .fm-select, .fm-textarea {
+    border: 1px solid var(--border-md); border-radius: var(--radius-md);
+    padding: 8px 12px; font-size: 13px; font-family: inherit;
+    color: var(--text-1); background: var(--white); outline: none;
+    transition: border-color 0.15s;
+  }
+  .fm-input:focus, .fm-select:focus, .fm-textarea:focus { border-color: var(--gold); }
+  .fm-textarea { resize: vertical; min-height: 80px; }
+
+  .km-modal-footer {
+    display: flex; align-items: center; justify-content: flex-end; gap: 10px;
+    padding: 14px 22px 18px; border-top: 1px solid var(--border);
+    position: sticky; bottom: 0; background: var(--white);
+  }
+  .btn-cancel {
+    background: var(--white); border: 1px solid var(--border-md);
+    border-radius: var(--radius-md); padding: 8px 18px;
+    font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit;
+    color: var(--text-2); transition: background 0.13s;
+  }
+  .btn-cancel:hover { background: var(--surface); }
+  .btn-submit {
+    background: var(--gold); color: #fff; border: none;
+    border-radius: var(--radius-md); padding: 8px 20px;
+    font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit;
+    transition: background 0.15s;
+  }
+  .btn-submit:hover { background: var(--navy); }
+
+  .km-del-modal {
+    background: var(--white); border-radius: var(--radius-lg);
+    width: 100%; max-width: 400px; box-shadow: var(--shadow-lg);
+    animation: slideUp 0.2s ease; padding: 28px 26px;
+    text-align: center;
+  }
+  .del-icon { width: 48px; height: 48px; border-radius: 50%; background: var(--red-50); display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
+  .del-icon svg { width: 22px; height: 22px; stroke: var(--red); }
+  .del-title { font-size: 16px; font-weight: 600; color: var(--text-1); margin-bottom: 6px; }
+  .del-sub   { font-size: 13px; color: var(--text-3); margin-bottom: 20px; }
+  .del-actions { display: flex; gap: 10px; justify-content: center; }
+  .btn-del-confirm {
+    background: var(--red); color: #fff; border: none;
+    border-radius: var(--radius-md); padding: 9px 22px;
+    font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit;
+    text-decoration: none; transition: opacity 0.15s;
+  }
+  .btn-del-confirm:hover { opacity: 0.88; }
+
+  @media (max-width: 640px) {
+    .km-form-grid { grid-template-columns: 1fr; }
+    .km-page { padding: 16px; }
+    table { display: block; overflow-x: auto; }
+  }
+</style>
+
+<div class="km-page">
+
+  <!-- Header -->
+  <div class="km-header">
+    <div class="km-header-left">
+      <h1>कोष समिती</h1>
+      <p>{{ active_kosh.kosh_name }} &nbsp;·&nbsp; एकूण {{ total_members }} सदस्य</p>
+    </div>
+    <button class="km-btn-add" onclick="openAddModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      सदस्य जोडा
+    </button>
+  </div>
+
+  <!-- Messages -->
+  {% if messages %}
+  <div class="km-messages">
+    {% for message in messages %}
+    <div class="km-msg {{ message.tags }}">
+      {% if message.tags == 'success' %}✓{% else %}✕{% endif %}
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Stat cards -->
+  <div class="km-stats">
+    <div class="km-stat">
+      <div class="st-label">एकूण सदस्य</div>
+      <div class="st-val">{{ total_members }}</div>
+    </div>
+    <div class="km-stat">
+      <div class="st-label">अध्यक्ष</div>
+      <div class="st-val">{{ chairman_count }}</div>
+    </div>
+    <div class="km-stat">
+      <div class="st-label">सदस्य</div>
+      <div class="st-val">{{ member_count }}</div>
+    </div>
+    <div class="km-stat">
+      <div class="st-label">फिल्टर निकाल</div>
+      <div class="st-val">{{ filtered_count }}</div>
+    </div>
+  </div>
+
+  <!-- Filter bar -->
+  <form method="GET" class="km-filter-bar">
+    <input type="text" name="search" value="{{ search }}" placeholder="नाव, मोबाइल, ईमेल शोधा...">
+    <select name="role">
+      <option value="">सर्व भूमिका</option>
+      <option value="Chairman" {% if role == 'Chairman' %}selected{% endif %}>अध्यक्ष</option>
+      <option value="Member"   {% if role == 'Member'   %}selected{% endif %}>सदस्य</option>
+    </select>
+    <select name="status">
+      <option value="">सर्व स्थिती</option>
+      <option value="Active"   {% if status == 'Active'   %}selected{% endif %}>सक्रिय</option>
+      <option value="Inactive" {% if status == 'Inactive' %}selected{% endif %}>निष्क्रिय</option>
+    </select>
+    <button type="submit" class="km-filter-btn">शोधा</button>
+    <a href="{% url 'Kosh-Manage-Kosh-Committee' %}" class="km-clear-btn">रीसेट</a>
+  </form>
+
+  <!-- Table -->
+  <div class="km-table-card">
+    <div class="km-table-head">
+      <span class="th-title">समिती सदस्य</span>
+      <span class="th-count">दाखवत आहे {{ members|length }} पैकी {{ filtered_count }}</span>
+    </div>
+
+    {% if members %}
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>सदस्य</th>
+          <th>भूमिका</th>
+          <th>मोबाइल</th>
+          <th>स्थिती</th>
+          <th>क्रिया</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in members %}
+        <tr>
+          <td style="color:var(--text-3); font-size:12px; font-family:'DM Mono',monospace;">
+            {{ forloop.counter }}
+           </td>
+           <td>
+            <div class="td-member">
+              {% if m.profile %}
+                <img src="{{ m.profile.url }}" alt="{{ m.name }}" class="td-avatar">
+              {% else %}
+                <div class="td-avatar-init">{{ m.name|slice:":2"|upper }}</div>
+              {% endif %}
+              <div>
+                <div class="td-name">{{ m.name }}</div>
+                <div class="td-email">{{ m.email|default:"—" }}</div>
+              </div>
+            </div>
+           </td>
+           <td>
+            {% if m.role == 'Chairman' %}
+              <span class="badge badge-chairman">अध्यक्ष</span>
+            {% else %}
+              <span class="badge badge-member">सदस्य</span>
+            {% endif %}
+           </td>
+          <td style="font-family:'DM Mono',monospace; font-size:12px;">{{ m.mobile|default:"—" }}</td>
+          <td>
+            {% if m.status == 'Active' %}
+              <span class="badge badge-active">सक्रिय</span>
+            {% else %}
+              <span class="badge badge-inactive">निष्क्रिय</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="td-actions">
+              <button class="btn-icon edit" title="संपादन"
+                onclick="openEditModal(
+                  '{{ m.id }}',
+                  '{{ m.name|escapejs }}',
+                  '{{ m.mobile|default:''|escapejs }}',
+                  '{{ m.email|default:''|escapejs }}',
+                  '{{ m.address|default:''|escapejs }}',
+                  '{{ m.role }}',
+                  '{{ m.status }}'
+                )">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </button>
+              <button class="btn-icon del" title="हटवा"
+                onclick="openDeleteModal('{{ m.id }}', '{{ m.name|escapejs }}')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+                  <path d="M10 11v6M14 11v6"/>
+                  <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    {% if members.has_other_pages %}
+    <div class="km-pagination">
+      <span class="pg-info">पान {{ members.number }} of {{ members.paginator.num_pages }}</span>
+      <div class="pg-links">
+        {% if members.has_previous %}
+          <a href="?page={{ members.previous_page_number }}&search={{ search }}&role={{ role }}&status={{ status }}">&lsaquo;</a>
+        {% endif %}
+        {% for i in members.paginator.page_range %}
+          {% if members.number == i %}
+            <span class="current">{{ i }}</span>
+          {% else %}
+            <a href="?page={{ i }}&search={{ search }}&role={{ role }}&status={{ status }}">{{ i }}</a>
+          {% endif %}
+        {% endfor %}
+        {% if members.has_next %}
+          <a href="?page={{ members.next_page_number }}&search={{ search }}&role={{ role }}&status={{ status }}">&rsaquo;</a>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="km-empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <p>कोणतेही सदस्य आढळले नाहीत.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- ADD MODAL -->
+<div class="km-modal-bg" id="addModalBg">
+  <div class="km-modal">
+    <div class="km-modal-header">
+      <h2>नवीन सदस्य जोडा</h2>
+      <button class="km-modal-close" onclick="closeModal('addModalBg')">✕</button>
+    </div>
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="add">
+      <div class="km-modal-body">
+        <div class="km-form-grid">
+
+          <div class="fm-group full">
+            <label class="fm-label">पूर्ण नाव <span class="req">*</span></label>
+            <input class="fm-input" type="text" name="name" placeholder="पूर्ण नाव" required>
+          </div>
+
+          <div class="fm-group">
+            <label class="fm-label">भूमिका <span class="req">*</span></label>
+            <select class="fm-select" name="role" required>
+              <option value="">भूमिका निवडा</option>
+              <option value="Chairman">अध्यक्ष</option>
+              <option value="Member">सदस्य</option>
+            </select>
+          </div>
+
+          <div class="fm-group">
+            <label class="fm-label">स्थिती</label>
+            <select class="fm-select" name="status">
+              <option value="Active">सक्रिय</option>
+              <option value="Inactive">निष्क्रिय</option>
+            </select>
+          </div>
+
+          <div class="fm-group">
+            <label class="fm-label">मोबाइल</label>
+            <input class="fm-input" type="text" name="mobile" placeholder="मोबाइल क्रमांक">
+          </div>
+
+          <div class="fm-group">
+            <label class="fm-label">ईमेल</label>
+            <input class="fm-input" type="email" name="email" placeholder="email@example.com">
+          </div>
+
+          <div class="fm-group full">
+            <label class="fm-label">पत्ता</label>
+            <textarea class="fm-textarea" name="address" placeholder="संपूर्ण पत्ता..."></textarea>
+          </div>
+
+          <div class="fm-group full">
+            <label class="fm-label">प्रोफाइल फोटो</label>
+            <input class="fm-input" type="file" name="profile" accept="image/jpg,image/jpeg,image/png">
+            <span style="font-size:11px;color:var(--text-3);margin-top:3px;">JPG/PNG · कमाल 2 MB</span>
+          </div>
+
+        </div>
+      </div>
+      <div class="km-modal-footer">
+        <button type="button" class="btn-cancel" onclick="closeModal('addModalBg')">रद्द करा</button>
+        <button type="submit" class="btn-submit">सदस्य जोडा</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="km-modal-bg" id="editModalBg">
+  <div class="km-modal">
+    <div class="km-modal-header">
+      <h2>सदस्य संपादित करा</h2>
+      <button class="km-modal-close" onclick="closeModal('editModalBg')">✕</button>
+    </div>
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="edit">
+      <input type="hidden" name="edit_id" id="edit_id">
+      <div class="km-modal-body">
+        <div class="km-form-grid">
+
+          <div class="fm-group full">
+            <label class="fm-label">पूर्ण नाव <span class="req">*</span></label>
+            <input class="fm-input" type="text" name="name" id="edit_name" placeholder="पूर्ण नाव" required>
+          </div>
+
+          <div class="fm-group">
+            <label class="fm-label">भूमिका <span class="req">*</span></label>
+            <select class="fm-select" name="role" id="edit_role" required>
+              <option value="">भूमिका निवडा</option>
+              <option value="Chairman">अध्यक्ष</option>
+              <option value="Member">सदस्य</option>
+            </select>
+          </div>
+
+          <div class="fm-group">
+            <label class="fm-label">स्थिती</label>
+            <select class="fm-select" name="status" id="edit_status">
+              <option value="Active">सक्रिय</option>
+              <option value="Inactive">निष्क्रिय</option>
+            </select>
+          </div>
+
+          <div class="fm-group">
+            <label class="fm-label">मोबाइल</label>
+            <input class="fm-input" type="text" name="mobile" id="edit_mobile" placeholder="मोबाइल क्रमांक">
+          </div>
+
+          <div class="fm-group">
+            <label class="fm-label">ईमेल</label>
+            <input class="fm-input" type="email" name="email" id="edit_email" placeholder="email@example.com">
+          </div>
+
+          <div class="fm-group full">
+            <label class="fm-label">पत्ता</label>
+            <textarea class="fm-textarea" name="address" id="edit_address" placeholder="संपूर्ण पत्ता..."></textarea>
+          </div>
+
+          <div class="fm-group full">
+            <label class="fm-label">प्रोफाइल फोटो <span style="color:var(--text-3);font-weight:400;">(रिकामे ठेवल्यास जुना फोटो राहील)</span></label>
+            <input class="fm-input" type="file" name="profile" accept="image/jpg,image/jpeg,image/png">
+            <span style="font-size:11px;color:var(--text-3);margin-top:3px;">JPG/PNG · कमाल 2 MB</span>
+          </div>
+
+        </div>
+      </div>
+      <div class="km-modal-footer">
+        <button type="button" class="btn-cancel" onclick="closeModal('editModalBg')">रद्द करा</button>
+        <button type="submit" class="btn-submit">अद्यतनित करा</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="km-modal-bg" id="deleteModalBg">
+  <div class="km-del-modal">
+    <div class="del-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="3 6 5 6 21 6"/>
+        <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+        <path d="M10 11v6M14 11v6"/>
+      </svg>
+    </div>
+    <div class="del-title">सदस्य हटवायचा?</div>
+    <div class="del-sub" id="del-sub-text">ही क्रिया पूर्ववत करता येणार नाही.</div>
+    <div class="del-actions">
+      <button class="btn-cancel" onclick="closeModal('deleteModalBg')">रद्द करा</button>
+      <a href="#" class="btn-del-confirm" id="del-confirm-link">होय, हटवा</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openAddModal() {
+    document.getElementById('addModalBg').classList.add('open');
+  }
+
+  function openEditModal(id, name, mobile, email, address, role, status) {
+    document.getElementById('edit_id').value      = id;
+    document.getElementById('edit_name').value    = name;
+    document.getElementById('edit_mobile').value  = mobile;
+    document.getElementById('edit_email').value   = email;
+    document.getElementById('edit_address').value = address;
+    document.getElementById('edit_role').value    = role;
+    document.getElementById('edit_status').value  = status;
+    document.getElementById('editModalBg').classList.add('open');
+  }
+
+  function openDeleteModal(id, name) {
+    document.getElementById('del-sub-text').textContent = '"' + name + '" हा सदस्य हटवायचा? ही क्रिया पूर्ववत करता येणार नाही.';
+    document.getElementById('del-confirm-link').href    = '?delete_id=' + id;
+    document.getElementById('deleteModalBg').classList.add('open');
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+  }
+
+  document.querySelectorAll('.km-modal-bg').forEach(bg => {
+    bg.addEventListener('click', function(e) {
+      if (e.target === bg) bg.classList.remove('open');
+    });
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.km-modal-bg.open').forEach(bg => bg.classList.remove('open'));
+    }
+  });
+</script>
+
+{% endblock %}

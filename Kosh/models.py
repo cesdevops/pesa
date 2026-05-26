@@ -91,7 +91,7 @@ class Kosh_User(models.Model):
         ('Inactive', 'Inactive'),
     )
 
-    kosh = models.ForeignKey('Kosh',on_delete=models.SET_NULL,null=True,blank=True, related_name='kosh_users')
+    kosh = models.ManyToManyField('Kosh',null=True,blank=True, related_name='kosh_users')
     kosh_name = models.CharField(max_length=255,null=True,blank=True)
     name = models.CharField(max_length=255,null=True,blank=True)
     mobile = models.CharField(max_length=255,null=True,blank=True)
@@ -150,6 +150,7 @@ class Kosh_Committee(models.Model):
 
     def __str__(self):
         return self.name if self.name else "Kosh Committee"
+
 
 class Kosh_Bank_Detail(models.Model):
     STATUS_CHOICES = (

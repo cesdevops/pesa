@@ -19,170 +19,103 @@ from django.core.paginator import Paginator
 from django.http import JsonResponse
 from Main.utils import validate_email, validate_mobile_number, validate_clean_text
 
-
 def Login(request):
 
-    try:
+    if request.method == "POST":
 
-        if request.method == "POST":
+        login_type = request.POST.get('login_type')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
 
-            login_type = request.POST.get('login_type')
-            username = request.POST.get('username')
-            password = request.POST.get('password')
+        if not login_type:
+            messages.error(request, "Please Select Login Type")
+            return redirect('Login')
 
-            # =====================================================
-            # Validation
-            # =====================================================
+        if not username:
+            messages.error(request, "Please Enter Username")
+            return redirect('Login')
 
-            if not login_type:
-                messages.error(request, "Please Select Login Type")
+        if not password:
+            messages.error(request, "Please Enter Password")
+            return redirect('Login')
+
+        # ── Zilla Parishad ──
+        if login_type == "ZillaParishad":
+            try:
+                zp_user = Zilla_Parishad_User.objects.get(username=username, status='Active')
+            except Zilla_Parishad_User.DoesNotExist:
+                messages.error(request, "Zilla Parishad User Not Found")
                 return redirect('Login')
 
-            if not username:
-                messages.error(request, "Please Enter Username")
-                return redirect('Login')
-
-            if not password:
-                messages.error(request, "Please Enter Password")
-                return redirect('Login')
-
-            # =====================================================
-            # Zilla Parishad Login
-            # =====================================================
-
-            if login_type == "ZillaParishad":
-
-                try:
-
-                    zp_user = Zilla_Parishad_User.objects.get(
-                        username=username,
-                        status='Active'
-                    )
-
-                    if zp_user.check_password(password):
-
-                        request.session['user_id'] = zp_user.id
-                        request.session['user_name'] = zp_user.name
-                        request.session['user_type'] = 'ZillaParishad'
-
-                        messages.success(
-                            request,
-                            "Zilla Parishad Login Successful"
-                        )
-
-                        return redirect('ZillaParishad_Dashboard')
-
-                    else:
-
-                        messages.error(request, "Invalid Password")
-                        return redirect('Login')
-
-                except Zilla_Parishad_User.DoesNotExist:
-
-                    messages.error(request, "Zilla Parishad User Not Found")
-                    return redirect('Login')
-
-
-
-            # =====================================================
-            # Panchayat Samiti Login
-            # =====================================================
-
-            elif login_type == "PanchayatSamiti":
-
-                try:
-
-                    ps_user = Panchayat_Samiti_User.objects.get(
-                        username=username,
-                        status='Active'
-                    )
-
-                    if ps_user.check_password(password):
-
-                        request.session['user_id'] = ps_user.id
-                        request.session['user_name'] = ps_user.name
-                        request.session['user_type'] = 'PanchayatSamiti'
-
-                        messages.success(
-                            request,
-                            "Panchayat Samiti Login Successful"
-                        )
-
-                        return redirect('PanchayatSamiti_Dashboard')
-
-                    else:
-
-                        messages.error(request, "Invalid Password")
-                        return redirect('Login')
-
-                except Panchayat_Samiti_User.DoesNotExist:
-
-                    messages.error(request, "Panchayat Samiti User Not Found")
-                    return redirect('Login')
-
-
-
-            # =====================================================
-            # Kosh Login
-            # =====================================================
-
-            elif login_type == "Kosh":
-
-                try:
-
-                    kosh_user = Kosh_User.objects.get(
-                        username=username,
-                        status='Active'
-                    )
-
-                    if kosh_user.check_password(password):
-
-                        request.session['user_id'] = kosh_user.id
-                        request.session['user_name'] = kosh_user.name
-                        request.session['user_type'] = 'Kosh'
-
-                        messages.success(
-                            request,
-                            "Kosh Login Successful"
-                        )
-
-                        return redirect('Kosh_Dashboard')
-
-                    else:
-
-                        messages.error(request, "Invalid Password")
-                        return redirect('Login')
-
-                except Kosh_User.DoesNotExist:
-
-                    messages.error(request, "Kosh User Not Found")
-                    return redirect('Login')
-
-
-
-            # =====================================================
-            # Invalid Login Type
-            # =====================================================
-
+            if zp_user.check_password(password):
+                request.session['user_id']   = zp_user.id
+                request.session['user_name'] = zp_user.name
+                request.session['user_type'] = 'ZillaParishad'
+                messages.success(request, "Zilla Parishad Login Successful")
+                return redirect('ZP-Dashboard')
             else:
-
-                messages.error(request, "Invalid Login Type")
+                messages.error(request, "Invalid Password")
                 return redirect('Login')
 
+        # ── Panchayat Samiti ──
+        elif login_type == "PanchayatSamiti":
+            try:
+                ps_user = Panchayat_Samiti_User.objects.get(username=username, status='Active')
+            except Panchayat_Samiti_User.DoesNotExist:
+                messages.error(request, "Panchayat Samiti User Not Found")
+                return redirect('Login')
+
+            if ps_user.check_password(password):
+                request.session['user_id']   = ps_user.id
+                request.session['user_name'] = ps_user.name
+                request.session['user_type'] = 'PanchayatSamiti'
+                messages.success(request, "Panchayat Samiti Login Successful")
+                return redirect('PS-Dashboard')
+            else:
+                messages.error(request, "Invalid Password")
+                return redirect('Login')
+
+        # ── Kosh ──
+        elif login_type == "Kosh":
+            try:
+                kosh_user = Kosh_User.objects.get(username=username, status='Active')
+            except Kosh_User.DoesNotExist:
+                messages.error(request, "Kosh User Not Found")
+                return redirect('Login')
+
+            if kosh_user.check_password(password):
+                request.session['user_id']   = kosh_user.id
+                request.session['user_name'] = kosh_user.name
+                request.session['user_type'] = 'Kosh'
+
+                all_kosh     = kosh_user.kosh.filter(status='Active', is_deleted=False)
+                primary_kosh = all_kosh.filter(is_primary=True).first()
+                active_kosh  = primary_kosh or all_kosh.first()
+
+                if active_kosh:
+                    request.session['active_kosh_id']   = active_kosh.id
+                    request.session['active_kosh_name'] = active_kosh.kosh_name
+                    request.session['active_kosh_code'] = active_kosh.kosh_code
+
+                messages.success(request, "Kosh Login Successful")
+                return redirect('Kosh_Dashboard')
+            else:
+                messages.error(request, "Invalid Password")
+                return redirect('Login')
+
+        # ── Invalid login type ──
+        else:
+            messages.error(request, "Invalid Login Type")
+            return redirect('Login')
+
+    # ✅ GET request — render the login page
+    return render(request, 'login.html')
 
 
-        return render(request, 'login.html')
-
-
-    except Exception as e:
-
-        messages.error(request, "Something Went Wrong")
-
-        return redirect('Login')
-   
-
-
-
+def Logout(request):
+    request.session.flush()
+    messages.success(request, "Successfully logged out.")
+    return redirect('Login')
 
 
 def SuperUser_Login(request):
