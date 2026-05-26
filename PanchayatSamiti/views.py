@@ -115,7 +115,6 @@ def PS_Manage_Panchayat_Samitis(request):
             Panchayat_Samiti.objects.create(
                 panchayat_samiti_name=panchayat_samiti_name,
                 zilla_parishad=zilla_parishad,
-                zilla_parishad_name=zilla_parishad.zillaParishad_name,
                 taluka=taluka,
                 panchayat_samiti_code=panchayat_samiti_code if panchayat_samiti_code else None,
                 status=raw_status
@@ -191,7 +190,6 @@ def PS_Manage_Panchayat_Samitis(request):
             # Update record
             samiti.panchayat_samiti_name = panchayat_samiti_name
             samiti.zilla_parishad = zilla_parishad
-            samiti.zilla_parishad_name = zilla_parishad.zillaParishad_name
             samiti.taluka = taluka
             samiti.panchayat_samiti_code = panchayat_samiti_code if panchayat_samiti_code else None
             samiti.status = raw_status
@@ -253,7 +251,9 @@ def PS_Manage_Panchayat_Samitis(request):
     if panchayat_samiti_name:
         samitis = samitis.filter(panchayat_samiti_name__icontains=panchayat_samiti_name)
     if zilla_parishad_name:
-        samitis = samitis.filter(zilla_parishad_name__icontains=zilla_parishad_name)
+        samitis = samitis.filter(
+            zilla_parishad__zillaParishad_name__icontains=zilla_parishad_name
+        )    
     if taluka_name:
         samitis = samitis.filter(taluka__name__icontains=taluka_name)
     if panchayat_samiti_code:
@@ -287,6 +287,9 @@ def PS_Manage_Panchayat_Samitis(request):
     }
 
     return render(request, 'PS-Manage-Panchayat-Samitis.html', context)
+
+
+
 
 from django.http import JsonResponse
 from django.core.paginator import Paginator
@@ -380,24 +383,23 @@ def PS_Manage_Users(request):
             raw_password = request.POST.get('password', '').strip()
             status = request.POST.get('status', 'Active')
 
+            # Apply clean_text validation
+            name = validate_clean_text(raw_name)
+            username = validate_clean_text(raw_username)
+            address = validate_clean_text(raw_address) if raw_address else ""
+
             # Validate required fields
-            if not raw_name:
+            if not name:
                 messages.error(request, 'नाव आवश्यक आहे')
                 return redirect('PS-Manage-Users')
 
-            if not raw_username:
+            if not username:
                 messages.error(request, 'यूजरनेम आवश्यक आहे')
                 return redirect('PS-Manage-Users')
 
             if not raw_password:
                 messages.error(request, 'पासवर्ड आवश्यक आहे')
                 return redirect('PS-Manage-Users')
-
-            # Clean text fields
-            name = raw_name.strip()
-            username = raw_username.strip()
-            password = raw_password
-            address = raw_address.strip() if raw_address else ""
 
             # Handle mobile number - store as is or empty string
             mobile = ""
@@ -443,13 +445,16 @@ def PS_Manage_Users(request):
                 email=email,
                 address=address,
                 username=username,
-                password=password,
+                password=raw_password,
                 status=status
             )
 
             messages.success(request, 'यूजर यशस्वीरित्या जोडला')
             return redirect('PS-Manage-Users')
 
+        except ValidationError as e:
+            messages.error(request, str(e))
+            return redirect('PS-Manage-Users')
         except Exception as e:
             messages.error(request, f'त्रुटी: {str(e)}')
             return redirect('PS-Manage-Users')
@@ -479,19 +484,19 @@ def PS_Manage_Users(request):
             raw_password = request.POST.get('password', '').strip()
             status = request.POST.get('status', 'Active')
 
+            # Apply clean_text validation
+            name = validate_clean_text(raw_name)
+            username = validate_clean_text(raw_username)
+            address = validate_clean_text(raw_address) if raw_address else ""
+
             # Validate required fields
-            if not raw_name:
+            if not name:
                 messages.error(request, 'नाव आवश्यक आहे')
                 return redirect('PS-Manage-Users')
 
-            if not raw_username:
+            if not username:
                 messages.error(request, 'यूजरनेम आवश्यक आहे')
                 return redirect('PS-Manage-Users')
-
-            # Clean text fields
-            name = raw_name.strip()
-            username = raw_username.strip()
-            address = raw_address.strip() if raw_address else ""
 
             # Handle mobile number
             mobile = ""
@@ -547,6 +552,9 @@ def PS_Manage_Users(request):
             messages.success(request, 'यूजर यशस्वीरित्या अद्यतनित केला')
             return redirect('PS-Manage-Users')
 
+        except ValidationError as e:
+            messages.error(request, str(e))
+            return redirect('PS-Manage-Users')
         except Exception as e:
             messages.error(request, f'त्रुटी: {str(e)}')
             return redirect('PS-Manage-Users')
@@ -647,8 +655,4 @@ def PS_Manage_Users(request):
     }
 
     return render(request, 'PS-Manage-Users.html', context)
-
-
-
-
 

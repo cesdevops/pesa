@@ -111,9 +111,10 @@ def Kosh_Manage_Grampanchayat(request):
             raw_address = request.POST.get('address', '').strip()
             raw_status = request.POST.get('status', 'Active')
             
-            # Apply clean_text validation (assuming you have this function)
+            # Apply clean_text validation
             gram_panchayat_name = validate_clean_text(raw_gram_panchayat_name)
             gram_panchayat_code = validate_clean_text(raw_gram_panchayat_code)
+            address = validate_clean_text(raw_address) if raw_address else None
             
             # Validate required fields
             if not gram_panchayat_name:
@@ -136,7 +137,7 @@ def Kosh_Manage_Grampanchayat(request):
                 panchayat_samiti_name=panchayat_samiti.panchayat_samiti_name,
                 gram_panchayat_name=gram_panchayat_name,
                 gram_panchayat_code=gram_panchayat_code if gram_panchayat_code else None,
-                address=raw_address if raw_address else None,
+                address=address,
                 status=raw_status
             )
             
@@ -175,6 +176,7 @@ def Kosh_Manage_Grampanchayat(request):
             # Apply clean_text validation
             gram_panchayat_name = validate_clean_text(raw_gram_panchayat_name)
             gram_panchayat_code = validate_clean_text(raw_gram_panchayat_code)
+            address = validate_clean_text(raw_address) if raw_address else None
             
             # Validate required fields
             if not gram_panchayat_name:
@@ -196,7 +198,7 @@ def Kosh_Manage_Grampanchayat(request):
             grampanchayat.panchayat_samiti_name = panchayat_samiti.panchayat_samiti_name
             grampanchayat.gram_panchayat_name = gram_panchayat_name
             grampanchayat.gram_panchayat_code = gram_panchayat_code if gram_panchayat_code else None
-            grampanchayat.address = raw_address if raw_address else None
+            grampanchayat.address = address
             grampanchayat.status = raw_status
             grampanchayat.save()
             
@@ -284,8 +286,6 @@ def Kosh_Manage_Grampanchayat(request):
     }
     
     return render(request, 'Kosh-Manage-Grampanchayat.html', context)
-
-
 
 def Kosh_Management(request, grampanchayat_id):
     if not request.session.get('superuser_id'):
@@ -404,22 +404,24 @@ def Kosh_Add(request, grampanchayat_id):
             raw_is_primary = request.POST.get('is_primary', 'False')
             raw_status = request.POST.get('status', 'Active')
             
-            if not raw_kosh_name:
+            # Apply clean_text validation
+            kosh_name = validate_clean_text(raw_kosh_name)
+            kosh_code = validate_clean_text(raw_kosh_code) if raw_kosh_code else None
+            
+            if not kosh_name:
                 messages.error(request, 'कोष नाव आवश्यक आहे')
                 return redirect('Kosh-Add', grampanchayat_id=grampanchayat_id)
-            
             
             # If is_primary is True, unset other primary kosh for this Gram Panchayat
             is_primary = raw_is_primary == 'True'
             if is_primary:
-                Kosh.objects.filter(gramPanchayat=gram_panchayat, is_primary=True).update(is_primary=False)
+                Kosh.objects.filter(grampanchayat=gram_panchayat, is_primary=True).update(is_primary=False)
             
             # Create record
             new_kosh = Kosh.objects.create(
-                gramPanchayat=gram_panchayat,
-                gramPanchayat_name=gram_panchayat.gram_panchayat_name,
-                kosh_name=raw_kosh_name,
-                kosh_code=raw_kosh_code if raw_kosh_code else None,
+                grampanchayat=gram_panchayat,
+                kosh_name=kosh_name,
+                kosh_code=kosh_code,
                 is_primary=is_primary,
                 status=raw_status
             )
@@ -427,13 +429,16 @@ def Kosh_Add(request, grampanchayat_id):
             messages.success(request, 'कोष यशस्वीरित्या जोडला')
             return redirect('Kosh-Edit', grampanchayat_id=gram_panchayat.id, kosh_id=new_kosh.id)
             
+        except ValidationError as e:
+            messages.error(request, str(e))
+            return redirect('Kosh-Add', grampanchayat_id=grampanchayat_id)
         except Exception as e:
             messages.error(request, f'त्रुटी: {str(e)}')
             return redirect('Kosh-Add', grampanchayat_id=grampanchayat_id)
     
     # Get all Kosh records for this Gram Panchayat (for display)
     kosh_list = Kosh.objects.filter(
-        gramPanchayat=gram_panchayat,
+        grampanchayat=gram_panchayat,
         is_deleted=False
     ).order_by('-id')
     
@@ -488,8 +493,6 @@ def Kosh_Add(request, grampanchayat_id):
     
     return render(request, 'Kosh-Add.html', context)
 
-
-
 # ================= KOSH EDIT VIEW =================
 def Kosh_Edit(request, grampanchayat_id, kosh_id):
     if not request.session.get('superuser_id'):
@@ -525,7 +528,7 @@ def Kosh_Edit(request, grampanchayat_id, kosh_id):
     financial_years = Financial_Year.objects.filter(status='Active').order_by('-year')
     # Get population records
     population_list = Kosh_Population.objects.filter(
-        gram_panchayat=gram_panchayat
+        kosh=edit_kosh
     ).select_related('cast_category', 'financial_year').order_by('-id')
     
     # Get total population records
@@ -534,17 +537,7 @@ def Kosh_Edit(request, grampanchayat_id, kosh_id):
     ).select_related('financial_year').order_by('-id')
     # Get Kosh details for editing
     
-    # Get population records
-    population_list = Kosh_Population.objects.filter(
-        gram_panchayat=gram_panchayat
-    ).select_related('cast_category', 'financial_year').order_by('-id')
-    
-    
-    # Get total population records
-    total_population_list = Kosh_Total_Population.objects.filter(
-        kosh=edit_kosh
-    ).select_related('financial_year').order_by('-id')
-    
+
     # Get bank details
     bank_details_list = Kosh_Bank_Detail.objects.filter(
         kosh=edit_kosh
@@ -561,23 +554,27 @@ def Kosh_Edit(request, grampanchayat_id, kosh_id):
             raw_is_primary = request.POST.get('is_primary', 'False')
             raw_status = request.POST.get('status', 'Active')
             
-            if not raw_kosh_name:
+            # Apply clean_text validation
+            kosh_name = validate_clean_text(raw_kosh_name)
+            kosh_code = validate_clean_text(raw_kosh_code) if raw_kosh_code else None
+            
+            if not kosh_name:
                 messages.error(request, 'कोष नाव आवश्यक आहे')
                 return redirect('Kosh-Edit', grampanchayat_id=grampanchayat_id, kosh_id=kosh_id)
             
             # Check duplicate code (excluding current)
-            if raw_kosh_code and Kosh.objects.filter(kosh_code=raw_kosh_code).exclude(id=kosh_id).exists():
+            if kosh_code and Kosh.objects.filter(kosh_code=kosh_code).exclude(id=kosh_id).exists():
                 messages.error(request, 'हा कोष कोड आधीपासून अस्तित्वात आहे')
                 return redirect('Kosh-Edit', grampanchayat_id=grampanchayat_id, kosh_id=kosh_id)
             
             # If is_primary is True, unset other primary kosh for this Gram Panchayat
             is_primary = raw_is_primary == 'True'
             if is_primary and not edit_kosh.is_primary:
-                Kosh.objects.filter(gramPanchayat=gram_panchayat, is_primary=True).update(is_primary=False)
+                Kosh.objects.filter(grampanchayat=gram_panchayat, is_primary=True).update(is_primary=False)
             
             # Update record
-            edit_kosh.kosh_name = raw_kosh_name
-            edit_kosh.kosh_code = raw_kosh_code if raw_kosh_code else None
+            edit_kosh.kosh_name = kosh_name
+            edit_kosh.kosh_code = kosh_code
             edit_kosh.is_primary = is_primary
             edit_kosh.status = raw_status
             edit_kosh.save()
@@ -585,13 +582,16 @@ def Kosh_Edit(request, grampanchayat_id, kosh_id):
             messages.success(request, 'कोष यशस्वीरित्या अद्यतनित केला')
             return redirect('Kosh-Add', grampanchayat_id=grampanchayat_id)
             
+        except ValidationError as e:
+            messages.error(request, str(e))
+            return redirect('Kosh-Edit', grampanchayat_id=grampanchayat_id, kosh_id=kosh_id)
         except Exception as e:
             messages.error(request, f'त्रुटी: {str(e)}')
             return redirect('Kosh-Edit', grampanchayat_id=grampanchayat_id, kosh_id=kosh_id)
     
     # Get all Kosh records for this Gram Panchayat (for display)
     kosh_list = Kosh.objects.filter(
-        gramPanchayat=gram_panchayat,
+        grampanchayat=gram_panchayat,
         is_deleted=False
     ).order_by('-id')
     
@@ -653,6 +653,7 @@ def Kosh_Edit(request, grampanchayat_id, kosh_id):
     
     return render(request, 'Kosh-Edit.html', context)
 
+
 # ================= SINGLE VIEW FOR POPULATION MANAGEMENT (ADD, EDIT, DELETE) =================
 
 def Kosh_Population_Manage(request, grampanchayat_id, kosh_id, population_id=None):
@@ -668,15 +669,14 @@ def Kosh_Population_Manage(request, grampanchayat_id, kosh_id, population_id=Non
         request.session.flush()
         return redirect('SuperUser-Login')
     
-    # Get Gram Panchayat
+    # Get Kosh
     try:
-        gram_panchayat = GramPanchayat.objects.get(
-            id=grampanchayat_id, 
-            is_deleted=False,
-            status='Active'
+        kosh = Kosh.objects.get(
+            id=kosh_id,
+            is_deleted=False
         )
-    except GramPanchayat.DoesNotExist:
-        messages.error(request, 'ग्रामपंचायत सापडली नाही')
+    except Kosh.DoesNotExist:
+        messages.error(request, 'कोष सापडला नाही')
         return redirect('Kosh-Manage-Grampanchayat')
     
     # ================= ADD POPULATION =================
@@ -684,8 +684,11 @@ def Kosh_Population_Manage(request, grampanchayat_id, kosh_id, population_id=Non
         try:
             cast_category_id = request.POST.get('cast_category_id')
             financial_year_id = request.POST.get('financial_year_id')
-            population_count = request.POST.get('population_count')
+            raw_population_count = request.POST.get('population_count')
             status = request.POST.get('status', 'Active')
+            
+            # Apply clean_text validation
+            population_count = validate_clean_text(raw_population_count) if raw_population_count else ''
             
             # Validate required fields
             if not cast_category_id:
@@ -702,7 +705,7 @@ def Kosh_Population_Manage(request, grampanchayat_id, kosh_id, population_id=Non
             
             # Check if population already exists for this category and year
             existing = Kosh_Population.objects.filter(
-                gram_panchayat=gram_panchayat,
+                kosh=kosh,
                 cast_category_id=cast_category_id,
                 financial_year_id=financial_year_id
             ).first()
@@ -713,7 +716,7 @@ def Kosh_Population_Manage(request, grampanchayat_id, kosh_id, population_id=Non
             
             # Create population record
             Kosh_Population.objects.create(
-                gram_panchayat=gram_panchayat,
+                kosh=kosh,
                 cast_category_id=cast_category_id,
                 financial_year_id=financial_year_id,
                 population_count=population_count,
@@ -722,6 +725,8 @@ def Kosh_Population_Manage(request, grampanchayat_id, kosh_id, population_id=Non
             
             messages.success(request, 'लोकसंख्या यशस्वीरित्या जोडली')
             
+        except ValidationError as e:
+            messages.error(request, str(e))
         except Exception as e:
             messages.error(request, f'त्रुटी: {str(e)}')
         
@@ -734,8 +739,11 @@ def Kosh_Population_Manage(request, grampanchayat_id, kosh_id, population_id=Non
             
             cast_category_id = request.POST.get('cast_category_id')
             financial_year_id = request.POST.get('financial_year_id')
-            population_count = request.POST.get('population_count')
+            raw_population_count = request.POST.get('population_count')
             status = request.POST.get('status', 'Active')
+            
+            # Apply clean_text validation
+            population_count = validate_clean_text(raw_population_count) if raw_population_count else ''
             
             # Validate required fields
             if not cast_category_id:
@@ -752,11 +760,11 @@ def Kosh_Population_Manage(request, grampanchayat_id, kosh_id, population_id=Non
             
             # Check if population already exists for this category and year (excluding current)
             existing = Kosh_Population.objects.filter(
-                gram_panchayat=gram_panchayat,
+                kosh=kosh,
                 cast_category_id=cast_category_id,
                 financial_year_id=financial_year_id
-            ).exclude(id=population_id).first()
-            
+            ).exclude(id=population_id).first()   
+
             if existing:
                 messages.error(request, 'या जात श्रेणी आणि आर्थिक वर्षासाठी लोकसंख्या आधीपासून अस्तित्वात आहे')
                 return redirect('Kosh-Edit', grampanchayat_id=grampanchayat_id, kosh_id=kosh_id)
@@ -772,6 +780,8 @@ def Kosh_Population_Manage(request, grampanchayat_id, kosh_id, population_id=Non
             
         except Kosh_Population.DoesNotExist:
             messages.error(request, 'लोकसंख्या सापडली नाही')
+        except ValidationError as e:
+            messages.error(request, str(e))
         except Exception as e:
             messages.error(request, f'त्रुटी: {str(e)}')
         
@@ -792,8 +802,6 @@ def Kosh_Population_Manage(request, grampanchayat_id, kosh_id, population_id=Non
     
     # If no valid operation, redirect back
     return redirect('Kosh-Edit', grampanchayat_id=grampanchayat_id, kosh_id=kosh_id)
-
-
 # ================= TOTAL POPULATION MANAGEMENT =================
 def Kosh_Total_Population_Manage(request, grampanchayat_id, kosh_id, total_population_id=None):
     if not request.session.get('superuser_id'):
@@ -819,8 +827,12 @@ def Kosh_Total_Population_Manage(request, grampanchayat_id, kosh_id, total_popul
     if request.method == 'POST' and 'add_total_population' in request.POST:
         try:
             financial_year_id = request.POST.get('financial_year_id')
-            total_population = request.POST.get('total_population')
-            tribal_population = request.POST.get('tribal_population', 0)
+            raw_total_population = request.POST.get('total_population')
+            raw_tribal_population = request.POST.get('tribal_population', 0)
+            
+            # Apply clean_text validation
+            total_population = validate_clean_text(raw_total_population) if raw_total_population else ''
+            tribal_population = validate_clean_text(raw_tribal_population) if raw_tribal_population else 0
             
             if not financial_year_id:
                 messages.error(request, 'आर्थिक वर्ष निवड आवश्यक आहे')
@@ -859,6 +871,8 @@ def Kosh_Total_Population_Manage(request, grampanchayat_id, kosh_id, total_popul
             
         except Financial_Year.DoesNotExist:
             messages.error(request, 'आर्थिक वर्ष सापडले नाही')
+        except ValidationError as e:
+            messages.error(request, str(e))
         except Exception as e:
             messages.error(request, f'त्रुटी: {str(e)}')
         
@@ -870,8 +884,12 @@ def Kosh_Total_Population_Manage(request, grampanchayat_id, kosh_id, total_popul
             total_pop = Kosh_Total_Population.objects.get(id=total_population_id)
             
             financial_year_id = request.POST.get('financial_year_id')
-            total_population = request.POST.get('total_population')
-            tribal_population = request.POST.get('tribal_population', 0)
+            raw_total_population = request.POST.get('total_population')
+            raw_tribal_population = request.POST.get('tribal_population', 0)
+            
+            # Apply clean_text validation
+            total_population = validate_clean_text(raw_total_population) if raw_total_population else ''
+            tribal_population = validate_clean_text(raw_tribal_population) if raw_tribal_population else 0
             
             if not financial_year_id:
                 messages.error(request, 'आर्थिक वर्ष निवड आवश्यक आहे')
@@ -910,6 +928,8 @@ def Kosh_Total_Population_Manage(request, grampanchayat_id, kosh_id, total_popul
             messages.error(request, 'एकूण लोकसंख्या सापडली नाही')
         except Financial_Year.DoesNotExist:
             messages.error(request, 'आर्थिक वर्ष सापडले नाही')
+        except ValidationError as e:
+            messages.error(request, str(e))
         except Exception as e:
             messages.error(request, f'त्रुटी: {str(e)}')
         
@@ -930,6 +950,7 @@ def Kosh_Total_Population_Manage(request, grampanchayat_id, kosh_id, total_popul
         return redirect('Kosh-Edit', grampanchayat_id=grampanchayat_id, kosh_id=kosh_id)
     
     return redirect('Kosh-Edit', grampanchayat_id=grampanchayat_id, kosh_id=kosh_id)
+
 
 
 
@@ -957,16 +978,25 @@ def Kosh_Bank_Detail_Manage(request, grampanchayat_id, kosh_id, bank_detail_id=N
     # ================= ADD BANK DETAIL =================
     if request.method == 'POST' and 'add_bank_detail' in request.POST:
         try:
-            bank_name = request.POST.get('bank_name', '').strip()
-            branch_name = request.POST.get('branch_name', '').strip()
-            account_holder_name = request.POST.get('account_holder_name', '').strip()
-            account_number = request.POST.get('account_number', '').strip()
-            ifsc_code = request.POST.get('ifsc_code', '').strip().upper()
-            account_type = request.POST.get('account_type', '').strip()
-            opening_balance = request.POST.get('opening_balance', 0)
-            current_balance = request.POST.get('current_balance', 0)
-            bank_address = request.POST.get('bank_address', '').strip()
+            raw_bank_name = request.POST.get('bank_name', '').strip()
+            raw_branch_name = request.POST.get('branch_name', '').strip()
+            raw_account_holder_name = request.POST.get('account_holder_name', '').strip()
+            raw_account_number = request.POST.get('account_number', '').strip()
+            raw_ifsc_code = request.POST.get('ifsc_code', '').strip().upper()
+            raw_account_type = request.POST.get('account_type', '').strip()
+            raw_opening_balance = request.POST.get('opening_balance', 0)
+            raw_current_balance = request.POST.get('current_balance', 0)
+            raw_bank_address = request.POST.get('bank_address', '').strip()
             status = request.POST.get('status', 'Active')
+            
+            # Apply clean_text validation
+            bank_name = validate_clean_text(raw_bank_name)
+            branch_name = validate_clean_text(raw_branch_name) if raw_branch_name else ""
+            account_holder_name = validate_clean_text(raw_account_holder_name) if raw_account_holder_name else ""
+            account_number = validate_clean_text(raw_account_number)
+            ifsc_code = validate_clean_text(raw_ifsc_code) if raw_ifsc_code else ""
+            account_type = validate_clean_text(raw_account_type) if raw_account_type else ""
+            bank_address = validate_clean_text(raw_bank_address) if raw_bank_address else ""
             
             if not bank_name:
                 messages.error(request, 'बँक नाव आवश्यक आहे')
@@ -996,8 +1026,8 @@ def Kosh_Bank_Detail_Manage(request, grampanchayat_id, kosh_id, bank_detail_id=N
                 account_number=account_number,
                 ifsc_code=ifsc_code,
                 account_type=account_type,
-                opening_balance=Decimal(opening_balance) if opening_balance else Decimal(0),
-                current_balance=Decimal(current_balance) if current_balance else Decimal(0),
+                opening_balance=Decimal(raw_opening_balance) if raw_opening_balance else Decimal(0),
+                current_balance=Decimal(raw_current_balance) if raw_current_balance else Decimal(0),
                 bank_address=bank_address,
             )
             
@@ -1009,6 +1039,8 @@ def Kosh_Bank_Detail_Manage(request, grampanchayat_id, kosh_id, bank_detail_id=N
             
             messages.success(request, f'✅ बँक तपशील "{bank_name}" यशस्वीरित्या जोडला')
             
+        except ValidationError as e:
+            messages.error(request, str(e))
         except Exception as e:
             messages.error(request, f'त्रुटी: {str(e)}')
         
@@ -1019,16 +1051,25 @@ def Kosh_Bank_Detail_Manage(request, grampanchayat_id, kosh_id, bank_detail_id=N
         try:
             bank = Kosh_Bank_Detail.objects.get(id=bank_detail_id)
             
-            bank_name = request.POST.get('bank_name', '').strip()
-            branch_name = request.POST.get('branch_name', '').strip()
-            account_holder_name = request.POST.get('account_holder_name', '').strip()
-            account_number = request.POST.get('account_number', '').strip()
-            ifsc_code = request.POST.get('ifsc_code', '').strip().upper()
-            account_type = request.POST.get('account_type', '').strip()
-            opening_balance = request.POST.get('opening_balance', 0)
-            current_balance = request.POST.get('current_balance', 0)
-            bank_address = request.POST.get('bank_address', '').strip()
+            raw_bank_name = request.POST.get('bank_name', '').strip()
+            raw_branch_name = request.POST.get('branch_name', '').strip()
+            raw_account_holder_name = request.POST.get('account_holder_name', '').strip()
+            raw_account_number = request.POST.get('account_number', '').strip()
+            raw_ifsc_code = request.POST.get('ifsc_code', '').strip().upper()
+            raw_account_type = request.POST.get('account_type', '').strip()
+            raw_opening_balance = request.POST.get('opening_balance', 0)
+            raw_current_balance = request.POST.get('current_balance', 0)
+            raw_bank_address = request.POST.get('bank_address', '').strip()
             status = request.POST.get('status', 'Active')
+            
+            # Apply clean_text validation
+            bank_name = validate_clean_text(raw_bank_name)
+            branch_name = validate_clean_text(raw_branch_name) if raw_branch_name else ""
+            account_holder_name = validate_clean_text(raw_account_holder_name) if raw_account_holder_name else ""
+            account_number = validate_clean_text(raw_account_number)
+            ifsc_code = validate_clean_text(raw_ifsc_code) if raw_ifsc_code else ""
+            account_type = validate_clean_text(raw_account_type) if raw_account_type else ""
+            bank_address = validate_clean_text(raw_bank_address) if raw_bank_address else ""
             
             if not bank_name:
                 messages.error(request, 'बँक नाव आवश्यक आहे')
@@ -1055,8 +1096,8 @@ def Kosh_Bank_Detail_Manage(request, grampanchayat_id, kosh_id, bank_detail_id=N
             bank.account_number = account_number
             bank.ifsc_code = ifsc_code
             bank.account_type = account_type
-            bank.opening_balance = Decimal(opening_balance) if opening_balance else Decimal(0)
-            bank.current_balance = Decimal(current_balance) if current_balance else Decimal(0)
+            bank.opening_balance = Decimal(raw_opening_balance) if raw_opening_balance else Decimal(0)
+            bank.current_balance = Decimal(raw_current_balance) if raw_current_balance else Decimal(0)
             bank.bank_address = bank_address
             
             # Only update status if the field exists in the model
@@ -1069,6 +1110,8 @@ def Kosh_Bank_Detail_Manage(request, grampanchayat_id, kosh_id, bank_detail_id=N
             
         except Kosh_Bank_Detail.DoesNotExist:
             messages.error(request, 'बँक तपशील सापडला नाही')
+        except ValidationError as e:
+            messages.error(request, str(e))
         except Exception as e:
             messages.error(request, f'त्रुटी: {str(e)}')
         
@@ -1092,8 +1135,6 @@ def Kosh_Bank_Detail_Manage(request, grampanchayat_id, kosh_id, bank_detail_id=N
 
 
 
-
-
 def Kosh_Users(request, grampanchayat_id):
     if not request.session.get('superuser_id'):
         return redirect('SuperUser-Login')
@@ -1106,12 +1147,12 @@ def Kosh_Users(request, grampanchayat_id):
     except Super_User.DoesNotExist:
         request.session.flush()
         return redirect('SuperUser-Login')    
-    # Get all Kosh Users with their related Kosh
-    all_users = Kosh_User.objects.filter(is_retired=False).prefetch_related('kosh__gramPanchayat__panchayat_samiti__taluka__district')
     
-    # If grampanchayat_id is provided, filter users by that grampanchayat
-    if grampanchayat_id:
-        all_users = all_users.filter(kosh__gramPanchayat_id=grampanchayat_id).distinct()
+    # Get all Kosh Users with their related Kosh - FIXED field names
+    # Use 'grampanchayat' (lowercase) not 'gramPanchayat'
+    all_users = Kosh_User.objects.filter(is_retired=False).prefetch_related(
+        'kosh__grampanchayat__panchayat_samiti__taluka__district'
+    )
     
     total_users = all_users.count()
     
@@ -1167,6 +1208,7 @@ def Kosh_Users(request, grampanchayat_id):
 
 
 
+    
 def Kosh_Add_User(request, grampanchayat_id):
     if not request.session.get('superuser_id'):
         return redirect('SuperUser-Login')
