@@ -1,8 +1,6 @@
 {% extends 'Superuser-base.html' %}
 {% load static %}
 
-{% block title %}पंचायत समिती व्यवस्थापन | PESA{% endblock %}
-
 {% block content %}
 <style>
   /* Pagination Styles */
@@ -70,37 +68,37 @@
   color: #64748b;
 }
 </style>
-<div class="container-fluid px-4 py-3">
+<div class="container-fluid px-4 py-3 bg-white">
   
   <!-- पृष्ठ शीर्षक -->
-<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
-
-    <h2 class="h3 mb-0 text-dark">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <div class="d-inline-block">
+      <h3 class="h3 mb-1 fw-bold text-dark">
         <i class="fas fa-sitemap text-warning me-2"></i>
         पंचायत समिती व्यवस्थापन
-    </h2>
-
-    <!-- Right Side Buttons -->
-    <div class="d-flex gap-2 ms-auto">
-        <a href="{% url 'PS-Manage-Users' %}"
-          class="btn btn-primary text-white fw-semibold px-4 py-2">
-            
-            <i class="fas fa-plus me-1"></i>
-            नवीन नवीन यूजर जोडा
-
-        </a>
-
-        <button type="button"
-                class="btn btn-primary text-white fw-semibold px-4 py-2"
-                data-bs-toggle="modal"
-                data-bs-target="#addModal">
-            <i class="fas fa-plus me-1"></i>
-            नवीन पंचायत समिती जोडा
-        </button>
-
+      </h3>
+      <div class="rounded-pill" style="height: 2px; width: 100%; background: linear-gradient(90deg, #f59e0b, #fbbf24);"></div>
     </div>
 
-</div>
+    <!-- Right Side Buttons -->
+    <div class="d-flex flex-wrap gap-3 ms-auto">
+      <!-- Add User Button -->
+      <a href="{% url 'PS-Manage-Users' %}"
+        class="btn btn-primary d-flex align-items-center fw-semibold px-4 py-2 shadow-sm rounded-pill">
+        <i class="fas fa-user-plus me-2"></i>
+        <span>नवीन यूजर जोडा</span>
+      </a>
+
+      <!-- Add Panchayat Samiti Button -->
+      <button type="button"
+              class="btn btn-warning text-dark d-flex align-items-center fw-semibold px-4 py-2 shadow-sm rounded-pill"
+              data-bs-toggle="modal"
+              data-bs-target="#addModal">
+        <i class="fas fa-plus-circle me-2"></i>
+        <span>नवीन पंचायत समिती जोडा</span>
+      </button>
+    </div>
+  </div>
   
   <!-- आकडेवारी कार्ड्स -->
   <div class="row g-4 mb-4">
@@ -129,15 +127,15 @@
     <div class="card-body p-3">
       <form method="GET" action="{% url 'PS-Manage-Panchayat-Samitis' %}">
         <div class="row g-2 align-items-end">
-          <div class="col-md-2">
+          <div class="col-md-3">
             <label class="form-label small fw-semibold mb-1">समितीचे नाव</label>
             <input type="text" name="panchayat_samiti_name" class="form-control form-control-sm rounded-3"
                    placeholder="समितीचे नाव" value="{{ panchayat_samiti_name|default:'' }}">
           </div>
-          <div class="col-md-2">
-            <label class="form-label small fw-semibold mb-1">जिल्हा</label>
-            <input type="text" name="district_name" class="form-control form-control-sm rounded-3"
-                   placeholder="जिल्हा" value="{{ district_name|default:'' }}">
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold mb-1">जिल्हा परिषद</label>
+            <input type="text" name="zilla_parishad_name" class="form-control form-control-sm rounded-3"
+                   placeholder="जिल्हा परिषद" value="{{ zilla_parishad_name|default:'' }}">
           </div>
           <div class="col-md-2">
             <label class="form-label small fw-semibold mb-1">तालुका</label>
@@ -149,7 +147,7 @@
             <input type="text" name="panchayat_samiti_code" class="form-control form-control-sm rounded-3"
                    placeholder="कोड" value="{{ panchayat_samiti_code|default:'' }}">
           </div>
-          <div class="col-md-1">
+          <div class="col-md-2">
             <label class="form-label small fw-semibold mb-1">स्थिती</label>
             <select name="status" class="form-select form-select-sm rounded-3">
               <option value="all" {% if status_filter == 'all' %}selected{% endif %}>सर्व</option>
@@ -157,7 +155,7 @@
               <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>निष्क्रिय</option>
             </select>
           </div>
-          <div class="col-md-3 d-flex gap-1">
+          <div class="col-md-2 d-flex gap-1">
             <button type="submit" class="btn btn-primary btn-sm rounded-3 w-100">
               <i class="fas fa-search me-1"></i> शोधा
             </button>
@@ -170,17 +168,6 @@
     </div>
   </div>
   
-  <!-- Django संदेश -->
-  <!-- {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-3 mb-4" role="alert">
-        <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %} me-2"></i>
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    {% endfor %}
-  {% endif %} -->
-  
   <!-- डेटा सारणी -->
   <div class="card border-0 shadow-sm rounded-4">
     <div class="card-body p-0 overflow-auto">
@@ -189,6 +176,7 @@
           <tr>
             <th class="ps-4 py-3" style="width: 50px;">#</th>
             <th class="py-3">समितीचे नाव</th>
+            <th class="py-3">जिल्हा परिषद</th>
             <th class="py-3">जिल्हा</th>
             <th class="py-3">तालुका</th>
             <th class="py-3">समिती कोड</th>
@@ -202,6 +190,7 @@
             <tr>
               <td class="ps-4">{{ forloop.counter0|add:start_index|default:forloop.counter }}</td>
               <td class="fw-semibold">{{ samiti.panchayat_samiti_name|default:"—" }}</td>
+              <td>{{ samiti.zilla_parishad_name|default:"—" }}</td>
               <td>{{ samiti.taluka.district.name|default:"—" }}</td>
               <td>{{ samiti.taluka.name|default:"—" }}</td>
               <td><code class="bg-light px-2 py-1 rounded">{{ samiti.panchayat_samiti_code|default:"—" }}</code></td>
@@ -238,7 +227,7 @@
             {% endfor %}
           {% else %}
             <tr>
-              <td colspan="7" class="text-center py-5">
+              <td colspan="8" class="text-center py-5">
                 <div class="py-5">
                   <i class="fas fa-building fa-3x text-secondary mb-3 d-block"></i>
                   <p class="text-secondary mb-3">पंचायत समिती आढळली नाही</p>
@@ -253,125 +242,124 @@
       </table>
     </div>
     
-<!-- Pagination Section - Updated for Panchayat Samiti -->
-{% if samitis and samitis.paginator and samitis.paginator.num_pages > 1 %}
-<div class="pagination-wrapper">
-  <div class="pagination-info">
-    <i class="fas fa-table me-1"></i> 
-    Showing {{ samitis.start_index }} - {{ samitis.end_index }} of {{ samitis.paginator.count }} samitis
-  </div>
-  
-  <div class="pagination">
-    <!-- First Page -->
-    {% if samitis.has_previous %}
-      <a href="?page=1{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if district_name %}&district_name={{ district_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" 
-        class="pagination-btn" title="First Page">
-        <i class="fas fa-angle-double-left"></i> First
-      </a>
-    {% else %}
-      <span class="pagination-btn disabled">
-        <i class="fas fa-angle-double-left"></i> First
-      </span>
-    {% endif %}
-    
-    <!-- Previous Page -->
-    {% if samitis.has_previous %}
-      <a href="?page={{ samitis.previous_page_number }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if district_name %}&district_name={{ district_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" 
-        class="pagination-btn" title="Previous Page">
-        <i class="fas fa-angle-left"></i> Prev
-      </a>
-    {% else %}
-      <span class="pagination-btn disabled">
-        <i class="fas fa-angle-left"></i> Prev
-      </span>
-    {% endif %}
-    
-    <!-- Page Numbers with Ellipsis Logic -->
-    {% with current_page=samitis.number total_pages=samitis.paginator.num_pages %}
-      {% if total_pages <= 7 %}
-        {% for page_num in samitis.paginator.page_range %}
-          {% if page_num == current_page %}
-            <span class="pagination-btn active">{{ page_num }}</span>
-          {% else %}
-            <a href="?page={{ page_num }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if district_name %}&district_name={{ district_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ page_num }}</a>
-          {% endif %}
-        {% endfor %}
-      {% else %}
-        {% if current_page <= 3 %}
-          {% for page_num in samitis.paginator.page_range|slice:":5" %}
-            {% if page_num == current_page %}
-              <span class="pagination-btn active">{{ page_num }}</span>
-            {% else %}
-              <a href="?page={{ page_num }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if district_name %}&district_name={{ district_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ page_num }}</a>
-            {% endif %}
-          {% endfor %}
-          <span class="pagination-ellipsis">...</span>
-          <a href="?page={{ total_pages }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if district_name %}&district_name={{ district_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ total_pages }}</a>
-        {% elif current_page >= total_pages|add:-2 %}
-          <a href="?page=1{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if district_name %}&district_name={{ district_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">1</a>
-          <span class="pagination-ellipsis">...</span>
-          {% for page_num in samitis.paginator.page_range|slice:total_pages|add:-5 %}
-            {% if page_num == current_page %}
-              <span class="pagination-btn active">{{ page_num }}</span>
-            {% else %}
-              <a href="?page={{ page_num }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if district_name %}&district_name={{ district_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ page_num }}</a>
-            {% endif %}
-          {% endfor %}
+    <!-- Pagination Section -->
+    {% if samitis and samitis.paginator and samitis.paginator.num_pages > 1 %}
+    <div class="pagination-wrapper">
+      <div class="pagination-info">
+        <i class="fas fa-table me-1"></i> 
+        Showing {{ samitis.start_index }} - {{ samitis.end_index }} of {{ samitis.paginator.count }} samitis
+      </div>
+      
+      <div class="pagination">
+        <!-- First Page -->
+        {% if samitis.has_previous %}
+          <a href="?page=1{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if zilla_parishad_name %}&zilla_parishad_name={{ zilla_parishad_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" 
+            class="pagination-btn" title="First Page">
+            <i class="fas fa-angle-double-left"></i> First
+          </a>
         {% else %}
-          <a href="?page=1{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if district_name %}&district_name={{ district_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">1</a>
-          <span class="pagination-ellipsis">...</span>
-          {% for page_num in samitis.paginator.page_range %}
-            {% if page_num >= current_page|add:-1 and page_num <= current_page|add:1 %}
+          <span class="pagination-btn disabled">
+            <i class="fas fa-angle-double-left"></i> First
+          </span>
+        {% endif %}
+        
+        <!-- Previous Page -->
+        {% if samitis.has_previous %}
+          <a href="?page={{ samitis.previous_page_number }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if zilla_parishad_name %}&zilla_parishad_name={{ zilla_parishad_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" 
+            class="pagination-btn" title="Previous Page">
+            <i class="fas fa-angle-left"></i> Prev
+          </a>
+        {% else %}
+          <span class="pagination-btn disabled">
+            <i class="fas fa-angle-left"></i> Prev
+          </span>
+        {% endif %}
+        
+        <!-- Page Numbers -->
+        {% with current_page=samitis.number total_pages=samitis.paginator.num_pages %}
+          {% if total_pages <= 7 %}
+            {% for page_num in samitis.paginator.page_range %}
               {% if page_num == current_page %}
                 <span class="pagination-btn active">{{ page_num }}</span>
               {% else %}
-                <a href="?page={{ page_num }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if district_name %}&district_name={{ district_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ page_num }}</a>
+                <a href="?page={{ page_num }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if zilla_parishad_name %}&zilla_parishad_name={{ zilla_parishad_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ page_num }}</a>
               {% endif %}
+            {% endfor %}
+          {% else %}
+            {% if current_page <= 3 %}
+              {% for page_num in samitis.paginator.page_range|slice:":5" %}
+                {% if page_num == current_page %}
+                  <span class="pagination-btn active">{{ page_num }}</span>
+                {% else %}
+                  <a href="?page={{ page_num }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if zilla_parishad_name %}&zilla_parishad_name={{ zilla_parishad_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ page_num }}</a>
+                {% endif %}
+              {% endfor %}
+              <span class="pagination-ellipsis">...</span>
+              <a href="?page={{ total_pages }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if zilla_parishad_name %}&zilla_parishad_name={{ zilla_parishad_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ total_pages }}</a>
+            {% elif current_page >= total_pages|add:-2 %}
+              <a href="?page=1{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if zilla_parishad_name %}&zilla_parishad_name={{ zilla_parishad_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">1</a>
+              <span class="pagination-ellipsis">...</span>
+              {% for page_num in samitis.paginator.page_range|slice:total_pages|add:-5 %}
+                {% if page_num == current_page %}
+                  <span class="pagination-btn active">{{ page_num }}</span>
+                {% else %}
+                  <a href="?page={{ page_num }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if zilla_parishad_name %}&zilla_parishad_name={{ zilla_parishad_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ page_num }}</a>
+                {% endif %}
+              {% endfor %}
+            {% else %}
+              <a href="?page=1{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if zilla_parishad_name %}&zilla_parishad_name={{ zilla_parishad_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">1</a>
+              <span class="pagination-ellipsis">...</span>
+              {% for page_num in samitis.paginator.page_range %}
+                {% if page_num >= current_page|add:-1 and page_num <= current_page|add:1 %}
+                  {% if page_num == current_page %}
+                    <span class="pagination-btn active">{{ page_num }}</span>
+                  {% else %}
+                    <a href="?page={{ page_num }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if zilla_parishad_name %}&zilla_parishad_name={{ zilla_parishad_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ page_num }}</a>
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+              <span class="pagination-ellipsis">...</span>
+              <a href="?page={{ total_pages }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if zilla_parishad_name %}&zilla_parishad_name={{ zilla_parishad_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ total_pages }}</a>
             {% endif %}
-          {% endfor %}
-          <span class="pagination-ellipsis">...</span>
-          <a href="?page={{ total_pages }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if district_name %}&district_name={{ district_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ total_pages }}</a>
+          {% endif %}
+        {% endwith %}
+        
+        <!-- Next Page -->
+        {% if samitis.has_next %}
+          <a href="?page={{ samitis.next_page_number }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if zilla_parishad_name %}&zilla_parishad_name={{ zilla_parishad_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" 
+            class="pagination-btn" title="Next Page">
+            Next <i class="fas fa-angle-right"></i>
+          </a>
+        {% else %}
+          <span class="pagination-btn disabled">
+            Next <i class="fas fa-angle-right"></i>
+          </span>
         {% endif %}
-      {% endif %}
-    {% endwith %}
-    
-    <!-- Next Page -->
-    {% if samitis.has_next %}
-      <a href="?page={{ samitis.next_page_number }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if district_name %}&district_name={{ district_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" 
-        class="pagination-btn" title="Next Page">
-        Next <i class="fas fa-angle-right"></i>
-      </a>
-    {% else %}
-      <span class="pagination-btn disabled">
-        Next <i class="fas fa-angle-right"></i>
-      </span>
-    {% endif %}
-    
-    <!-- Last Page -->
-    {% if samitis.has_next %}
-      <a href="?page={{ samitis.paginator.num_pages }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if district_name %}&district_name={{ district_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" 
-        class="pagination-btn" title="Last Page">
-        Last <i class="fas fa-angle-double-right"></i>
-      </a>
-    {% else %}
-      <span class="pagination-btn disabled">
-        Last <i class="fas fa-angle-double-right"></i>
-      </span>
+        
+        <!-- Last Page -->
+        {% if samitis.has_next %}
+          <a href="?page={{ samitis.paginator.num_pages }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if zilla_parishad_name %}&zilla_parishad_name={{ zilla_parishad_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" 
+            class="pagination-btn" title="Last Page">
+            Last <i class="fas fa-angle-double-right"></i>
+          </a>
+        {% else %}
+          <span class="pagination-btn disabled">
+            Last <i class="fas fa-angle-double-right"></i>
+          </span>
+        {% endif %}
+      </div>
+      
+      <div class="pagination-info">
+        <i class="fas fa-file-alt me-1"></i> 
+        Page {{ samitis.number }} of {{ samitis.paginator.num_pages }}
+      </div>
+    </div>
     {% endif %}
   </div>
-  
-  <div class="pagination-info">
-    <i class="fas fa-file-alt me-1"></i> 
-    Page {{ samitis.number }} of {{ samitis.paginator.num_pages }}
-  </div>
-</div>
-{% endif %}
-  </div>
-  
 </div>
 
 <!-- ================================================= -->
-<!-- जोडा मॉडल -->
+<!-- जोडा मॉडल (ADD MODAL) -->
 <!-- ================================================= -->
 <div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -386,46 +374,53 @@
         {% csrf_token %}
         <input type="hidden" name="add_samiti" value="1">
         <div class="modal-body p-4">
-          <div class="mb-3">
-            <label class="form-label fw-semibold">समितीचे नाव <span class="text-danger">*</span></label>
-            <input type="text" name="panchayat_samiti_name" class="form-control rounded-3" 
-                   placeholder="समितीचे नाव प्रविष्ट करा..." required>
+          <!-- Row 1: Samiti Name & Zilla Parishad -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">समितीचे नाव <span class="text-danger">*</span></label>
+              <input type="text" name="panchayat_samiti_name" class="form-control rounded-3" 
+                     placeholder="समितीचे नाव प्रविष्ट करा..." required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">जिल्हा परिषद <span class="text-danger">*</span></label>
+              <select name="zilla_parishad_id" class="form-select rounded-3" id="addZillaParishadSelect" required>
+                <option value="">-- जिल्हा परिषद निवडा --</option>
+                {% for zp in all_zilla_parishads %}
+                  <option value="{{ zp.id }}" data-district-id="{{ zp.district.id }}">{{ zp.zillaParishad_name }} ({{ zp.district.name }})</option>
+                {% endfor %}
+              </select>
+            </div>
           </div>
           
-          <div class="mb-3">
-            <label class="form-label fw-semibold">जिल्हा <span class="text-danger">*</span></label>
-            <select name="district_id" class="form-select rounded-3" id="addDistrictSelect" required>
-              <option value="">-- जिल्हा निवडा --</option>
-              {% for district in all_districts %}
-                <option value="{{ district.id }}">{{ district.name }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          
-          <div class="mb-3">
-            <label class="form-label fw-semibold">तालुका <span class="text-danger">*</span></label>
-            <select name="taluka_id" class="form-select rounded-3" id="addTalukaSelect" required disabled>
-              <option value="">-- प्रथम जिल्हा निवडा --</option>
-            </select>
-          </div>
-          
-          <div class="mb-3">
-            <label class="form-label fw-semibold">समिती कोड </label>
-            <input type="text" name="panchayat_samiti_code" class="form-control rounded-3" 
-                   placeholder="अद्वितीय कोड..." >
+          <!-- Row 2: Taluka & Samiti Code -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">तालुका <span class="text-danger">*</span></label>
+              <select name="taluka_id" class="form-select rounded-3" id="addTalukaSelect" required disabled>
+                <option value="">-- प्रथम जिल्हा परिषद निवडा --</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">समिती कोड</label>
+              <input type="text" name="panchayat_samiti_code" class="form-control rounded-3" 
+                     placeholder="अद्वितीय कोड...">
+            </div>
           </div>
 
-          <div class="mb-3">
-            <label class="form-label fw-semibold">स्थिती</label>
-            <select name="status" class="form-select rounded-3">
-              <option value="Active">सक्रिय</option>
-              <option value="Inactive">निष्क्रिय</option>
-            </select>
+          <!-- Row 3: Status (Full Width) -->
+          <div class="row">
+            <div class="col-12">
+              <label class="form-label fw-semibold">स्थिती</label>
+              <select name="status" class="form-select rounded-3">
+                <option value="Active">सक्रिय</option>
+                <option value="Inactive">निष्क्रिय</option>
+              </select>
+            </div>
           </div>
         </div>
         <div class="modal-footer bg-light rounded-bottom-4 border-0">
           <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">रद्द करा</button>
-          <button type="submit" class="btn btn-warning text-white rounded-pill px-4">जतन करा</button>
+          <button type="submit" class="btn btn-warning text-dark rounded-pill px-4">जतन करा</button>
         </div>
       </form>
     </div>
@@ -433,7 +428,7 @@
 </div>
 
 <!-- ================================================= -->
-<!-- संपादित करा मॉडल (प्रत्येक समितीसाठी डायनॅमिक) -->
+<!-- संपादित करा मॉडल (EDIT MODAL) -->
 <!-- ================================================= -->
 {% for samiti in samitis %}
 <div class="modal fade" id="editModal{{ samiti.id }}" tabindex="-1" aria-hidden="true">
@@ -450,46 +445,55 @@
         <input type="hidden" name="edit_samiti" value="1">
         <input type="hidden" name="samiti_id" value="{{ samiti.id }}">
         <div class="modal-body p-4">
-          <div class="mb-3">
-            <label class="form-label fw-semibold">समितीचे नाव <span class="text-danger">*</span></label>
-            <input type="text" name="panchayat_samiti_name" class="form-control rounded-3" 
-                   value="{{ samiti.panchayat_samiti_name|default:'' }}" required>
+          <!-- Row 1: Samiti Name & Zilla Parishad -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">समितीचे नाव <span class="text-danger">*</span></label>
+              <input type="text" name="panchayat_samiti_name" class="form-control rounded-3" 
+                     value="{{ samiti.panchayat_samiti_name|default:'' }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">जिल्हा परिषद <span class="text-danger">*</span></label>
+              <select name="zilla_parishad_id" class="form-select rounded-3 zilla-parishad-select" data-samiti-id="{{ samiti.id }}" required>
+                <option value="">-- जिल्हा परिषद निवडा --</option>
+                {% for zp in all_zilla_parishads %}
+                  <option value="{{ zp.id }}" data-district-id="{{ zp.district.id }}" {% if samiti.zilla_parishad and samiti.zilla_parishad.id == zp.id %}selected{% endif %}>
+                    {{ zp.zillaParishad_name }} ({{ zp.district.name }})
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
           </div>
           
-          <div class="mb-3">
-            <label class="form-label fw-semibold">जिल्हा <span class="text-danger">*</span></label>
-            <select name="district_id" class="form-select rounded-3 district-select" data-samiti-id="{{ samiti.id }}" required>
-              <option value="">-- जिल्हा निवडा --</option>
-              {% for district in all_districts %}
-                <option value="{{ district.id }}" {% if samiti.taluka and samiti.taluka.district.id == district.id %}selected{% endif %}>{{ district.name }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          
-          <div class="mb-3">
-            <label class="form-label fw-semibold">तालुका <span class="text-danger">*</span></label>
-            <select name="taluka_id" class="form-select rounded-3 taluka-select" data-samiti-id="{{ samiti.id }}" data-current-taluka="{{ samiti.taluka.id|default:'' }}" required>
-              <option value="">-- तालुका निवडा --</option>
-            </select>
-          </div>
-          
-          <div class="mb-3">
-            <label class="form-label fw-semibold">समिती कोड </label>
-            <input type="text" name="panchayat_samiti_code" class="form-control rounded-3" 
-                   value="{{ samiti.panchayat_samiti_code|default:'' }}" >
+          <!-- Row 2: Taluka & Samiti Code -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">तालुका <span class="text-danger">*</span></label>
+              <select name="taluka_id" class="form-select rounded-3 taluka-select" data-samiti-id="{{ samiti.id }}" data-current-taluka="{{ samiti.taluka.id|default:'' }}" required>
+                <option value="">-- तालुका निवडा --</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">समिती कोड</label>
+              <input type="text" name="panchayat_samiti_code" class="form-control rounded-3" 
+                     value="{{ samiti.panchayat_samiti_code|default:'' }}">
+            </div>
           </div>
 
-          <div class="mb-3">
-            <label class="form-label fw-semibold">स्थिती</label>
-            <select name="status" class="form-select rounded-3">
-              <option value="Active" {% if samiti.status == 'Active' %}selected{% endif %}>सक्रिय</option>
-              <option value="Inactive" {% if samiti.status == 'Inactive' %}selected{% endif %}>निष्क्रिय</option>
-            </select>
+          <!-- Row 3: Status (Full Width) -->
+          <div class="row">
+            <div class="col-12">
+              <label class="form-label fw-semibold">स्थिती</label>
+              <select name="status" class="form-select rounded-3">
+                <option value="Active" {% if samiti.status == 'Active' %}selected{% endif %}>सक्रिय</option>
+                <option value="Inactive" {% if samiti.status == 'Inactive' %}selected{% endif %}>निष्क्रिय</option>
+              </select>
+            </div>
           </div>
         </div>
         <div class="modal-footer bg-light rounded-bottom-4 border-0">
           <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">रद्द करा</button>
-          <button type="submit" class="btn btn-warning text-white rounded-pill px-4">अद्यतनित करा</button>
+          <button type="submit" class="btn btn-warning text-dark rounded-pill px-4">अद्यतनित करा</button>
         </div>
       </form>
     </div>
@@ -497,74 +501,88 @@
 </div>
 {% endfor %}
 
-<!-- JavaScript for Dynamic Taluka Loading -->
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-      // Get talukas data from Django context
-      const talukasByDistrict = {{ talukas_by_district_json|safe }};
-      
-      // Function to populate taluka dropdown
-      function populateTalukaSelect(selectElement, districtId, selectedTalukaId = null) {
-          if (!districtId || !talukasByDistrict[districtId] || talukasByDistrict[districtId].length === 0) {
-              selectElement.disabled = true;
-              selectElement.innerHTML = '<option value="">-- तालुका उपलब्ध नाही --</option>';
-              return;
-          }
-          
-          const talukas = talukasByDistrict[districtId];
-          selectElement.disabled = false;
-          selectElement.innerHTML = '<option value="">-- तालुका निवडा --</option>';
-          
-          talukas.forEach(taluka => {
-              const option = document.createElement('option');
-              option.value = taluka.id;
-              option.textContent = taluka.name;
-              if (selectedTalukaId && parseInt(selectedTalukaId) === taluka.id) {
-                  option.selected = true;
-              }
-              selectElement.appendChild(option);
-          });
-      }
-      
-      // For Add Modal
-      const addDistrictSelect = document.getElementById('addDistrictSelect');
-      const addTalukaSelect = document.getElementById('addTalukaSelect');
-      
-      if (addDistrictSelect) {
-          addDistrictSelect.addEventListener('change', function() {
-              const districtId = this.value;
-              populateTalukaSelect(addTalukaSelect, districtId, null);
-          });
-      }
-      
-      // For each Edit Modal - Initialize on page load
-      const editModals = document.querySelectorAll('.editSamitiForm');
-      
-      editModals.forEach(form => {
-          const districtSelect = form.querySelector('.district-select');
-          const talukaSelect = form.querySelector('.taluka-select');
-          
-          if (districtSelect && talukaSelect) {
-              // Get initial values
-              const initialDistrictId = districtSelect.value;
-              const currentTalukaId = talukaSelect.getAttribute('data-current-taluka');
-              
-              // Populate talukas for initial district if district is selected
-              if (initialDistrictId) {
-                  populateTalukaSelect(talukaSelect, initialDistrictId, currentTalukaId);
-              } else {
-                  talukaSelect.disabled = true;
-                  talukaSelect.innerHTML = '<option value="">-- प्रथम जिल्हा निवडा --</option>';
-              }
-              
-              // Handle district change
-              districtSelect.addEventListener('change', function() {
-                  const districtId = this.value;
-                  populateTalukaSelect(talukaSelect, districtId, null);
-              });
-          }
-      });
-  });
-</script>
 
+<!-- JavaScript for Dynamic Taluka Loading - Alternative Approach -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM fully loaded");
+    
+    // Get talukas data from Django context
+    const talukasByDistrict = {{ talukas_by_district_json|safe }};
+    console.log("Talukas by district data:", talukasByDistrict);
+    
+    // Function to populate taluka dropdown using pre-loaded data
+    function populateTalukaSelectFromData(selectElement, districtId, selectedTalukaId = null) {
+        console.log(`Populating taluka for district: ${districtId}, selected: ${selectedTalukaId}`);
+        
+        if (!districtId || !talukasByDistrict[districtId] || talukasByDistrict[districtId].length === 0) {
+            selectElement.disabled = true;
+            selectElement.innerHTML = '<option value="">-- तालुका उपलब्ध नाही --</option>';
+            return;
+        }
+        
+        const talukas = talukasByDistrict[districtId];
+        selectElement.disabled = false;
+        selectElement.innerHTML = '<option value="">-- तालुका निवडा --</option>';
+        
+        talukas.forEach(taluka => {
+            const option = document.createElement('option');
+            option.value = taluka.id;
+            option.textContent = taluka.name;
+            if (selectedTalukaId && parseInt(selectedTalukaId) === taluka.id) {
+                option.selected = true;
+            }
+            selectElement.appendChild(option);
+        });
+        console.log(`Added ${talukas.length} talukas to dropdown`);
+    }
+    
+    // For Add Modal
+    const addZillaParishadSelect = document.getElementById('addZillaParishadSelect');
+    const addTalukaSelect = document.getElementById('addTalukaSelect');
+    
+    if (addZillaParishadSelect) {
+        addZillaParishadSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const districtId = selectedOption.getAttribute('data-district-id');
+            console.log("Selected ZP - District ID:", districtId);
+            
+            if (districtId) {
+                populateTalukaSelectFromData(addTalukaSelect, districtId, null);
+            } else {
+                addTalukaSelect.disabled = true;
+                addTalukaSelect.innerHTML = '<option value="">-- प्रथम जिल्हा परिषद निवडा --</option>';
+            }
+        });
+    }
+    
+    // For Edit Modal
+    const editModals = document.querySelectorAll('.editSamitiForm');
+    
+    editModals.forEach((form, index) => {
+        const zillaParishadSelect = form.querySelector('.zilla-parishad-select');
+        const talukaSelect = form.querySelector('.taluka-select');
+        
+        if (zillaParishadSelect && talukaSelect) {
+            // Get initial values
+            const initialSelectedOption = zillaParishadSelect.options[zillaParishadSelect.selectedIndex];
+            const initialDistrictId = initialSelectedOption ? initialSelectedOption.getAttribute('data-district-id') : null;
+            const currentTalukaId = talukaSelect.getAttribute('data-current-taluka');
+            
+            console.log(`Edit modal ${index} - Initial District: ${initialDistrictId}, Taluka: ${currentTalukaId}`);
+            
+            if (initialDistrictId) {
+                populateTalukaSelectFromData(talukaSelect, initialDistrictId, currentTalukaId);
+            }
+            
+            zillaParishadSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                const districtId = selectedOption.getAttribute('data-district-id');
+                console.log(`Edit modal ${index} - Changed District: ${districtId}`);
+                populateTalukaSelectFromData(talukaSelect, districtId, null);
+            });
+        }
+    });
+});
+</script>
 {% endblock %}

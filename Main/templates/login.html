@@ -31,81 +31,95 @@ body{
   background:var(--gray1);
   color:var(--text);
   min-height:100vh;
-  display:flex;flex-direction:column;
+  display:flex;
+  flex-direction:column;
 }
 
 /* TOP STRIPS */
+<<<<<<< HEAD
+.strip-tricolor{height:4px;background:linear-gradient(to right,#ff9933 33%,#fff 33% 66%,#138808 66%);}
+.strip-navy{background:var(--navy);color:#cde;font-size:10.5px;padding:4px 20px;display:flex;justify-content:space-between;align-items:center;}
+.strip-navy a{color:#aed6f1;text-decoration:none;font-size:10px;}
+=======
 .strip-tricolor{height:5px;background:linear-gradient(to right,#ff9933 33%,#fff 33% 66%,#138808 66%);}
 .strip-navy{background:var(--navy);color:#cde;font-size:11px;padding:3px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px;}
 .strip-navy a{color:#aed6f1;text-decoration:none;font-size:10.5px;}
+>>>>>>> cd5031cf3fc80bf4132c04891d12b8579c4f819b
 .strip-navy a:hover{text-decoration:underline;}
-.strip-nav-links{display:flex;gap:14px;align-items:center;}
+.strip-nav-links{display:flex;gap:12px;align-items:center;}
 
 /* MAIN HEADER */
 .main-header{
   background:#fff;
   border-bottom:3px solid var(--gold);
-  padding:8px 16px;
-  display:flex;align-items:center;gap:12px;
+  padding:10px 20px;
+  display:flex;
+  align-items:center;
+  gap:16px;
 }
 .emblem{
-  width:60px;height:60px;flex-shrink:0;
-  border-radius:50%;
+  width:55px;height:55px;flex-shrink:0;
   background:var(--navy);
+  border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  border:2.5px solid var(--gold);
+  border:2px solid var(--gold);
 }
-.emblem svg{width:40px;height:40px;}
+.emblem svg{width:38px;height:38px;}
 .header-center{flex:1;}
-.header-center .h1{font-family:'Noto Serif Devanagari',serif;font-size:17px;font-weight:700;color:var(--navy);line-height:1.3;}
-.header-center .h2{font-size:11.5px;color:var(--muted);margin-top:2px;}
-.header-center .h3{font-size:11px;color:var(--navy3);margin-top:1px;font-weight:500;}
-.header-right{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+.header-center .h1{font-family:'Noto Serif Devanagari',serif;font-size:16px;font-weight:700;color:var(--navy);line-height:1.3;}
+.header-center .h2{font-size:11px;color:var(--muted);margin-top:2px;}
+.header-center .h3{font-size:10px;color:var(--navy3);margin-top:1px;}
+.header-right{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:3px;}
 .pesa-logo{
   background:var(--navy);color:#fff;
   font-family:'Noto Serif Devanagari',serif;
-  font-size:20px;font-weight:700;
-  width:52px;height:52px;border-radius:6px;
+  font-size:18px;font-weight:700;
+  width:48px;height:48px;border-radius:6px;
   display:flex;align-items:center;justify-content:center;
   border:2px solid var(--gold);
-  letter-spacing:1px;
 }
-.header-right .tagline{font-size:10px;color:var(--muted);}
+.header-right .tagline{font-size:9px;color:var(--muted);}
 
 /* MENU BAR */
 .menu-bar{
   background:var(--navy2);
-  display:flex;align-items:center;
-  padding:0 16px;
+  display:flex;
+  align-items:center;
+  padding:0 20px;
   border-bottom:2px solid var(--gold);
 }
 .menu-bar a{
-  color:#cde;font-size:11.5px;
-  padding:7px 12px;
-  display:flex;align-items:center;gap:5px;
+  color:#cde;font-size:11px;
+  padding:8px 14px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
   text-decoration:none;
   border-right:1px solid rgba(255,255,255,0.1);
   transition:background .15s;
 }
 .menu-bar a:hover{background:var(--navy3);color:#fff;}
 .menu-bar a.active{background:var(--gold);color:var(--navy);font-weight:600;}
-.menu-bar a i{font-size:12px;}
+.menu-bar a i{font-size:11px;}
 .menu-bar .spacer{flex:1;}
-.menu-bar .login-info{color:#aed6f1;font-size:11px;padding:7px 0;}
+.menu-bar .login-info{color:#aed6f1;font-size:10px;padding:8px 0;}
 
-/* NOTICE */
+/* NOTICE BAR */
 .notice-bar{
   background:#fef9e7;
   border-bottom:1px solid #f9d71c;
-  padding:5px 16px;
-  display:flex;align-items:center;gap:8px;
-  font-size:11.5px;color:#7d5a00;
-  overflow:hidden;
+  padding:5px 20px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:11px;
+  color:#7d5a00;
 }
 .notice-bar .label{
   background:#e67e00;color:#fff;
-  font-size:10px;font-weight:600;
-  padding:2px 6px;border-radius:3px;white-space:nowrap;flex-shrink:0;
+  font-size:9px;font-weight:600;
+  padding:2px 8px;border-radius:3px;
+  white-space:nowrap;
 }
 .marquee{overflow:hidden;flex:1;}
 .marquee-inner{white-space:nowrap;animation:scroll 25s linear infinite;}
@@ -115,221 +129,361 @@ body{
 .body-wrap{
   flex:1;
   display:flex;
-  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230d2b45' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
-  linear-gradient(160deg,#e8f0f7 0%,#f0f3f5 50%,#e3ecf5 100%);
+  background:#f0f3f5;
 }
 
 /* LEFT INFO PANEL */
 .info-panel{
-  width:340px;flex-shrink:0;
-  padding:20px 18px;
-  display:flex;flex-direction:column;gap:12px;
-  background:rgba(13,43,69,0.04);
+  width:300px;
+  padding:16px 14px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  background:rgba(13,43,69,0.03);
   border-right:1px solid var(--gray2);
 }
 .info-panel h3{
-  font-size:12px;font-weight:600;
+  font-size:11px;font-weight:700;
   color:var(--navy);
   text-transform:uppercase;
   letter-spacing:.5px;
   border-bottom:2px solid var(--gold);
-  padding-bottom:5px;margin-bottom:6px;
-  display:flex;align-items:center;gap:6px;
+  padding-bottom:4px;
+  margin-bottom:6px;
+  display:flex;
+  align-items:center;
+  gap:6px;
 }
-.info-panel h3 i{font-size:13px;color:var(--gold);}
+.info-panel h3 i{font-size:12px;color:var(--gold);}
 
-.about-pesa{background:#fff;border:1px solid var(--gray2);border-radius:6px;padding:12px;font-size:11.5px;line-height:1.7;color:var(--muted);}
-.about-pesa strong{color:var(--navy);font-weight:600;}
+.about-pesa{
+  background:#fff;
+  border:1px solid var(--gray2);
+  border-radius:6px;
+  padding:10px;
+  font-size:11px;
+  line-height:1.6;
+  color:var(--muted);
+}
+.about-pesa strong{color:var(--navy);}
 
-.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
 .stat-card{
-  background:#fff;border:1px solid var(--gray2);border-radius:6px;
-  padding:10px 10px 8px;text-align:center;
+  background:#fff;
+  border:1px solid var(--gray2);
+  border-radius:6px;
+  padding:8px;
+  text-align:center;
 }
-.stat-card .num{font-size:20px;font-weight:700;color:var(--navy3);}
-.stat-card .lbl{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.3;}
+.stat-card .num{font-size:18px;font-weight:700;color:var(--navy3);}
+.stat-card .lbl{font-size:9px;color:var(--muted);margin-top:2px;}
 
 .news-list{list-style:none;}
 .news-list li{
-  display:flex;gap:8px;align-items:flex-start;
-  padding:7px 0;border-bottom:1px solid var(--gray2);
-  font-size:11.5px;line-height:1.5;
+  display:flex;
+  gap:6px;
+  padding:6px 0;
+  border-bottom:1px solid var(--gray2);
+  font-size:10.5px;
 }
 .news-list li:last-child{border:none;}
 .news-list .dot{
-  width:20px;height:20px;flex-shrink:0;
-  background:var(--navy2);color:#fff;
-  border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-size:9px;margin-top:1px;
+  width:16px;height:16px;
+  background:var(--navy2);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  margin-top:2px;
 }
+.news-list .dot i{font-size:5px;color:#fff;}
 .news-list a{color:var(--link);text-decoration:none;}
 .news-list a:hover{text-decoration:underline;}
-.news-list .date{font-size:10px;color:var(--muted);display:block;}
+.news-list .date{font-size:9px;color:var(--muted);display:block;}
 
-.doc-links{display:flex;flex-direction:column;gap:6px;}
+.doc-links{display:flex;flex-direction:column;gap:5px;}
 .doc-link{
-  display:flex;align-items:center;gap:8px;
-  background:#fff;border:1px solid var(--gray2);border-radius:5px;
-  padding:7px 10px;font-size:11.5px;color:var(--navy3);
-  text-decoration:none;transition:background .15s;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  background:#fff;
+  border:1px solid var(--gray2);
+  border-radius:5px;
+  padding:6px 8px;
+  font-size:10.5px;
+  color:var(--navy3);
+  text-decoration:none;
 }
 .doc-link:hover{background:var(--gray1);}
-.doc-link i{font-size:13px;color:var(--gold);}
+.doc-link i{font-size:11px;color:var(--gold);}
 
-/* LOGIN AREA — fixed: top-aligned, compact, no extra space */
+/* LOGIN AREA */
 .login-area{
   flex:1;
   display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:flex-start;
-  padding:16px 16px 20px;
-  gap:10px;
-  overflow-y:auto;
+  align-items:flex-start;
+  justify-content:center;
+  padding:20px 16px;
 }
 
 .login-card{
   background:#fff;
   border:1px solid var(--gray2);
   border-radius:8px;
-  width:100%;max-width:390px;
+  width:100%;
+  max-width:360px;
   overflow:hidden;
-  box-shadow:0 2px 12px rgba(13,43,69,.1);
+  box-shadow:0 2px 8px rgba(13,43,69,.08);
 }
 .login-card-header{
   background:var(--navy);
-  padding:12px 18px;
-  border-bottom:2.5px solid var(--gold);
+  padding:10px 16px;
+  border-bottom:2px solid var(--gold);
 }
 .login-card-header .title{
   font-family:'Noto Serif Devanagari',serif;
-  font-size:14px;font-weight:700;color:#fff;
+  font-size:13px;font-weight:700;color:#fff;
 }
-.login-card-header .sub{font-size:11px;color:#aed6f1;margin-top:2px;}
+.login-card-header .sub{font-size:10px;color:#aed6f1;margin-top:2px;}
 
-.login-card-body{padding:16px 18px;}
+.login-card-body{padding:14px 16px;}
 
-.field{margin-bottom:11px;}
-.field label{display:block;font-size:11.5px;font-weight:600;color:var(--navy);margin-bottom:4px;}
+.field{margin-bottom:10px;}
+.field label{display:block;font-size:11px;font-weight:600;color:var(--navy);margin-bottom:3px;}
 .field label .req{color:var(--danger);}
 .input-row{position:relative;display:flex;align-items:center;}
-.input-row i.icon{position:absolute;left:9px;font-size:13px;color:var(--gray3);}
+.input-row i.icon{position:absolute;left:9px;font-size:12px;color:var(--gray3);}
 .input-row input,.input-row select{
-  width:100%;padding:8px 9px 8px 30px;
-  border:1px solid var(--gray2);border-radius:4px;
-  font-size:12.5px;font-family:inherit;color:var(--text);
-  background:#fdfdfd;outline:none;transition:border .15s;
+  width:100%;
+  padding:7px 8px 7px 30px;
+  border:1px solid var(--gray2);
+  border-radius:4px;
+  font-size:12px;
+  font-family:inherit;
+  background:#fdfdfd;
+  outline:none;
 }
-.input-row input:focus,.input-row select:focus{border-color:var(--navy3);background:#fff;}
+.input-row input:focus,.input-row select:focus{border-color:var(--navy3);}
 .input-row .eye{
   position:absolute;right:8px;cursor:pointer;
-  font-size:13px;color:var(--gray3);
+  font-size:12px;color:var(--gray3);
 }
 .input-row select{appearance:none;padding-right:28px;}
-.input-row .sel-arrow{position:absolute;right:9px;font-size:11px;color:var(--gray3);pointer-events:none;}
+.input-row .sel-arrow{position:absolute;right:9px;font-size:10px;color:var(--gray3);pointer-events:none;}
 
-.captcha-wrap{display:flex;gap:8px;align-items:center;margin-bottom:11px;}
+.captcha-wrap{display:flex;gap:6px;align-items:center;margin-bottom:10px;}
 .captcha-box{
-  background:#e8f4fd;border:1px dashed var(--navy3);border-radius:4px;
-  padding:6px 12px;font-size:17px;font-weight:700;letter-spacing:6px;
-  color:var(--navy);font-family:monospace;user-select:none;min-width:90px;text-align:center;
+  background:#e8f4fd;
+  border:1px solid var(--navy3);
+  border-radius:4px;
+  padding:5px 8px;
+  font-size:15px;
+  font-weight:700;
+  letter-spacing:4px;
+  color:var(--navy);
+  font-family:monospace;
+  min-width:80px;
+  text-align:center;
 }
 .captcha-input{
-  flex:1;padding:7px 9px;border:1px solid var(--gray2);border-radius:4px;
-  font-size:12.5px;font-family:inherit;outline:none;
+  flex:1;
+  padding:6px 8px;
+  border:1px solid var(--gray2);
+  border-radius:4px;
+  font-size:12px;
+  outline:none;
 }
-.captcha-input:focus{border-color:var(--navy3);}
 .refresh-btn{
-  background:none;border:1px solid var(--gray2);border-radius:4px;
-  padding:7px 8px;cursor:pointer;color:var(--navy3);font-size:13px;
-  display:flex;align-items:center;
+  background:none;
+  border:1px solid var(--gray2);
+  border-radius:4px;
+  padding:6px 7px;
+  cursor:pointer;
+  color:var(--navy3);
+  font-size:11px;
 }
 .refresh-btn:hover{background:var(--gray1);}
 
-.check-row{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);margin-bottom:11px;}
-.check-row input[type=checkbox]{accent-color:var(--navy3);width:13px;height:13px;}
+.check-row{display:flex;align-items:center;gap:5px;margin-bottom:10px;}
+.check-row input{width:12px;height:12px;}
+.check-row label{font-size:10.5px;color:var(--muted);}
 
 .btn-login{
-  width:100%;background:var(--navy);color:#fff;border:none;
-  border-radius:5px;padding:10px;font-size:13px;font-weight:600;
-  font-family:inherit;cursor:pointer;letter-spacing:.3px;
-  transition:background .15s;display:flex;align-items:center;justify-content:center;gap:7px;
+  width:100%;
+  background:var(--navy);
+  color:#fff;
+  border:none;
+  border-radius:4px;
+  padding:8px;
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
 }
 .btn-login:hover{background:var(--navy2);}
-.btn-login i{font-size:14px;}
 
-.login-links{display:flex;justify-content:space-between;margin-top:10px;font-size:11.5px;}
+.login-links{display:flex;justify-content:space-between;margin-top:8px;font-size:10px;}
 .login-links a{color:var(--link);text-decoration:none;}
 .login-links a:hover{text-decoration:underline;}
 
 .help-strip{
-  background:var(--gray1);border-top:1px solid var(--gray2);
-  padding:9px 18px;display:flex;align-items:center;gap:10px;
-  font-size:11px;color:var(--muted);
+  background:var(--gray1);
+  border-top:1px solid var(--gray2);
+  padding:8px 14px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:10px;
+  color:var(--muted);
 }
-.help-strip i{font-size:13px;color:var(--navy3);}
-.help-strip strong{color:var(--navy);}
-.help-strip .sep{color:var(--gray2);}
+.help-strip i{font-size:11px;color:var(--navy3);}
 
 /* RIGHT SIDE PANEL */
 .side-panel{
-  width:220px;flex-shrink:0;
-  padding:16px 14px;
-  display:flex;flex-direction:column;gap:12px;
+  width:260px;
+  padding:16px 12px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
   border-left:1px solid var(--gray2);
   background:rgba(13,43,69,.03);
 }
 .side-panel h4{
-  font-size:11.5px;font-weight:700;color:var(--navy);
-  text-transform:uppercase;letter-spacing:.5px;
-  border-left:3px solid var(--gold);padding-left:7px;
-  margin-bottom:5px;
+  font-size:10.5px;
+  font-weight:700;
+  color:var(--navy);
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  border-left:3px solid var(--gold);
+  padding-left:6px;
+  margin-bottom:4px;
 }
 
 .alert-box{
-  border:1px solid;border-radius:5px;padding:8px 10px;font-size:11px;line-height:1.6;
+  border-left:3px solid;
+  border-radius:4px;
+  padding:6px 8px;
+  font-size:10px;
+  line-height:1.5;
+  background:#fff;
 }
-.alert-box.info{background:#e8f4fd;border-color:#90caf9;color:#0c4a74;}
-.alert-box.warn{background:#fff8e1;border-color:#ffe082;color:#7d5a00;}
-.alert-box.success{background:#e8f5e9;border-color:#a5d6a7;color:#1b5e20;}
-.alert-box i{margin-right:4px;}
+.alert-box.info{border-left-color:#2196f3;color:#0c4a74;}
+.alert-box.warn{border-left-color:#ff9800;color:#7d5a00;}
+.alert-box.success{border-left-color:#4caf50;color:#1b5e20;}
 
-.quick-links{display:flex;flex-direction:column;gap:5px;}
+.quick-links{display:flex;flex-direction:column;gap:4px;}
 .quick-link{
-  display:flex;align-items:center;gap:7px;
-  padding:6px 8px;background:#fff;border:1px solid var(--gray2);
-  border-radius:4px;font-size:11.5px;color:var(--navy3);
-  text-decoration:none;transition:background .15s;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:5px 7px;
+  background:#fff;
+  border:1px solid var(--gray2);
+  border-radius:4px;
+  font-size:10.5px;
+  color:var(--navy3);
+  text-decoration:none;
 }
 .quick-link:hover{background:var(--gray1);}
-.quick-link i{font-size:12px;color:var(--gold);width:14px;}
+.quick-link i{font-size:10px;color:var(--gold);width:14px;}
 
-.user-types{display:flex;flex-direction:column;gap:4px;}
+.user-types{display:flex;flex-direction:column;gap:3px;}
 .user-type{
-  display:flex;align-items:center;gap:8px;
-  background:#fff;border:1px solid var(--gray2);border-radius:4px;
-  padding:6px 8px;font-size:11px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  background:#fff;
+  border:1px solid var(--gray2);
+  border-radius:4px;
+  padding:5px 7px;
+  font-size:10px;
 }
-.user-type i{color:var(--navy3);font-size:12px;width:14px;}
-.user-type .uname{font-weight:600;color:var(--navy);display:block;font-size:11px;}
-.user-type .udesc{font-size:10px;color:var(--muted);}
+.user-type i{color:var(--navy3);font-size:11px;width:14px;}
+.user-type .uname{font-weight:600;color:var(--navy);display:block;font-size:10px;}
+.user-type .udesc{font-size:9px;color:var(--muted);}
 
-/* FOOTER */
+/* FOOTER - FIXED PROPERLY */
 .footer{
-  background:var(--navy);color:#aed6f1;
-  border-top:2.5px solid var(--gold);
-  padding:10px 16px;
-  display:flex;align-items:center;justify-content:space-between;
-  flex-wrap:wrap;gap:6px;
+  background:var(--navy);
+  color:#aed6f1;
+  border-top:2px solid var(--gold);
+  padding:12px 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:8px;
 }
-.footer .left{font-size:11px;line-height:1.6;}
-.footer .right{display:flex;gap:12px;font-size:11px;}
-.footer a{color:#aed6f1;text-decoration:none;}
-.footer a:hover{color:#fff;}
+.footer-left{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.footer-left .main-text{
+  font-size:11px;
+  font-weight:500;
+  color:#fff;
+}
+.footer-left .sub-text{
+  font-size:9.5px;
+  color:#aed6f1;
+}
+.footer-center{
+  display:flex;
+  gap:20px;
+  align-items:center;
+}
+.footer-center .contact-item{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:10.5px;
+}
+.footer-center .contact-item i{
+  font-size:11px;
+  color:var(--gold);
+}
+.footer-center .contact-item strong{
+  color:#fff;
+  font-weight:600;
+}
+.footer-right{
+  display:flex;
+  gap:15px;
+}
+.footer-right a{
+  color:#aed6f1;
+  text-decoration:none;
+  font-size:10px;
+}
+.footer-right a:hover{
+  color:#fff;
+  text-decoration:underline;
+}
 .footer-bottom{
   background:#0a1f30;
-  text-align:center;padding:5px;font-size:10.5px;color:#5a7a90;
+  text-align:center;
+  padding:6px;
+  font-size:9px;
+  color:#5a7a90;
 }
+
+@media (max-width: 900px){
+  .footer{
+    flex-direction:column;
+    text-align:center;
+  }
+  .footer-center{
+    flex-direction:column;
+    gap:8px;
+  }
+}
+
+.text-danger{color:var(--danger);}
 </style>
 </head>
 <body>
@@ -337,20 +491,20 @@ body{
 <div class="strip-tricolor"></div>
 
 <div class="strip-navy">
-  <div style="display:flex;align-items:center;gap:6px;">
-    <i class="fa fa-globe" style="font-size:11px;"></i>
+  <div style="display:flex;align-items:center;gap:5px;">
+    <i class="fa fa-globe" style="font-size:10px;"></i>
     <span>भारत सरकार | महाराष्ट्र शासन</span>
   </div>
   <div class="strip-nav-links">
-    <a href="#"><i class="fa fa-font" style="font-size:10px;"></i> अ+</a>
-    <a href="#"><i class="fa fa-font" style="font-size:8px;"></i> अ-</a>
+    <a href="#"><i class="fa fa-font" style="font-size:9px;"></i> अ+</a>
+    <a href="#"><i class="fa fa-font" style="font-size:7px;"></i> अ-</a>
     <span style="color:#5a7a90">|</span>
     <a href="#">Screen Reader</a>
     <a href="#">English</a>
     <a href="#">मराठी</a>
     <span style="color:#5a7a90">|</span>
-    <a href="#"><i class="fa fa-phone" style="font-size:10px;"></i> हेल्पडेस्क</a>
-    <a href="#"><i class="fa fa-envelope" style="font-size:10px;"></i> ई-मेल</a>
+    <a href="#"><i class="fa fa-phone" style="font-size:9px;"></i> हेल्पडेस्क</a>
+    <a href="#"><i class="fa fa-envelope" style="font-size:9px;"></i> ई-मेल</a>
   </div>
 </div>
 
@@ -387,17 +541,21 @@ body{
   <a href="#"><i class="fa fa-download"></i> दस्तऐवज</a>
   <a href="#"><i class="fa fa-question-circle"></i> मदत</a>
   <div class="spacer"></div>
-  <div class="login-info"><i class="fa fa-clock" style="font-size:11px;"></i> शेवटचे अद्यतन: ०५ जून २०२५</div>
+  <div class="login-info"><i class="fa fa-clock"></i> शेवटचे अद्यतन: ०५ जून २०२५</div>
 </div>
 
 <div class="notice-bar">
-  <span class="label">&#128276; सूचना</span>
+  <span class="label">🔔 सूचना</span>
   <div class="marquee">
     <span class="marquee-inner">
       ग्रामसभा अहवाल सादर करण्याची अंतिम तारीख ३० जून २०२५ आहे &nbsp;|&nbsp;
       नवीन PESA नियम २०२२ अंतर्गत नोंदणी सुरू &nbsp;|&nbsp;
+<<<<<<< HEAD
+      आदिवासी महिला बचत गट अनुदान अर्ज स्वीकारले जात आहेत
+=======
       आदिवासी महिला बचत गट अनुदान अर्ज स्वीकारले जात आहेत &nbsp;|&nbsp;
       तांत्रिक अडचणींसाठी १८०० *** **** वर संपर्क करा
+>>>>>>> cd5031cf3fc80bf4132c04891d12b8579c4f819b
     </span>
   </div>
 </div>
@@ -409,13 +567,13 @@ body{
     <div>
       <h3><i class="fa fa-info-circle"></i> PESA विषयी</h3>
       <div class="about-pesa">
-        <strong>पंचायत (अनुसूचित क्षेत्रांवर विस्तार) अधिनियम, १९९६</strong> हा कायदा अनुसूचित जमातींच्या स्वयंशासनाचा अधिकार सुनिश्चित करतो. या अंतर्गत <strong>ग्रामसभेला</strong> नैसर्गिक संसाधने, जमीन व्यवस्थापन आणि विकास कार्यक्रमांवर थेट अधिकार दिला आहे.
+        <strong>पंचायत (अनुसूचित क्षेत्रांवर विस्तार) अधिनियम, १९९६</strong> हा कायदा अनुसूचित जमातींच्या स्वयंशासनाचा अधिकार सुनिश्चित करतो.
       </div>
     </div>
     <div>
       <h3><i class="fa fa-chart-pie"></i> जिल्हा आकडेवारी</h3>
       <div class="stat-grid">
-        <div class="stat-card"><div class="num">१२४</div><div class="lbl">नोंदणीकृत ग्रामपंचायती</div></div>
+        <div class="stat-card"><div class="num">१२४</div><div class="lbl">ग्रामपंचायती</div></div>
         <div class="stat-card"><div class="num">४७</div><div class="lbl">अनुसूचित गावे</div></div>
         <div class="stat-card"><div class="num">८,२१५</div><div class="lbl">लाभार्थी कुटुंबे</div></div>
         <div class="stat-card"><div class="num">३९</div><div class="lbl">प्रलंबित अहवाल</div></div>
@@ -424,6 +582,11 @@ body{
     <div>
       <h3><i class="fa fa-newspaper"></i> ताज्या बातम्या</h3>
       <ul class="news-list">
+<<<<<<< HEAD
+        <li><div class="dot"><i class="fa fa-circle"></i></div><div><a href="#">ग्रामसभा निधी वितरण सुरू</a><span class="date">०३ जून २०२५</span></div></li>
+        <li><div class="dot"><i class="fa fa-circle"></i></div><div><a href="#">नवीन आदिवासी शाळा निर्माण मंजूर</a><span class="date">२८ मे २०२५</span></div></li>
+        <li><div class="dot"><i class="fa fa-circle"></i></div><div><a href="#">वनहक्क पट्टे वितरण</a><span class="date">२० मे २०२५</span></div></li>
+=======
         <li>
           <div class="dot"><i class="fa fa-circle" style="font-size:6px;"></i></div>
           <div><a href="#">ग्रामसभा निधी वितरण २०२५-२६ सुरू</a><span class="date">०३ जून २०२५</span></div>
@@ -440,28 +603,39 @@ body{
           <div class="dot"><i class="fa fa-circle" style="font-size:6px;"></i></div>
           <div><a href="#">PESA प्रशिक्षण शिबीर — सर्व तालुके</a><span class="date">१५ मे २०२५</span></div>
         </li>
+>>>>>>> cd5031cf3fc80bf4132c04891d12b8579c4f819b
       </ul>
     </div>
     <div>
-      <h3><i class="fa fa-file-download"></i> महत्वाचे दस्तऐवज</h3>
+      <h3><i class="fa fa-file-download"></i> दस्तऐवज</h3>
       <div class="doc-links">
-        <a href="#" class="doc-link"><i class="fa fa-file-pdf"></i> PESA कायदा १९९६ (PDF)</a>
-        <a href="#" class="doc-link"><i class="fa fa-file-pdf"></i> ग्रामसभा आदेश नमुना</a>
+        <a href="#" class="doc-link"><i class="fa fa-file-pdf"></i> PESA कायदा १९९६</a>
         <a href="#" class="doc-link"><i class="fa fa-file-pdf"></i> वापरकर्ता मार्गदर्शिका</a>
         <a href="#" class="doc-link"><i class="fa fa-file-alt"></i> परिपत्रक यादी</a>
       </div>
     </div>
   </div>
 
+<<<<<<< HEAD
+  <!-- CENTER LOGIN -->
+  <div class="login-area">
+    <form method="post" action="{% url 'Login' %}" style="width:100%;max-width:360px;">
+=======
   <!-- CENTER LOGIN — top aligned, no dead space -->
   <div class="login-area">
     <form method="post" action="{% url 'Login' %}" style="width:100%;max-width:390px;display:flex;flex-direction:column;gap:10px;">
+>>>>>>> cd5031cf3fc80bf4132c04891d12b8579c4f819b
       {% csrf_token %}
 
       <div class="login-card">
         <div class="login-card-header">
+<<<<<<< HEAD
+          <div class="title">🔒 PESA प्रणाली — अधिकृत प्रवेश</div>
+          <div class="sub">केवळ अधिकृत शासकीय कर्मचारी / ग्रामपंचायत सदस्य</div>
+=======
           <div class="title">&#128274; PESA प्रणाली — अधिकृत प्रवेश</div>
           <div class="sub">केवळ अधिकृत शासकीय कर्मचारी / ग्रामपंचायत सदस्य लॉगिन करू शकतात</div>
+>>>>>>> cd5031cf3fc80bf4132c04891d12b8579c4f819b
         </div>
         <div class="login-card-body">
 
@@ -480,7 +654,11 @@ body{
           </div>
 
           <div class="field">
+<<<<<<< HEAD
+            <label>वापरकर्ता आयडी <span class="req">*</span></label>
+=======
             <label>वापरकर्ता आयडी / कर्मचारी क्रमांक <span class="req">*</span></label>
+>>>>>>> cd5031cf3fc80bf4132c04891d12b8579c4f819b
             <div class="input-row">
               <i class="fa fa-user icon"></i>
               <input type="text" name="username" placeholder="वापरकर्ता आयडी प्रविष्ट करा" required/>
@@ -496,9 +674,13 @@ body{
             </div>
           </div>
 
+<<<<<<< HEAD
+          <div style="font-size:10.5px;font-weight:600;color:var(--navy);margin-bottom:4px;">कॅप्चा सत्यापन <span class="req">*</span></div>
+=======
           <div style="font-size:11.5px;font-weight:600;color:var(--navy);margin-bottom:6px;">
             कॅप्चा सत्यापन <span class="req">*</span>
           </div>
+>>>>>>> cd5031cf3fc80bf4132c04891d12b8579c4f819b
           <div class="captcha-wrap">
             <div class="captcha-box" id="cap-box">K4M7P</div>
             <button class="refresh-btn" type="button" onclick="newCaptcha()" title="नवीन कॅप्चा"><i class="fa fa-sync-alt"></i></button>
@@ -515,19 +697,37 @@ body{
           </button>
 
           <div class="login-links">
+<<<<<<< HEAD
+            <a href="#"><i class="fa fa-key"></i> संकेतशब्द विसरलात?</a>
+            <a href="#"><i class="fa fa-user-plus"></i> नवीन नोंदणी</a>
+            <a href="#"><i class="fa fa-unlock"></i> खाते अनलॉक</a>
+=======
             <a href="#"><i class="fa fa-key" style="font-size:10px;"></i> संकेतशब्द विसरलात?</a>
             <a href="#"><i class="fa fa-user-plus" style="font-size:10px;"></i> नवीन नोंदणी</a>
             <a href="#"><i class="fa fa-unlock" style="font-size:10px;"></i> खाते अनलॉक करा</a>
+>>>>>>> cd5031cf3fc80bf4132c04891d12b8579c4f819b
           </div>
         </div>
         <div class="help-strip">
           <i class="fa fa-headset"></i>
           <span>हेल्पडेस्क: <strong>1800-XXX-XXXX</strong></span>
+<<<<<<< HEAD
+=======
           <span class="sep">|</span>
+>>>>>>> cd5031cf3fc80bf4132c04891d12b8579c4f819b
           <span>सोम–शनि: सकाळी १० ते सायं ५</span>
         </div>
       </div>
 
+<<<<<<< HEAD
+      <div style="background:#fff;border:1px solid #ffc107;border-left:3px solid #e67e00;border-radius:4px;padding:8px 12px;font-size:10px;color:#7d5a00;margin-top:8px;">
+        <strong><i class="fa fa-shield-alt"></i> सुरक्षा सूचना:</strong> आपला संकेतशब्द कोणाशीही शेअर करू नका.
+      </div>
+    </form>
+  </div>
+
+  <!-- RIGHT SIDE PANEL -->
+=======
       <div style="background:#fff;border:1px solid #ffc107;border-left:4px solid #e67e00;border-radius:5px;padding:10px 14px;font-size:11px;color:#7d5a00;line-height:1.6;">
         <strong><i class="fa fa-shield-alt" style="color:#e67e00;margin-right:5px;"></i> सुरक्षा सूचना:</strong>
         आपला संकेतशब्द कोणाशीही शेअर करू नका. शासकीय अधिकारी कधीही फोनवर किंवा ईमेलद्वारे संकेतशब्द विचारत नाहीत.
@@ -542,14 +742,13 @@ body{
   </div>
 
   <!-- RIGHT SIDE PANEL — unchanged -->
+>>>>>>> cd5031cf3fc80bf4132c04891d12b8579c4f819b
   <div class="side-panel">
     <div>
       <h4>सूचना</h4>
-      <div style="display:flex;flex-direction:column;gap:6px;">
-        <div class="alert-box success"><i class="fa fa-check-circle"></i> प्रणाली सामान्यपणे कार्यरत आहे</div>
-        <div class="alert-box warn"><i class="fa fa-exclamation-triangle"></i> देखभालीसाठी रविवारी रात्री ११ ते ११:३० बंद राहील</div>
-        <div class="alert-box info"><i class="fa fa-info-circle"></i> नवीन वैशिष्ट्य: ग्रामसभा थेट प्रसारण उपलब्ध</div>
-      </div>
+      <div class="alert-box success"><i class="fa fa-check-circle"></i> प्रणाली कार्यरत आहे</div>
+      <div class="alert-box warn" style="margin-top:4px;"><i class="fa fa-exclamation-triangle"></i> देखभाल: रविवार रात्री ११-११:३०</div>
+      <div class="alert-box info" style="margin-top:4px;"><i class="fa fa-info-circle"></i> नवीन: ग्रामसभा थेट प्रसारण</div>
     </div>
     <div>
       <h4>द्रुत दुवे</h4>
@@ -557,53 +756,62 @@ body{
         <a href="#" class="quick-link"><i class="fa fa-file-signature"></i> ग्रामसभा नोंदणी</a>
         <a href="#" class="quick-link"><i class="fa fa-money-bill-wave"></i> निधी स्थिती</a>
         <a href="#" class="quick-link"><i class="fa fa-tree"></i> वनहक्क अर्ज</a>
-        <a href="#" class="quick-link"><i class="fa fa-tasks"></i> योजना अहवाल</a>
         <a href="#" class="quick-link"><i class="fa fa-user-check"></i> लाभार्थी यादी</a>
-        <a href="#" class="quick-link"><i class="fa fa-map"></i> जिल्हा नकाशा</a>
-        <a href="#" class="quick-link"><i class="fa fa-calendar-check"></i> बैठक वेळापत्रक</a>
       </div>
     </div>
     <div>
       <h4>वापरकर्ता प्रकार</h4>
       <div class="user-types">
+<<<<<<< HEAD
+        <div class="user-type"><i class="fa fa-user-tie"></i><div><span class="uname">शासकीय अधिकारी</span><span class="udesc">जिल्हा / तालुका</span></div></div>
+        <div class="user-type"><i class="fa fa-home"></i><div><span class="uname">ग्रामपंचायत</span><span class="udesc">सरपंच / सचिव</span></div></div>
+=======
         <div class="user-type"><i class="fa fa-user-tie"></i><div><span class="uname">शासकीय अधिकारी</span><span class="udesc">जिल्हा / तालुका स्तर</span></div></div>
         <div class="user-type"><i class="fa fa-home"></i><div><span class="uname">ग्रामपंचायत</span><span class="udesc">सरपंच / सचिव</span></div></div>
         <div class="user-type"><i class="fa fa-users"></i><div><span class="uname">ग्रामसभा</span><span class="udesc">ग्रामसभा अध्यक्ष</span></div></div>
+>>>>>>> cd5031cf3fc80bf4132c04891d12b8579c4f819b
         <div class="user-type"><i class="fa fa-user"></i><div><span class="uname">नागरिक</span><span class="udesc">सामान्य सेवा</span></div></div>
       </div>
     </div>
     <div>
       <h4>संपर्क</h4>
-      <div style="font-size:11px;color:var(--muted);line-height:1.8;background:#fff;border:1px solid var(--gray2);border-radius:4px;padding:8px 10px;">
-        <div><i class="fa fa-phone" style="color:var(--navy3);width:14px;"></i> <strong>1800-XXX-XXXX</strong></div>
-        <div><i class="fa fa-envelope" style="color:var(--navy3);width:14px;"></i> pesa@mah.gov.in</div>
-        <div><i class="fa fa-map-marker" style="color:var(--navy3);width:14px;"></i> जिल्हा परिषद भवन</div>
-        <div><i class="fa fa-clock" style="color:var(--navy3);width:14px;"></i> सोम–शनि, १०:०० – १७:००</div>
+      <div style="font-size:10px;background:#fff;border:1px solid var(--gray2);border-radius:4px;padding:6px 8px;">
+        <div><i class="fa fa-phone"></i> <strong>1800-XXX-XXXX</strong></div>
+        <div><i class="fa fa-envelope"></i> pesa@mah.gov.in</div>
+        <div><i class="fa fa-clock"></i> सोम–शनि, १०:०० – १७:००</div>
       </div>
     </div>
   </div>
 
 </div>
 
+<<<<<<< HEAD
+<!-- FOOTER - FIXED WITH PROPER SPACING -->
+=======
+>>>>>>> cd5031cf3fc80bf4132c04891d12b8579c4f819b
 <div class="footer">
-  <div class="left">
-    <strong style="color:#fff;">महाराष्ट्र शासन — PESA व्यवस्थापन प्रणाली</strong><br>
-    © २०२५ आदिवासी विकास विभाग, महाराष्ट्र शासन. सर्व हक्क राखीव.
+  <div class="footer-left">
+    <div class="main-text">महाराष्ट्र शासन — जिल्हा परिषद, आदिवासी विकास विभाग</div>
+    <div class="sub-text">© २०२५ PESA व्यवस्थापन प्रणाली | सर्व हक्क राखीव</div>
   </div>
-  <div class="right">
-    <a href="#">गोपनीयता धोरण</a>
+  <div class="footer-center">
+    <div class="contact-item"><i class="fa fa-phone"></i> हेल्पलाइन: <strong>1800-XXX-XXXX</strong></div>
+    <div class="contact-item"><i class="fa fa-envelope"></i> ई-मेल: <strong>pesa@mah.gov.in</strong></div>
+    <div class="contact-item"><i class="fa fa-map-marker-alt"></i> जिल्हा परिषद भवन, नागपूर</div>
+  </div>
+  <div class="footer-right">
+    <a href="#">गोपनीयता</a>
     <a href="#">अटी व शर्ती</a>
     <a href="#">साइटमॅप</a>
-    <a href="#">प्रतिसाद</a>
     <a href="#">RTI</a>
   </div>
 </div>
 <div class="footer-bottom">
-  हे संकेतस्थळ NIC (National Informatics Centre) द्वारे होस्ट केले आहे | अंतिम अद्यतन: ०५ जून २०२५ | आवृत्ती: v३.२.१
+  NIC (National Informatics Centre) द्वारे होस्ट | अंतिम अद्यतन: ०५ जून २०२५ | आवृत्ती: v३.२
 </div>
 
 <script>
-const caps=['K4M7P','R8Z2T','B5F9W','Q3N6L','T7P1X','H2M4S','Y6K8C'];
+const caps=['K4M7P','R8Z2T','B5F9W','Q3N6L','T7P1X','H2M4S'];
 let ci=0;
 function newCaptcha(){ci=(ci+1)%caps.length;document.getElementById('cap-box').textContent=caps[ci];}
 function togglePwd(){

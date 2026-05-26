@@ -5,10 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>PESA व्यवस्थापन प्रणाली | जिल्हा परिषद</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Noto+Serif+Devanagari:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Noto+Serif+Devanagari:wght@600;700&display=swap" integrity="sha384-c9JtrxEAWWMIXEaCS5UHjfw2HgtGWw7Txx5iRcD5Kjpqxn/hYAU2k2EZEoEkbXr0" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha384-/o6I2CkkWC//PSjvWC/eYN7l3xM3tJm8ZzVkCOfp//W05QcE3mlGskpoHB6XqI+B" crossorigin="anonymous">
 <!-- Bootstrap CSS (Required for modals and layout) -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"><style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+<style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
   --navy:#0d2b45;
@@ -257,7 +258,163 @@ body{
   overflow:hidden;
   position:relative;
 }
+/* Django Messages Container - Dark Professional Theme */
+.messages-container {
+    position: fixed;
+    top: 85px;
+    right: 20px;
+    z-index: 9999;
+    min-width: 380px;
+    max-width: 480px;
+}
 
+.messages-container .alert {
+    margin-bottom: 12px;
+    padding: 14px 18px;
+    border-radius: 6px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    animation: slideInRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    opacity: 1;
+    transition: all 0.3s ease;
+    border-left: 4px solid;
+    backdrop-filter: blur(10px);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(120%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.messages-container .alert.fade-out {
+    opacity: 0;
+    transform: translateX(120%);
+}
+
+.messages-container .alert .msg-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.messages-container .alert .msg-content {
+    flex: 1;
+}
+
+.messages-container .alert .msg-title {
+    font-weight: 700;
+    font-size: 13.5px;
+    margin-bottom: 3px;
+    display: block;
+}
+
+.messages-container .alert .msg-text {
+    font-size: 12.5px;
+    opacity: 0.95;
+}
+
+.messages-container .alert .close-btn {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: 20px;
+    opacity: 0.8;
+    padding: 0 4px;
+    line-height: 1;
+    border-radius: 3px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    margin-top: -2px;
+}
+
+.messages-container .alert .close-btn:hover {
+    opacity: 1;
+    background: rgba(255,255,255,0.2);
+    transform: scale(1.1);
+}
+
+/* SUCCESS - Dark Green Theme */
+.messages-container .alert-success {
+    background: linear-gradient(135deg, #0d3320 0%, #0f3d26 100%);
+    border: 1px solid rgba(46, 204, 113, 0.3);
+    border-left-color: #2ecc71;
+    color: #d4f5e0;
+    box-shadow: 0 6px 20px rgba(46, 204, 113, 0.15);
+}
+
+.messages-container .alert-success .msg-icon { color: #2ecc71; }
+.messages-container .alert-success .msg-title { color: #2ecc71; }
+.messages-container .alert-success .close-btn:hover { background: rgba(46, 204, 113, 0.2); }
+
+/* ERROR/DANGER - Dark Red Theme */
+.messages-container .alert-error,
+.messages-container .alert-danger {
+    background: linear-gradient(135deg, #2c0e0e 0%, #331111 100%);
+    border: 1px solid rgba(231, 76, 60, 0.3);
+    border-left-color: #e74c3c;
+    color: #fcd7d7;
+    box-shadow: 0 6px 20px rgba(231, 76, 60, 0.15);
+}
+
+.messages-container .alert-error .msg-icon,
+.messages-container .alert-danger .msg-icon { color: #e74c3c; }
+.messages-container .alert-error .msg-title,
+.messages-container .alert-danger .msg-title { color: #e74c3c; }
+.messages-container .alert-error .close-btn:hover,
+.messages-container .alert-danger .close-btn:hover { background: rgba(231, 76, 60, 0.2); }
+
+/* WARNING - Dark Orange/Gold Theme */
+.messages-container .alert-warning {
+    background: linear-gradient(135deg, #2c1f0a 0%, #332510 100%);
+    border: 1px solid rgba(243, 156, 18, 0.3);
+    border-left-color: #f39c12;
+    color: #fde3b8;
+    box-shadow: 0 6px 20px rgba(243, 156, 18, 0.15);
+}
+
+.messages-container .alert-warning .msg-icon { color: #f39c12; }
+.messages-container .alert-warning .msg-title { color: #f39c12; }
+.messages-container .alert-warning .close-btn:hover { background: rgba(243, 156, 18, 0.2); }
+
+/* INFO - Dark Blue Theme */
+.messages-container .alert-info {
+    background: linear-gradient(135deg, #0a1f30 0%, #0d2640 100%);
+    border: 1px solid rgba(52, 152, 219, 0.3);
+    border-left-color: #3498db;
+    color: #cce5f6;
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.15);
+}
+
+.messages-container .alert-info .msg-icon { color: #3498db; }
+.messages-container .alert-info .msg-title { color: #3498db; }
+.messages-container .alert-info .close-btn:hover { background: rgba(52, 152, 219, 0.2); }
+
+/* Progress bar for auto-dismiss */
+.messages-container .alert .msg-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 0 0 0 3px;
+    animation: progressShrink 5s linear forwards;
+}
+
+@keyframes progressShrink {
+    from { width: 100%; }
+    to { width: 0%; }
+}
 /* ═══════════════════════════════
    LEFT SIDEBAR
 ═══════════════════════════════ */
@@ -573,11 +730,46 @@ body{
 </style>
 </head>
 <body>
-
+<!-- Django Messages Display - Dark Professional -->
+{% if messages %}
+<div class="messages-container" id="messagesContainer">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}" role="alert">
+        {% if message.tags == 'success' %}
+            <div class="msg-icon"><i class="fa fa-check-circle"></i></div>
+            <div class="msg-content">
+                <span class="msg-title">यशस्वी</span>
+                <span class="msg-text">{{ message }}</span>
+            </div>
+        {% elif message.tags == 'error' or message.tags == 'danger' %}
+            <div class="msg-icon"><i class="fa fa-times-circle"></i></div>
+            <div class="msg-content">
+                <span class="msg-title">त्रुटी</span>
+                <span class="msg-text">{{ message }}</span>
+            </div>
+        {% elif message.tags == 'warning' %}
+            <div class="msg-icon"><i class="fa fa-exclamation-triangle"></i></div>
+            <div class="msg-content">
+                <span class="msg-title">चेतावणी</span>
+                <span class="msg-text">{{ message }}</span>
+            </div>
+        {% elif message.tags == 'info' %}
+            <div class="msg-icon"><i class="fa fa-info-circle"></i></div>
+            <div class="msg-content">
+                <span class="msg-title">माहिती</span>
+                <span class="msg-text">{{ message }}</span>
+            </div>
+        {% endif %}
+        <button class="close-btn" onclick="closeMessage(this)" title="बंद करा">&times;</button>
+        <div class="msg-progress"></div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 <!-- ══════════════════════════════════════
      TRICOLOR STRIP
 ══════════════════════════════════════ -->
-<div class="strip-tricolor"></div>
+<!-- <div class="strip-tricolor"></div> -->
 
 <!-- ══════════════════════════════════════
      TOP UTILITY BAR
@@ -706,7 +898,7 @@ body{
 
     <!-- MAIN NAVIGATION -->
     <ul class="sidebar-nav">
-      <li><a href="#" class="" data-tooltip="डॅशबोर्ड"><i class="fa fa-tachometer-alt"></i><span class="nav-label">डॅशबोर्ड</span></a></li>
+      <li><a href="{% url 'Superuser-Dashboard' %}" class="" data-tooltip="डॅशबोर्ड"><i class="fa fa-tachometer-alt"></i><span class="nav-label">डॅशबोर्ड</span></a></li>
 
       <li>
         
@@ -764,9 +956,15 @@ body{
 
   <!-- Gram Panchayat -->
   <li>
-    <a href="{% url 'Super_User_Kosh_Add_Grampanchayat' %}" data-tooltip="ग्रामपंचायत">
+    <a href="{% url 'Kosh-Manage-Grampanchayat' %}" data-tooltip="ग्रामपंचायत">
       <i class="fa fa-home"></i>
       <span class="nav-label">ग्रामपंचायत</span>
+    </a>
+  </li>
+  <li>
+    <a href="" data-tooltip="कोश">
+      <i class="fa fa-home"></i>
+      <span class="nav-label">कोश</span>
     </a>
   </li>
 
@@ -913,6 +1111,37 @@ function setActiveFromUrl() {
 }
 
 setActiveFromUrl();
+// ── Django Messages System ──
+function closeMessage(button) {
+    const alert = button.closest('.alert');
+    alert.classList.add('fade-out');
+    setTimeout(() => {
+        if (alert && alert.parentNode) {
+            alert.remove();
+        }
+    }, 300);
+}
+
+// Auto-dismiss messages after 5 seconds with smooth animation
+document.addEventListener('DOMContentLoaded', function() {
+    const messages = document.querySelectorAll('.messages-container .alert');
+    messages.forEach((message, index) => {
+        // Stagger the animations slightly
+        message.style.animationDelay = (index * 0.1) + 's';
+        
+        // Auto dismiss
+        setTimeout(() => {
+            if (message && message.parentNode) {
+                message.classList.add('fade-out');
+                setTimeout(() => {
+                    if (message && message.parentNode) {
+                        message.remove();
+                    }
+                }, 300);
+            }
+        }, 5000 + (index * 200)); // Stagger dismissal
+    });
+});
 </script>
 </body>
 </html>

@@ -20,8 +20,9 @@ from django.core.paginator import Paginator
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.core.exceptions import ValidationError
+from django.core.paginator import Paginator
 
-def PanchayatSamiti_Dashboard(request):
+def PS_Dashboard(request):
 
 
     context = {
@@ -32,7 +33,7 @@ def PanchayatSamiti_Dashboard(request):
 
     return render(
         request,
-        'Panchayat_samiti_dashboard.html',
+        'PS-Dashboard.html',
         context
     )
 
@@ -54,25 +55,23 @@ def PS_Manage_Panchayat_Samitis(request):
         request.session.flush()
         return redirect('SuperUser-Login')
 
-    # Get all districts and talukas for dropdown
-    all_districts = District.objects.all().order_by('name')
+    # Get all active Zilla Parishads for dropdown
+    all_zilla_parishads = Zilla_Parishad.objects.filter(status='Active').select_related('district').order_by('zillaParishad_name')
     
     # Create a dictionary of talukas grouped by district for JavaScript
     talukas_by_district = {}
+    all_districts = District.objects.all()
     for district in all_districts:
         talukas_by_district[str(district.id)] = list(
             Taluka.objects.filter(district=district).values('id', 'name').order_by('name')
         )
-    
-    # For edit modals - get all talukas with district info
-    all_talukas_with_district = Taluka.objects.select_related('district').all().order_by('name')
 
     # ================= ADD =================
     if request.method == 'POST' and 'add_samiti' in request.POST:
         try:
-            # Get raw values and apply clean_text
+            # Get raw values
             raw_panchayat_samiti_name = request.POST.get('panchayat_samiti_name', '').strip()
-            raw_district_id = request.POST.get('district_id', '').strip()
+            raw_zilla_parishad_id = request.POST.get('zilla_parishad_id', '').strip()
             raw_taluka_id = request.POST.get('taluka_id', '').strip()
             raw_panchayat_samiti_code = request.POST.get('panchayat_samiti_code', '').strip()
             raw_status = request.POST.get('status', 'Active')
@@ -86,48 +85,39 @@ def PS_Manage_Panchayat_Samitis(request):
                 messages.error(request, 'समितीचे नाव आवश्यक आहे')
                 return redirect('PS-Manage-Panchayat-Samitis')
             
-            if not raw_district_id:
-                messages.error(request, 'जिल्हा निवड आवश्यक आहे')
+            if not raw_zilla_parishad_id:
+                messages.error(request, 'जिल्हा परिषद निवड आवश्यक आहे')
                 return redirect('PS-Manage-Panchayat-Samitis')
             
             if not raw_taluka_id:
                 messages.error(request, 'तालुका निवड आवश्यक आहे')
                 return redirect('PS-Manage-Panchayat-Samitis')
-            
-
 
             try:
-                district = District.objects.get(id=raw_district_id)
-            except District.DoesNotExist:
-                messages.error(request, 'अवैध जिल्हा निवडला')
+                zilla_parishad = Zilla_Parishad.objects.get(id=raw_zilla_parishad_id, status='Active')
+            except Zilla_Parishad.DoesNotExist:
+                messages.error(request, 'अवैध जिल्हा परिषद निवडली')
                 return redirect('PS-Manage-Panchayat-Samitis')
 
+            # Verify taluka belongs to the district of selected Zilla Parishad
             try:
-                taluka = Taluka.objects.get(id=raw_taluka_id, district=district)
+                taluka = Taluka.objects.get(id=raw_taluka_id, district=zilla_parishad.district)
             except Taluka.DoesNotExist:
                 messages.error(request, 'अवैध तालुका निवडला')
                 return redirect('PS-Manage-Panchayat-Samitis')
 
             # Check duplicate code
-            if Panchayat_Samiti.objects.filter(panchayat_samiti_code=panchayat_samiti_code).exists():
+            if panchayat_samiti_code and Panchayat_Samiti.objects.filter(panchayat_samiti_code=panchayat_samiti_code).exists():
                 messages.error(request, 'हा समिती कोड आधीपासून अस्तित्वात आहे')
                 return redirect('PS-Manage-Panchayat-Samitis')
-
-            # Get Zilla Parishad from District (if you have Zilla_Parishad model)
-            zilla_parishad = None
-            zilla_parishad_name = None
-            # If you have Zilla_Parishad model related to District, uncomment below
-            # if hasattr(district, 'zilla_parishad'):
-            #     zilla_parishad = district.zilla_parishad
-            #     zilla_parishad_name = district.zilla_parishad.name
 
             # Create record
             Panchayat_Samiti.objects.create(
                 panchayat_samiti_name=panchayat_samiti_name,
                 zilla_parishad=zilla_parishad,
-                zilla_parishad_name=zilla_parishad_name,
+                zilla_parishad_name=zilla_parishad.zillaParishad_name,
                 taluka=taluka,
-                panchayat_samiti_code=panchayat_samiti_code,
+                panchayat_samiti_code=panchayat_samiti_code if panchayat_samiti_code else None,
                 status=raw_status
             )
 
@@ -156,9 +146,9 @@ def PS_Manage_Panchayat_Samitis(request):
             return redirect('PS-Manage-Panchayat-Samitis')
 
         try:
-            # Get raw values and apply clean_text
+            # Get raw values
             raw_panchayat_samiti_name = request.POST.get('panchayat_samiti_name', '').strip()
-            raw_district_id = request.POST.get('district_id', '').strip()
+            raw_zilla_parishad_id = request.POST.get('zilla_parishad_id', '').strip()
             raw_taluka_id = request.POST.get('taluka_id', '').strip()
             raw_panchayat_samiti_code = request.POST.get('panchayat_samiti_code', '').strip()
             raw_status = request.POST.get('status', 'Active')
@@ -172,46 +162,38 @@ def PS_Manage_Panchayat_Samitis(request):
                 messages.error(request, 'समितीचे नाव आवश्यक आहे')
                 return redirect('PS-Manage-Panchayat-Samitis')
             
-            if not raw_district_id:
-                messages.error(request, 'जिल्हा निवड आवश्यक आहे')
+            if not raw_zilla_parishad_id:
+                messages.error(request, 'जिल्हा परिषद निवड आवश्यक आहे')
                 return redirect('PS-Manage-Panchayat-Samitis')
             
             if not raw_taluka_id:
                 messages.error(request, 'तालुका निवड आवश्यक आहे')
                 return redirect('PS-Manage-Panchayat-Samitis')
-            
 
             try:
-                district = District.objects.get(id=raw_district_id)
-            except District.DoesNotExist:
-                messages.error(request, 'अवैध जिल्हा निवडला')
+                zilla_parishad = Zilla_Parishad.objects.get(id=raw_zilla_parishad_id, status='Active')
+            except Zilla_Parishad.DoesNotExist:
+                messages.error(request, 'अवैध जिल्हा परिषद निवडली')
                 return redirect('PS-Manage-Panchayat-Samitis')
 
+            # Verify taluka belongs to the district of selected Zilla Parishad
             try:
-                taluka = Taluka.objects.get(id=raw_taluka_id, district=district)
+                taluka = Taluka.objects.get(id=raw_taluka_id, district=zilla_parishad.district)
             except Taluka.DoesNotExist:
                 messages.error(request, 'अवैध तालुका निवडला')
                 return redirect('PS-Manage-Panchayat-Samitis')
 
             # Check duplicate code (excluding current)
-            if Panchayat_Samiti.objects.filter(panchayat_samiti_code=panchayat_samiti_code).exclude(id=samiti_id).exists():
+            if panchayat_samiti_code and Panchayat_Samiti.objects.filter(panchayat_samiti_code=panchayat_samiti_code).exclude(id=samiti_id).exists():
                 messages.error(request, 'हा समिती कोड आधीपासून अस्तित्वात आहे')
                 return redirect('PS-Manage-Panchayat-Samitis')
-
-            # Get Zilla Parishad from District
-            zilla_parishad = None
-            zilla_parishad_name = None
-            # If you have Zilla_Parishad model related to District, uncomment below
-            # if hasattr(district, 'zilla_parishad'):
-            #     zilla_parishad = district.zilla_parishad
-            #     zilla_parishad_name = district.zilla_parishad.name
 
             # Update record
             samiti.panchayat_samiti_name = panchayat_samiti_name
             samiti.zilla_parishad = zilla_parishad
-            samiti.zilla_parishad_name = zilla_parishad_name
+            samiti.zilla_parishad_name = zilla_parishad.zillaParishad_name
             samiti.taluka = taluka
-            samiti.panchayat_samiti_code = panchayat_samiti_code
+            samiti.panchayat_samiti_code = panchayat_samiti_code if panchayat_samiti_code else None
             samiti.status = raw_status
             samiti.save()
 
@@ -242,7 +224,7 @@ def PS_Manage_Panchayat_Samitis(request):
 
     # ================= FILTERS =================
     panchayat_samiti_name = request.GET.get('panchayat_samiti_name', '').strip()
-    district_name = request.GET.get('district_name', '').strip()
+    zilla_parishad_name = request.GET.get('zilla_parishad_name', '').strip()
     taluka_name = request.GET.get('taluka_name', '').strip()
     panchayat_samiti_code = request.GET.get('panchayat_samiti_code', '').strip()
     status_filter = request.GET.get('status', 'all')
@@ -251,13 +233,13 @@ def PS_Manage_Panchayat_Samitis(request):
     # Reset filters
     if reset:
         panchayat_samiti_name = ''
-        district_name = ''
+        zilla_parishad_name = ''
         taluka_name = ''
         panchayat_samiti_code = ''
         status_filter = 'all'
 
     # Base queryset - order by latest first
-    samitis = Panchayat_Samiti.objects.select_related('taluka', 'taluka__district').all()
+    samitis = Panchayat_Samiti.objects.select_related('zilla_parishad', 'taluka', 'taluka__district').all()
     total_samitis = samitis.count()
     active_count = Panchayat_Samiti.objects.filter(status='Active').count()
 
@@ -270,8 +252,8 @@ def PS_Manage_Panchayat_Samitis(request):
     # Apply search filters
     if panchayat_samiti_name:
         samitis = samitis.filter(panchayat_samiti_name__icontains=panchayat_samiti_name)
-    if district_name:
-        samitis = samitis.filter(taluka__district__name__icontains=district_name)
+    if zilla_parishad_name:
+        samitis = samitis.filter(zilla_parishad_name__icontains=zilla_parishad_name)
     if taluka_name:
         samitis = samitis.filter(taluka__name__icontains=taluka_name)
     if panchayat_samiti_code:
@@ -296,30 +278,70 @@ def PS_Manage_Panchayat_Samitis(request):
         'active_count': active_count,
         'start_index': start_index,
         'panchayat_samiti_name': panchayat_samiti_name,
-        'district_name': district_name,
+        'zilla_parishad_name': zilla_parishad_name,
         'taluka_name': taluka_name,
         'panchayat_samiti_code': panchayat_samiti_code,
         'status_filter': status_filter,
-        'all_districts': all_districts,
-        'all_talukas_with_district': all_talukas_with_district,
-        'talukas_by_district_json': json.dumps(talukas_by_district),  # Pass as JSON string
+        'all_zilla_parishads': all_zilla_parishads,
+        'talukas_by_district_json': json.dumps(talukas_by_district),
     }
 
     return render(request, 'PS-Manage-Panchayat-Samitis.html', context)
 
+from django.http import JsonResponse
+from django.core.paginator import Paginator
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.db.models import Q
+import json
 
-# API endpoint for getting talukas
-def get_talukas_by_district(request, district_id):
-    """API endpoint to get talukas for a specific district"""
+def get_talukas_by_zilla_parishad(request, zilla_parishad_id):
+    """API endpoint to get talukas for a specific Zilla Parishad's district"""
     try:
-        talukas = Taluka.objects.filter(district_id=district_id).values('id', 'name').order_by('name')
+        from ZillaParishad.models import Zilla_Parishad
+        from Main.models import Taluka
+        
+        # Validate zilla_parishad_id
+        if not zilla_parishad_id:
+            return JsonResponse({
+                'success': False, 
+                'error': 'Invalid Zilla Parishad ID provided',
+                'talukas': []
+            })
+        
+        # Get Zilla Parishad with its district
+        try:
+            zilla_parishad = Zilla_Parishad.objects.select_related('district').get(id=zilla_parishad_id, status='Active')
+            district = zilla_parishad.district
+        except Zilla_Parishad.DoesNotExist:
+            return JsonResponse({
+                'success': False, 
+                'error': 'Zilla Parishad not found or inactive',
+                'talukas': []
+            })
+        
+        if not district:
+            return JsonResponse({
+                'success': False, 
+                'error': 'No district associated with this Zilla Parishad',
+                'talukas': []
+            })
+        
+        # Get talukas for the district
+        talukas = Taluka.objects.filter(district=district, district__isnull=False).values('id', 'name').order_by('name')
         talukas_list = list(talukas)
+        
+        print(f"Found {len(talukas_list)} talukas for district {district.name}")  # Debug log
+        
         return JsonResponse({
             'success': True, 
             'talukas': talukas_list,
-            'count': len(talukas_list)
+            'count': len(talukas_list),
+            'district_name': district.name
         })
+        
     except Exception as e:
+        print(f"Error in get_talukas_by_zilla_parishad: {str(e)}")  # Debug log
         return JsonResponse({
             'success': False, 
             'error': str(e), 
@@ -587,7 +609,6 @@ def PS_Manage_Users(request):
     filtered_count = users.count()
 
     # ================= PAGINATION =================
-    from django.core.paginator import Paginator
     paginator = Paginator(users, 15)
     page_number = request.GET.get('page', 1)
     users_page = paginator.get_page(page_number)

@@ -90,21 +90,34 @@ class KoshUserAdmin(admin.ModelAdmin):
         'name',
         'mobile',
         'username',
-        'kosh_name',
+        'get_kosh_names',
         'status',
         'is_retired',
     )
+
     search_fields = (
         'name',
         'mobile',
         'username',
         'email',
+        'kosh__kosh_name',
     )
+
     list_filter = (
         'status',
         'is_retired',
+        'kosh',
     )
 
+    # Left Side -> Right Side ManyToMany UI
+    filter_horizontal = ('kosh',)
+
+    def get_kosh_names(self, obj):
+        return ", ".join(
+            obj.kosh.values_list('kosh_name', flat=True)
+        )
+
+    get_kosh_names.short_description = "Kosh Names"
 
 @admin.register(Kosh_Committee)
 class KoshCommitteeAdmin(admin.ModelAdmin):
