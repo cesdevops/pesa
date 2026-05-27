@@ -10,7 +10,7 @@ class GramPanchayat(models.Model):
     )
     panchayat_samiti = models.ForeignKey(Panchayat_Samiti,on_delete=models.SET_NULL,null=True,blank=True, related_name='gram_panchayats')
     gram_panchayat_name = models.CharField(max_length=255,null=True,blank=True)
-    gram_panchayat_code = models.CharField(max_length=50,unique=True,null=True,blank=True)
+    gram_panchayat_code = models.CharField(max_length=50,null=True,blank=True)
     address = models.TextField(null=True,blank=True)
     status = models.CharField(max_length=20,choices=STATUS_CHOICES,default='Active',null=True,blank=True)
     
@@ -31,9 +31,8 @@ class Kosh(models.Model):
     )
 
     grampanchayat = models.ForeignKey('GramPanchayat',on_delete=models.SET_NULL,null=True,blank=True, related_name='kosh')
-    # gramPanchayat_name = models.CharField(max_length=255,null=True,blank=True)
     kosh_name = models.CharField(max_length=255,null=True,blank=True)
-    kosh_code = models.CharField(max_length=100,unique=True,null=True,blank=True)
+    kosh_code = models.CharField(max_length=100,null=True,blank=True)
     is_primary = models.BooleanField(default=False,null=True,blank=True)
     status = models.CharField(max_length=20,choices=STATUS_CHOICES,default='Active',null=True,blank=True)
     
@@ -167,7 +166,9 @@ class Kosh_Bank_Detail(models.Model):
     current_balance = models.DecimalField(max_digits=15,decimal_places=2,default=0,null=True,blank=True)
     bank_address = models.TextField(null=True,blank=True)
 
-
+    status = models.CharField(max_length=20,choices=STATUS_CHOICES,default='Active',null=True,blank=True)
+    created_at = models.DateTimeField(auto_now_add=True,null=True,blank=True)
+    updated_at = models.DateTimeField(auto_now=True,null=True,blank=True)
 
 
 

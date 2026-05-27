@@ -158,7 +158,7 @@
             <tr>
               <td class="ps-4">{{ forloop.counter0|add:start_index|default:forloop.counter }}</td>
               <td class="fw-semibold">{{ gp.gram_panchayat_name|default:"—" }}</td>
-              <td>{{ gp.panchayat_samiti_name|default:"—" }}</td>
+              <td>{{ gp.panchayat_samiti.panchayat_samiti_name|default:"—" }}</td>
               <td><code class="bg-light px-2 py-1 rounded">{{ gp.gram_panchayat_code|default:"—" }}</code></td>
               <td>{{ gp.address|default:"—"|truncatechars:50 }}</td>
 

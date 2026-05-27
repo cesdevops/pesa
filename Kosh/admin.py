@@ -141,6 +141,7 @@ class KoshBankDetailAdmin(admin.ModelAdmin):
         'branch_name',
         'account_holder_name',
         'account_number',
+        'status',
         'current_balance',
     )
     search_fields = (
