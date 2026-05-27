@@ -71,3 +71,24 @@ class Taluka(models.Model):
 
 
 
+
+
+class Kosh_Head(models.Model):
+    STATUS_CHOICES = (
+        ('Active', 'Active'),
+        ('Inactive', 'Inactive'),
+    )
+ 
+    name       = models.CharField(max_length=255)
+    percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    status     = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Active')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+ 
+    def __str__(self):
+        return self.name
+
+
+
+
+

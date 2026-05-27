@@ -1,598 +1,592 @@
 {% extends 'Superuser-base.html' %}
 {% load static %}
 
-{% block title %}PESA FMS — Panchayat Samiti Management{% endblock %}
-
-{% block extra_head %}
-<style>
-  .page-title-block {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  
-  .page-title-block h1 {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--navy);
-    margin: 0;
-  }
-  
-  .btn-add {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--gold);
-    color: var(--navy);
-    padding: 8px 18px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.2s;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .btn-add:hover {
-    background: var(--gold2);
-    color: var(--navy);
-  }
-  
-  .filter-bar {
-    background: white;
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 20px;
-    border: 1px solid var(--gray2);
-  }
-  
-  .filter-row {
-    display: flex;
-    gap: 12px;
-    align-items: flex-end;
-    flex-wrap: wrap;
-  }
-  
-  .filter-group {
-    flex: 1;
-    min-width: 150px;
-  }
-  
-  .filter-group label {
-    display: block;
-    font-size: 10px;
-    font-weight: 600;
-    color: var(--muted);
-    margin-bottom: 4px;
-  }
-  
-  .filter-group input,
-  .filter-group select {
-    width: 100%;
-    padding: 6px 10px;
-    border: 1px solid var(--gray2);
-    border-radius: 4px;
-    font-size: 12px;
-  }
-  
-  .filter-group input:focus,
-  .filter-group select:focus {
-    border-color: var(--gold);
-    outline: none;
-  }
-  
-  .filter-actions {
-    display: flex;
-    gap: 8px;
-  }
-  
-  .btn-primary-custom {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 14px;
-    background: var(--navy);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 12px;
-    cursor: pointer;
-  }
-  
-  .btn-primary-custom:hover {
-    background: var(--navy2);
-  }
-  
-  .btn-reset-custom {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 14px;
-    background: var(--gray2);
-    color: var(--text);
-    border: none;
-    border-radius: 4px;
-    font-size: 12px;
-    cursor: pointer;
-    text-decoration: none;
-  }
-  
-  .btn-reset-custom:hover {
-    background: var(--gray3);
-  }
-  
-  .table-container {
-    background: white;
-    border-radius: 8px;
-    border: 1px solid var(--gray2);
-    overflow: auto;
-  }
-  
-  .data-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 12px;
-  }
-  
-  .data-table th {
-    text-align: left;
-    padding: 10px 12px;
-    background: var(--gray1);
-    font-weight: 600;
-    color: var(--navy);
-    border-bottom: 1px solid var(--gray2);
-  }
-  
-  .data-table td {
-    padding: 8px 12px;
-    border-bottom: 1px solid var(--gray2);
-  }
-  
-  .data-table tbody tr:hover {
-    background: var(--gray1);
-  }
-  
-  .status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 10px;
-    font-weight: 600;
-  }
-  
-  .status-active {
-    background: #e8f5e9;
-    color: #2e7d32;
-  }
-  
-  .status-inactive {
-    background: #ffebee;
-    color: #c62828;
-  }
-  
-  .action-btns {
-    display: flex;
-    gap: 6px;
-  }
-  
-  .edit-btn, .delete-btn {
-    background: none;
-    border: none;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    cursor: pointer;
-    text-decoration: none;
-  }
-  
-  .edit-btn {
-    color: var(--link);
-  }
-  
-  .edit-btn:hover {
-    background: #e3f2fd;
-  }
-  
-  .delete-btn {
-    color: var(--danger);
-  }
-  
-  .delete-btn:hover {
-    background: #ffebee;
-  }
-  
-  .empty-state {
-    text-align: center;
-    padding: 40px;
-  }
-  
-  .empty-state i {
-    font-size: 48px;
-    color: var(--gray3);
-    margin-bottom: 12px;
-  }
-  
-  .pagination-wrapper {
-    padding: 12px;
-    background: white;
-    border-top: 1px solid var(--gray2);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  
-  .pagination {
-    display: flex;
-    gap: 5px;
-    align-items: center;
-  }
-  
-  .pagination-btn {
-    padding: 4px 10px;
-    border: 1px solid var(--gray2);
-    background: white;
-    border-radius: 4px;
-    font-size: 11px;
-    color: var(--text);
-    cursor: pointer;
-    text-decoration: none;
-  }
-  
-  .pagination-btn:hover {
-    background: var(--gray1);
-    border-color: var(--gold);
-  }
-  
-  .pagination-btn.active {
-    background: var(--gold);
-    color: var(--navy);
-    border-color: var(--gold);
-  }
-  
-  .modal-content {
-    border-radius: 8px;
-  }
-  
-  .modal-header {
-    background: var(--navy);
-    color: white;
-    border-bottom: 2px solid var(--gold);
-  }
-  
-  .form-group {
-    margin-bottom: 12px;
-  }
-  
-  .form-group label {
-    display: block;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
-  
-  .form-group label span {
-    color: var(--danger);
-  }
-  
-  .form-group input,
-  .form-group select {
-    width: 100%;
-    padding: 6px 10px;
-    border: 1px solid var(--gray2);
-    border-radius: 4px;
-    font-size: 12px;
-  }
-  
-  .form-row {
-    display: flex;
-    gap: 12px;
-  }
-  
-  .form-row .form-group {
-    flex: 1;
-  }
-  
-  @media (max-width: 768px) {
-    .filter-row {
-      flex-direction: column;
-    }
-    .form-row {
-      flex-direction: column;
-      gap: 0;
-    }
-    .page-title-block {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-  }
-</style>
-{% endblock %}
-
 {% block content %}
+<style>
+  /* Pagination Styles */
+.pagination-wrapper {
+  padding: 20px;
+  background: #fff;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
 
-<!-- Page Header -->
-<div class="page-title-block">
-  <div style="display: flex; align-items: center; gap: 12px;">
-    <i class="fa fa-building" style="font-size: 24px; color: var(--gold);"></i>
-    <h1>पंचायत समिती व्यवस्थापन</h1>
+.pagination {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+}
+
+.pagination-btn {
+  padding: 6px 12px;
+  border: 1px solid #d1d5db;
+  background: white;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pagination-btn:hover {
+  background: #f1f5f9;
+  border-color: #1e88e5;
+  color: #1e88e5;
+}
+
+.pagination-btn.active {
+  background: linear-gradient(135deg, #1e88e5, #1565c0);
+  color: white;
+  border-color: #1e88e5;
+}
+
+.pagination-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.pagination-ellipsis {
+  padding: 6px 10px;
+  color: #94a3b8;
+}
+
+.pagination-info {
+  font-size: 12px;
+  color: #64748b;
+}
+</style>
+<div class="container-fluid px-4 py-3 bg-white">
+  
+  <!-- पृष्ठ शीर्षक -->
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <div class="d-inline-block">
+      <h3 class="h3 mb-1 fw-bold text-dark">
+        <i class="fas fa-sitemap text-warning me-2"></i>
+        पंचायत समिती व्यवस्थापन
+      </h3>
+      <div class="rounded-pill" style="height: 2px; width: 100%; background: linear-gradient(90deg, #f59e0b, #fbbf24);"></div>
+    </div>
+
+    <!-- Right Side Buttons -->
+    <div class="d-flex flex-wrap gap-3 ms-auto">
+      <!-- Add User Button -->
+      <a href="{% url 'PS-Manage-Users' %}"
+        class="btn btn-primary d-flex align-items-center fw-semibold px-4 py-2 shadow-sm rounded-pill">
+        <i class="fas fa-user-plus me-2"></i>
+        <span>नवीन यूजर जोडा</span>
+      </a>
+
+      <!-- Add Panchayat Samiti Button -->
+      <button type="button"
+              class="btn btn-warning text-dark d-flex align-items-center fw-semibold px-4 py-2 shadow-sm rounded-pill"
+              data-bs-toggle="modal"
+              data-bs-target="#addModal">
+        <i class="fas fa-plus-circle me-2"></i>
+        <span>नवीन पंचायत समिती जोडा</span>
+      </button>
+    </div>
   </div>
   
-  <button type="button" class="btn-add" data-bs-toggle="modal" data-bs-target="#addModal">
-    <i class="fa fa-plus"></i> पंचायत समिती जोडा
-  </button>
-</div>
-
-<!-- Filter Bar -->
-<div class="filter-bar">
-  <form method="GET" action="{% url 'PS-Manage-Panchayat-Samitis' %}">
-    <div class="filter-row">
-      <div class="filter-group">
-        <label><i class="fa fa-building"></i> समिती नाव</label>
-        <input type="text" name="panchayat_samiti_name" placeholder="समिती नाव..." value="{{ panchayat_samiti_name }}">
-      </div>
-      
-      <div class="filter-group">
-        <label><i class="fa fa-map-marker"></i> तालुका नाव</label>
-        <input type="text" name="taluka_name" placeholder="तालुका..." value="{{ taluka_name }}">
-      </div>
-      
-      <div class="filter-group">
-        <label><i class="fa fa-barcode"></i> समिती कोड</label>
-        <input type="text" name="panchayat_samiti_code" placeholder="कोड..." value="{{ panchayat_samiti_code }}">
-      </div>
-      
-      <div class="filter-group">
-        <label><i class="fa fa-user"></i> संपर्क व्यक्ती</label>
-        <input type="text" name="contact_person" placeholder="नाव..." value="{{ contact_person }}">
-      </div>
-      
-      <div class="filter-group">
-        <label><i class="fa fa-phone"></i> मोबाईल</label>
-        <input type="text" name="contact_phone" placeholder="मोबाईल..." value="{{ contact_phone }}">
-      </div>
-      
-      <div class="filter-group">
-        <label><i class="fa fa-filter"></i> स्थिती</label>
-        <select name="status">
-          <option value="all" {% if status_filter == 'all' %}selected{% endif %}>सर्व</option>
-          <option value="active" {% if status_filter == 'active' %}selected{% endif %}>सक्रिय</option>
-          <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>निष्क्रिय</option>
-        </select>
-      </div>
-      
-      <div class="filter-actions">
-        <button type="submit" class="btn-primary-custom">
-          <i class="fa fa-search"></i> शोधा
-        </button>
-        <a href="{% url 'PS-Manage-Panchayat-Samitis' %}?reset=1" class="btn-reset-custom">
-          <i class="fa fa-refresh"></i> रीसेट
-        </a>
+  <!-- आकडेवारी कार्ड्स -->
+  <div class="row g-4 mb-4">
+    {% if filtered_count and filtered_count != total_samitis %}
+    <div class="col-md-6 col-lg-4">
+      <div class="card border-0 shadow-sm rounded-4 h-100">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <div class="display-1 mb-2">🔍</div>
+              <div class="h1 fw-bold text-dark mb-0">{{ filtered_count }}</div>
+              <div class="text-secondary small mt-1">फिल्टर केलेले निकाल</div>
+            </div>
+            <div class="bg-info bg-opacity-10 rounded-circle p-3">
+              <i class="fas fa-filter text-info fs-2"></i>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </form>
-</div>
-
-<!-- Messages -->
-{% if messages %}
-  {% for message in messages %}
-    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" style="border-radius: 8px; font-size: 12px;">
-      {{ message }}
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    {% endif %}
+  </div>
+  
+  <!-- फिल्टर कार्ड -->
+  <div class="card shadow-sm border-0 rounded-4 mb-3">
+    <div class="card-body p-3">
+      <form method="GET" action="{% url 'PS-Manage-Panchayat-Samitis' %}">
+        <div class="row g-2 align-items-end">
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold mb-1">समितीचे नाव</label>
+            <input type="text" name="panchayat_samiti_name" class="form-control form-control-sm rounded-3"
+                   placeholder="समितीचे नाव" value="{{ panchayat_samiti_name|default:'' }}">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold mb-1">जिल्हा परिषद</label>
+            <input type="text" name="zilla_parishad_name" class="form-control form-control-sm rounded-3"
+                   placeholder="जिल्हा परिषद" value="{{ zilla_parishad_name|default:'' }}">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold mb-1">तालुका</label>
+            <input type="text" name="taluka_name" class="form-control form-control-sm rounded-3"
+                   placeholder="तालुका" value="{{ taluka_name|default:'' }}">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold mb-1">कोड</label>
+            <input type="text" name="panchayat_samiti_code" class="form-control form-control-sm rounded-3"
+                   placeholder="कोड" value="{{ panchayat_samiti_code|default:'' }}">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold mb-1">स्थिती</label>
+            <select name="status" class="form-select form-select-sm rounded-3">
+              <option value="all" {% if status_filter == 'all' %}selected{% endif %}>सर्व</option>
+              <option value="active" {% if status_filter == 'active' %}selected{% endif %}>सक्रिय</option>
+              <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>निष्क्रिय</option>
+            </select>
+          </div>
+          <div class="col-md-2 d-flex gap-1">
+            <button type="submit" class="btn btn-primary btn-sm rounded-3 w-100">
+              <i class="fas fa-search me-1"></i> शोधा
+            </button>
+            <a href="{% url 'PS-Manage-Panchayat-Samitis' %}?reset=1" class="btn btn-outline-secondary btn-sm rounded-3 w-100">
+              <i class="fas fa-undo-alt me-1"></i> रीसेट करा
+            </a>
+          </div>
+        </div>
+      </form>
     </div>
-  {% endfor %}
-{% endif %}
-
-<!-- Table -->
-<div class="table-container">
-  <table class="data-table">
-    <thead>
-      <tr>
-        <th width="5%">#</th>
-        <th width="20%">समिती नाव</th>
-        <th width="15%">तालुका</th>
-        <th width="12%">कोड</th>
-        <th width="12%">संपर्क व्यक्ती</th>
-        <th width="12%">मोबाईल</th>
-        <th width="10%">स्थिती</th>
-        <th width="8%">कार्य</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% if samitis %}
-        {% for samiti in samitis %}
-        <tr>
-          <td>{{ start_index|add:forloop.counter0 }}</td>
-          <td><strong>{{ samiti.panchayat_samiti_name|default:"—" }}</strong></td>
-          <td>{{ samiti.taluka_name|default:"—" }}</td>
-          <td><code>{{ samiti.panchayat_samiti_code|default:"—" }}</code></td>
-          <td>{{ samiti.contact_person|default:"—" }}</td>
-          <td>{{ samiti.contact_phone|default:"—" }}</td>
-          <td>
-            {% if samiti.status == 'Active' %}
-              <span class="status-badge status-active">
-                <i class="fa fa-check-circle"></i> सक्रिय
-              </span>
+  </div>
+  
+  <!-- डेटा सारणी -->
+  <div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-0 overflow-auto">
+      <table class="table table-hover mb-0">
+        <thead class="bg-light">
+          <tr>
+            <th class="ps-4 py-3" style="width: 50px;">#</th>
+            <th class="py-3">समितीचे नाव</th>
+            <th class="py-3">जिल्हा परिषद</th>
+            <th class="py-3">जिल्हा</th>
+            <th class="py-3">तालुका</th>
+            <th class="py-3">समिती कोड</th>
+            <th class="py-3">स्थिती</th>
+            <th class="pe-4 py-3" style="width: 160px;">क्रिया</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if samitis %}
+            {% for samiti in samitis %}
+            <tr>
+              <td class="ps-4">{{ forloop.counter0|add:start_index|default:forloop.counter }}</td>
+              <td class="fw-semibold">{{ samiti.panchayat_samiti_name|default:"—" }}</td>
+              <td>{{ samiti.zilla_parishad.zillaParishad_name|default:"—" }}</td>
+              <td>{{ samiti.taluka.district.name|default:"—" }}</td>
+              <td>{{ samiti.taluka.name|default:"—" }}</td>
+              <td><code class="bg-light px-2 py-1 rounded">{{ samiti.panchayat_samiti_code|default:"—" }}</code></td>
+              <td>
+                {% if samiti.status == 'Active' %}
+                  <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
+                    <i class="fas fa-circle fs-10 me-1"></i> सक्रिय
+                  </span>
+                {% else %}
+                  <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill">
+                    <i class="fas fa-circle fs-10 me-1"></i> निष्क्रिय
+                  </span>
+                {% endif %}
+              </td>
+              <td class="pe-4">
+                <div class="d-flex gap-2">
+                      <a href="{% url 'PS-Manage-Users' %}?pre_selected_samiti={{ samiti.id }}&samiti_name={{ samiti.panchayat_samiti_name|urlencode }}"
+                          class="btn btn-sm btn-outline-success rounded-pill px-3">
+                          <i class="fas fa-user-plus me-1"></i> यूजर जोडा
+                      </a>
+                  <button class="btn btn-sm btn-outline-primary rounded-pill px-3" 
+                          data-bs-toggle="modal" data-bs-target="#editModal{{ samiti.id }}">
+                    <i class="fas fa-edit me-1"></i> संपादित करा
+                  </button>
+                  <form method="POST" action="{% url 'PS-Manage-Panchayat-Samitis' %}" 
+                        style="display: inline;" 
+                        onsubmit="return confirm('⚠️ कृपया खात्री करा? ही पंचायत समिती कायमची हटविली जाईल!');">
+                    {% csrf_token %}
+                    <input type="hidden" name="delete_samiti" value="1">
+                    <input type="hidden" name="samiti_id" value="{{ samiti.id }}">
+                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                      <i class="fas fa-trash-alt me-1"></i> हटवा
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="8" class="text-center py-5">
+                <div class="py-5">
+                  <i class="fas fa-building fa-3x text-secondary mb-3 d-block"></i>
+                  <p class="text-secondary mb-3">पंचायत समिती आढळली नाही</p>
+                  <button type="button" class="btn btn-warning text-white rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#addModal">
+                    <i class="fas fa-plus me-1"></i> प्रथम समिती जोडा
+                  </button>
+                </div>
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Pagination Section -->
+    {% if samitis and samitis.paginator and samitis.paginator.num_pages > 1 %}
+    <div class="pagination-wrapper">
+      <div class="pagination-info">
+        <i class="fas fa-table me-1"></i> 
+        Showing {{ samitis.start_index }} - {{ samitis.end_index }} of {{ samitis.paginator.count }} samitis
+      </div>
+      
+      <div class="pagination">
+        <!-- First Page -->
+        {% if samitis.has_previous %}
+          <a href="?page=1{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if zilla_parishad_name %}&zilla_parishad_name={{ zilla_parishad_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" 
+            class="pagination-btn" title="First Page">
+            <i class="fas fa-angle-double-left"></i> First
+          </a>
+        {% else %}
+          <span class="pagination-btn disabled">
+            <i class="fas fa-angle-double-left"></i> First
+          </span>
+        {% endif %}
+        
+        <!-- Previous Page -->
+        {% if samitis.has_previous %}
+          <a href="?page={{ samitis.previous_page_number }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if zilla_parishad_name %}&zilla_parishad_name={{ zilla_parishad_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" 
+            class="pagination-btn" title="Previous Page">
+            <i class="fas fa-angle-left"></i> Prev
+          </a>
+        {% else %}
+          <span class="pagination-btn disabled">
+            <i class="fas fa-angle-left"></i> Prev
+          </span>
+        {% endif %}
+        
+        <!-- Page Numbers -->
+        {% with current_page=samitis.number total_pages=samitis.paginator.num_pages %}
+          {% if total_pages <= 7 %}
+            {% for page_num in samitis.paginator.page_range %}
+              {% if page_num == current_page %}
+                <span class="pagination-btn active">{{ page_num }}</span>
+              {% else %}
+                <a href="?page={{ page_num }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if zilla_parishad_name %}&zilla_parishad_name={{ zilla_parishad_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ page_num }}</a>
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            {% if current_page <= 3 %}
+              {% for page_num in samitis.paginator.page_range|slice:":5" %}
+                {% if page_num == current_page %}
+                  <span class="pagination-btn active">{{ page_num }}</span>
+                {% else %}
+                  <a href="?page={{ page_num }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if zilla_parishad_name %}&zilla_parishad_name={{ zilla_parishad_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ page_num }}</a>
+                {% endif %}
+              {% endfor %}
+              <span class="pagination-ellipsis">...</span>
+              <a href="?page={{ total_pages }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if zilla_parishad_name %}&zilla_parishad_name={{ zilla_parishad_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ total_pages }}</a>
+            {% elif current_page >= total_pages|add:-2 %}
+              <a href="?page=1{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if zilla_parishad_name %}&zilla_parishad_name={{ zilla_parishad_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">1</a>
+              <span class="pagination-ellipsis">...</span>
+              {% for page_num in samitis.paginator.page_range|slice:total_pages|add:-5 %}
+                {% if page_num == current_page %}
+                  <span class="pagination-btn active">{{ page_num }}</span>
+                {% else %}
+                  <a href="?page={{ page_num }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if zilla_parishad_name %}&zilla_parishad_name={{ zilla_parishad_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ page_num }}</a>
+                {% endif %}
+              {% endfor %}
             {% else %}
-              <span class="status-badge status-inactive">
-                <i class="fa fa-times-circle"></i> निष्क्रिय
-              </span>
+              <a href="?page=1{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if zilla_parishad_name %}&zilla_parishad_name={{ zilla_parishad_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">1</a>
+              <span class="pagination-ellipsis">...</span>
+              {% for page_num in samitis.paginator.page_range %}
+                {% if page_num >= current_page|add:-1 and page_num <= current_page|add:1 %}
+                  {% if page_num == current_page %}
+                    <span class="pagination-btn active">{{ page_num }}</span>
+                  {% else %}
+                    <a href="?page={{ page_num }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if zilla_parishad_name %}&zilla_parishad_name={{ zilla_parishad_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ page_num }}</a>
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+              <span class="pagination-ellipsis">...</span>
+              <a href="?page={{ total_pages }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if zilla_parishad_name %}&zilla_parishad_name={{ zilla_parishad_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ total_pages }}</a>
             {% endif %}
-          </td>
-          <td>
-            <div class="action-btns">
-              <a href="?edit_id={{ samiti.id }}&page={{ samitis.number }}&panchayat_samiti_name={{ panchayat_samiti_name }}&taluka_name={{ taluka_name }}&panchayat_samiti_code={{ panchayat_samiti_code }}&contact_person={{ contact_person }}&contact_phone={{ contact_phone }}&status={{ status_filter }}" class="edit-btn">
-                <i class="fa fa-edit"></i> संपादन
-              </a>
-              <form method="POST" action="{% url 'PS-Manage-Panchayat-Samitis' %}" style="display: inline;" onsubmit="return confirm('खात्री आहे? ही समिती हटवली जाईल!');">
-                {% csrf_token %}
-                <input type="hidden" name="delete_samiti" value="1">
-                <input type="hidden" name="samiti_id" value="{{ samiti.id }}">
-                <button type="submit" class="delete-btn">
-                  <i class="fa fa-trash"></i> हटवा
-                </button>
-              </form>
-            </div>
-          </td>
-        </tr>
-        {% endfor %}
-      {% else %}
-        <tr>
-          <td colspan="8">
-            <div class="empty-state">
-              <i class="fa fa-building"></i>
-              <p>कोणतीही पंचायत समिती सापडली नाही</p>
-              <small class="text-muted">"पंचायत समिती जोडा" बटणावर क्लिक करा</small>
-            </div>
-          </td>
-        </tr>
-      {% endif %}
-    </tbody>
-  </table>
-</div>
-
-<!-- Pagination -->
-{% if samitis and samitis.paginator.num_pages > 1 %}
-<div class="pagination-wrapper">
-  <div class="pagination-info">
-    <i class="fa fa-table"></i> {{ samitis.start_index }} - {{ samitis.end_index }} / {{ samitis.paginator.count }}
-  </div>
-  <div class="pagination">
-    {% if samitis.has_previous %}
-      <a href="?page=1&panchayat_samiti_name={{ panchayat_samiti_name }}&taluka_name={{ taluka_name }}&panchayat_samiti_code={{ panchayat_samiti_code }}&contact_person={{ contact_person }}&contact_phone={{ contact_phone }}&status={{ status_filter }}" class="pagination-btn"><i class="fa fa-angle-double-left"></i></a>
-      <a href="?page={{ samitis.previous_page_number }}&panchayat_samiti_name={{ panchayat_samiti_name }}&taluka_name={{ taluka_name }}&panchayat_samiti_code={{ panchayat_samiti_code }}&contact_person={{ contact_person }}&contact_phone={{ contact_phone }}&status={{ status_filter }}" class="pagination-btn"><i class="fa fa-angle-left"></i></a>
-    {% endif %}
-    
-    <span class="pagination-btn active">{{ samitis.number }}</span>
-    
-    {% if samitis.has_next %}
-      <a href="?page={{ samitis.next_page_number }}&panchayat_samiti_name={{ panchayat_samiti_name }}&taluka_name={{ taluka_name }}&panchayat_samiti_code={{ panchayat_samiti_code }}&contact_person={{ contact_person }}&contact_phone={{ contact_phone }}&status={{ status_filter }}" class="pagination-btn"><i class="fa fa-angle-right"></i></a>
-      <a href="?page={{ samitis.paginator.num_pages }}&panchayat_samiti_name={{ panchayat_samiti_name }}&taluka_name={{ taluka_name }}&panchayat_samiti_code={{ panchayat_samiti_code }}&contact_person={{ contact_person }}&contact_phone={{ contact_phone }}&status={{ status_filter }}" class="pagination-btn"><i class="fa fa-angle-double-right"></i></a>
-    {% endif %}
-  </div>
-</div>
-{% endif %}
-
-<!-- ADD MODAL -->
-<div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title"><i class="fa fa-plus-circle"></i> पंचायत समिती जोडा</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          {% endif %}
+        {% endwith %}
+        
+        <!-- Next Page -->
+        {% if samitis.has_next %}
+          <a href="?page={{ samitis.next_page_number }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if zilla_parishad_name %}&zilla_parishad_name={{ zilla_parishad_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" 
+            class="pagination-btn" title="Next Page">
+            Next <i class="fas fa-angle-right"></i>
+          </a>
+        {% else %}
+          <span class="pagination-btn disabled">
+            Next <i class="fas fa-angle-right"></i>
+          </span>
+        {% endif %}
+        
+        <!-- Last Page -->
+        {% if samitis.has_next %}
+          <a href="?page={{ samitis.paginator.num_pages }}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if zilla_parishad_name %}&zilla_parishad_name={{ zilla_parishad_name }}{% endif %}{% if taluka_name %}&taluka_name={{ taluka_name }}{% endif %}{% if panchayat_samiti_code %}&panchayat_samiti_code={{ panchayat_samiti_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" 
+            class="pagination-btn" title="Last Page">
+            Last <i class="fas fa-angle-double-right"></i>
+          </a>
+        {% else %}
+          <span class="pagination-btn disabled">
+            Last <i class="fas fa-angle-double-right"></i>
+          </span>
+        {% endif %}
       </div>
-      <form method="POST" action="{% url 'PS-Manage-Panchayat-Samitis' %}">
+      
+      <div class="pagination-info">
+        <i class="fas fa-file-alt me-1"></i> 
+        Page {{ samitis.number }} of {{ samitis.paginator.num_pages }}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- ================================================= -->
+<!-- जोडा मॉडल (ADD MODAL) -->
+<!-- ================================================= -->
+<div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content rounded-4 border-0">
+      <div class="modal-header bg-dark text-white rounded-top-4 border-0">
+        <h5 class="modal-title">
+          <i class="fas fa-plus-circle me-2"></i> नवीन पंचायत समिती जोडा
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" action="{% url 'PS-Manage-Panchayat-Samitis' %}" id="addSamitiForm">
         {% csrf_token %}
         <input type="hidden" name="add_samiti" value="1">
-        <div class="modal-body">
-          <div class="form-group">
-            <label>समिती नाव <span>*</span></label>
-            <input type="text" name="panchayat_samiti_name" class="form-control" required>
-          </div>
-          <div class="form-group">
-            <label>तालुका नाव <span>*</span></label>
-            <input type="text" name="taluka_name" class="form-control" required>
-          </div>
-          <div class="form-group">
-            <label>समिती कोड <span>*</span></label>
-            <input type="text" name="panchayat_samiti_code" class="form-control" required>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>संपर्क व्यक्ती</label>
-              <input type="text" name="contact_person" class="form-control">
+        <div class="modal-body p-4">
+          <!-- Row 1: Samiti Name & Zilla Parishad -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">समितीचे नाव <span class="text-danger">*</span></label>
+              <input type="text" name="panchayat_samiti_name" class="form-control rounded-3" 
+                     placeholder="समितीचे नाव प्रविष्ट करा..." required>
             </div>
-            <div class="form-group">
-              <label>मोबाईल क्रमांक</label>
-              <input type="text" name="contact_phone" class="form-control" maxlength="10">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">जिल्हा परिषद <span class="text-danger">*</span></label>
+              <select name="zilla_parishad_id" class="form-select rounded-3" id="addZillaParishadSelect" required>
+                <option value="">-- जिल्हा परिषद निवडा --</option>
+                {% for zp in all_zilla_parishads %}
+                  <option value="{{ zp.id }}" data-district-id="{{ zp.district.id }}">{{ zp.zillaParishad_name }} ({{ zp.district.name }})</option>
+                {% endfor %}
+              </select>
             </div>
           </div>
-          <div class="form-group">
-            <label>स्थिती</label>
-            <select name="status" class="form-control">
-              <option value="Active">सक्रिय</option>
-              <option value="Inactive">निष्क्रिय</option>
-            </select>
+          
+          <!-- Row 2: Taluka & Samiti Code -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">तालुका <span class="text-danger">*</span></label>
+              <select name="taluka_id" class="form-select rounded-3" id="addTalukaSelect" required disabled>
+                <option value="">-- प्रथम जिल्हा परिषद निवडा --</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">समिती कोड</label>
+              <input type="text" name="panchayat_samiti_code" class="form-control rounded-3" 
+                     placeholder="अद्वितीय कोड...">
+            </div>
+          </div>
+
+          <!-- Row 3: Status (Full Width) -->
+          <div class="row">
+            <div class="col-12">
+              <label class="form-label fw-semibold">स्थिती</label>
+              <select name="status" class="form-select rounded-3">
+                <option value="Active">सक्रिय</option>
+                <option value="Inactive">निष्क्रिय</option>
+              </select>
+            </div>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">रद्द करा</button>
-          <button type="submit" class="btn btn-primary">जतन करा</button>
+        <div class="modal-footer bg-light rounded-bottom-4 border-0">
+          <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">रद्द करा</button>
+          <button type="submit" class="btn btn-warning text-dark rounded-pill px-4">जतन करा</button>
         </div>
       </form>
     </div>
   </div>
 </div>
 
-<!-- EDIT MODAL -->
-{% if edit_samiti %}
-<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true" style="display: block;">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title"><i class="fa fa-edit"></i> पंचायत समिती संपादन</h5>
-        <a href="{% url 'PS-Manage-Panchayat-Samitis' %}?page={{ samitis.number }}&panchayat_samiti_name={{ panchayat_samiti_name }}&taluka_name={{ taluka_name }}&panchayat_samiti_code={{ panchayat_samiti_code }}&contact_person={{ contact_person }}&contact_phone={{ contact_phone }}&status={{ status_filter }}" class="btn-close btn-close-white"></a>
+<!-- ================================================= -->
+<!-- संपादित करा मॉडल (EDIT MODAL) -->
+<!-- ================================================= -->
+{% for samiti in samitis %}
+<div class="modal fade" id="editModal{{ samiti.id }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content rounded-4 border-0">
+      <div class="modal-header bg-dark text-white rounded-top-4 border-0">
+        <h5 class="modal-title">
+          <i class="fas fa-edit me-2"></i> पंचायत समिती संपादित करा
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form method="POST" action="{% url 'PS-Manage-Panchayat-Samitis' %}">
+      <form method="POST" action="{% url 'PS-Manage-Panchayat-Samitis' %}" class="editSamitiForm">
         {% csrf_token %}
         <input type="hidden" name="edit_samiti" value="1">
-        <input type="hidden" name="samiti_id" value="{{ edit_samiti.id }}">
-        <div class="modal-body">
-          <div class="form-group">
-            <label>समिती नाव <span>*</span></label>
-            <input type="text" name="panchayat_samiti_name" class="form-control" value="{{ edit_samiti.panchayat_samiti_name|default:'' }}" required>
-          </div>
-          <div class="form-group">
-            <label>तालुका नाव <span>*</span></label>
-            <input type="text" name="taluka_name" class="form-control" value="{{ edit_samiti.taluka_name|default:'' }}" required>
-          </div>
-          <div class="form-group">
-            <label>समिती कोड <span>*</span></label>
-            <input type="text" name="panchayat_samiti_code" class="form-control" value="{{ edit_samiti.panchayat_samiti_code|default:'' }}" required>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>संपर्क व्यक्ती</label>
-              <input type="text" name="contact_person" class="form-control" value="{{ edit_samiti.contact_person|default:'' }}">
+        <input type="hidden" name="samiti_id" value="{{ samiti.id }}">
+        <div class="modal-body p-4">
+          <!-- Row 1: Samiti Name & Zilla Parishad -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">समितीचे नाव <span class="text-danger">*</span></label>
+              <input type="text" name="panchayat_samiti_name" class="form-control rounded-3" 
+                     value="{{ samiti.panchayat_samiti_name|default:'' }}" required>
             </div>
-            <div class="form-group">
-              <label>मोबाईल क्रमांक</label>
-              <input type="text" name="contact_phone" class="form-control" value="{{ edit_samiti.contact_phone|default:'' }}" maxlength="10">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">जिल्हा परिषद <span class="text-danger">*</span></label>
+              <select name="zilla_parishad_id" class="form-select rounded-3 zilla-parishad-select" data-samiti-id="{{ samiti.id }}" required>
+                <option value="">-- जिल्हा परिषद निवडा --</option>
+                {% for zp in all_zilla_parishads %}
+                  <option value="{{ zp.id }}" data-district-id="{{ zp.district.id }}" {% if samiti.zilla_parishad and samiti.zilla_parishad.id == zp.id %}selected{% endif %}>
+                    {{ zp.zillaParishad_name }} ({{ zp.district.name }})
+                  </option>
+                {% endfor %}
+              </select>
             </div>
           </div>
-          <div class="form-group">
-            <label>स्थिती</label>
-            <select name="status" class="form-control">
-              <option value="Active" {% if edit_samiti.status == 'Active' %}selected{% endif %}>सक्रिय</option>
-              <option value="Inactive" {% if edit_samiti.status == 'Inactive' %}selected{% endif %}>निष्क्रिय</option>
-            </select>
+          
+          <!-- Row 2: Taluka & Samiti Code -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">तालुका <span class="text-danger">*</span></label>
+              <select name="taluka_id" class="form-select rounded-3 taluka-select" data-samiti-id="{{ samiti.id }}" data-current-taluka="{{ samiti.taluka.id|default:'' }}" required>
+                <option value="">-- तालुका निवडा --</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">समिती कोड</label>
+              <input type="text" name="panchayat_samiti_code" class="form-control rounded-3" 
+                     value="{{ samiti.panchayat_samiti_code|default:'' }}">
+            </div>
+          </div>
+
+          <!-- Row 3: Status (Full Width) -->
+          <div class="row">
+            <div class="col-12">
+              <label class="form-label fw-semibold">स्थिती</label>
+              <select name="status" class="form-select rounded-3">
+                <option value="Active" {% if samiti.status == 'Active' %}selected{% endif %}>सक्रिय</option>
+                <option value="Inactive" {% if samiti.status == 'Inactive' %}selected{% endif %}>निष्क्रिय</option>
+              </select>
+            </div>
           </div>
         </div>
-        <div class="modal-footer">
-          <a href="{% url 'PS-Manage-Panchayat-Samitis' %}?page={{ samitis.number }}&panchayat_samiti_name={{ panchayat_samiti_name }}&taluka_name={{ taluka_name }}&panchayat_samiti_code={{ panchayat_samiti_code }}&contact_person={{ contact_person }}&contact_phone={{ contact_phone }}&status={{ status_filter }}" class="btn btn-secondary">रद्द करा</a>
-          <button type="submit" class="btn btn-primary">अद्यतन करा</button>
+        <div class="modal-footer bg-light rounded-bottom-4 border-0">
+          <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">रद्द करा</button>
+          <button type="submit" class="btn btn-warning text-dark rounded-pill px-4">अद्यतनित करा</button>
         </div>
       </form>
     </div>
   </div>
 </div>
+{% endfor %}
 
+
+<!-- JavaScript for Dynamic Taluka Loading - Alternative Approach -->
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    {% if edit_samiti %}
-      var editModal = new bootstrap.Modal(document.getElementById('editModal'));
-      editModal.show();
-    {% endif %}
-  });
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM fully loaded");
+    
+    // Get talukas data from Django context
+    const talukasByDistrict = {{ talukas_by_district_json|safe }};
+    console.log("Talukas by district data:", talukasByDistrict);
+    
+    // Function to populate taluka dropdown using pre-loaded data
+    function populateTalukaSelectFromData(selectElement, districtId, selectedTalukaId = null) {
+        console.log(`Populating taluka for district: ${districtId}, selected: ${selectedTalukaId}`);
+        
+        if (!districtId || !talukasByDistrict[districtId] || talukasByDistrict[districtId].length === 0) {
+            selectElement.disabled = true;
+            selectElement.innerHTML = '<option value="">-- तालुका उपलब्ध नाही --</option>';
+            return;
+        }
+        
+        const talukas = talukasByDistrict[districtId];
+        selectElement.disabled = false;
+        selectElement.innerHTML = '<option value="">-- तालुका निवडा --</option>';
+        
+        talukas.forEach(taluka => {
+            const option = document.createElement('option');
+            option.value = taluka.id;
+            option.textContent = taluka.name;
+            if (selectedTalukaId && parseInt(selectedTalukaId) === taluka.id) {
+                option.selected = true;
+            }
+            selectElement.appendChild(option);
+        });
+        console.log(`Added ${talukas.length} talukas to dropdown`);
+    }
+    
+    // For Add Modal
+    const addZillaParishadSelect = document.getElementById('addZillaParishadSelect');
+    const addTalukaSelect = document.getElementById('addTalukaSelect');
+    
+    if (addZillaParishadSelect) {
+        addZillaParishadSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const districtId = selectedOption.getAttribute('data-district-id');
+            console.log("Selected ZP - District ID:", districtId);
+            
+            if (districtId) {
+                populateTalukaSelectFromData(addTalukaSelect, districtId, null);
+            } else {
+                addTalukaSelect.disabled = true;
+                addTalukaSelect.innerHTML = '<option value="">-- प्रथम जिल्हा परिषद निवडा --</option>';
+            }
+        });
+    }
+    
+    // For Edit Modal
+    const editModals = document.querySelectorAll('.editSamitiForm');
+    
+    editModals.forEach((form, index) => {
+        const zillaParishadSelect = form.querySelector('.zilla-parishad-select');
+        const talukaSelect = form.querySelector('.taluka-select');
+        
+        if (zillaParishadSelect && talukaSelect) {
+            // Get initial values
+            const initialSelectedOption = zillaParishadSelect.options[zillaParishadSelect.selectedIndex];
+            const initialDistrictId = initialSelectedOption ? initialSelectedOption.getAttribute('data-district-id') : null;
+            const currentTalukaId = talukaSelect.getAttribute('data-current-taluka');
+            
+            console.log(`Edit modal ${index} - Initial District: ${initialDistrictId}, Taluka: ${currentTalukaId}`);
+            
+            if (initialDistrictId) {
+                populateTalukaSelectFromData(talukaSelect, initialDistrictId, currentTalukaId);
+            }
+            
+            zillaParishadSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                const districtId = selectedOption.getAttribute('data-district-id');
+                console.log(`Edit modal ${index} - Changed District: ${districtId}`);
+                populateTalukaSelectFromData(talukaSelect, districtId, null);
+            });
+        }
+    });
+});
 </script>
-{% endif %}
-
 {% endblock %}

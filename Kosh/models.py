@@ -9,9 +9,8 @@ class GramPanchayat(models.Model):
         ('Inactive', 'Inactive'),
     )
     panchayat_samiti = models.ForeignKey(Panchayat_Samiti,on_delete=models.SET_NULL,null=True,blank=True, related_name='gram_panchayats')
-    panchayat_samiti_name = models.CharField(max_length=255,null=True,blank=True)
     gram_panchayat_name = models.CharField(max_length=255,null=True,blank=True)
-    gram_panchayat_code = models.CharField(max_length=50,unique=True,null=True,blank=True)
+    gram_panchayat_code = models.CharField(max_length=50,null=True,blank=True)
     address = models.TextField(null=True,blank=True)
     status = models.CharField(max_length=20,choices=STATUS_CHOICES,default='Active',null=True,blank=True)
     
@@ -24,7 +23,6 @@ class GramPanchayat(models.Model):
     def __str__(self):
         return self.gram_panchayat_name if self.gram_panchayat_name else "Gram Panchayat"
     
-
 class Kosh(models.Model):
     STATUS_CHOICES = (
         ('Active', 'Active'),
@@ -32,10 +30,9 @@ class Kosh(models.Model):
         ('Closed', 'Closed'),
     )
 
-    gramPanchayat = models.ForeignKey('GramPanchayat',on_delete=models.SET_NULL,null=True,blank=True, related_name='kosh')
-    gramPanchayat_name = models.CharField(max_length=255,null=True,blank=True)
+    grampanchayat = models.ForeignKey('GramPanchayat',on_delete=models.SET_NULL,null=True,blank=True, related_name='kosh')
     kosh_name = models.CharField(max_length=255,null=True,blank=True)
-    kosh_code = models.CharField(max_length=100,unique=True,null=True,blank=True)
+    kosh_code = models.CharField(max_length=100,null=True,blank=True)
     is_primary = models.BooleanField(default=False,null=True,blank=True)
     status = models.CharField(max_length=20,choices=STATUS_CHOICES,default='Active',null=True,blank=True)
     
@@ -62,7 +59,7 @@ class Kosh_Population(models.Model):
         ('Inactive', 'Inactive'),
     )
 
-    gram_panchayat = models.ForeignKey('GramPanchayat',on_delete=models.SET_NULL,null=True,blank=True,related_name='kosh_populations')
+    kosh = models.ForeignKey('Kosh',on_delete=models.SET_NULL,null=True,blank=True, related_name='kosh_populations')
     cast_category = models.ForeignKey('Kosh_Cast_Category',on_delete=models.SET_NULL,null=True,blank=True,related_name='kosh_populations')
     financial_year = models.ForeignKey(Financial_Year,on_delete=models.SET_NULL,null=True,blank=True,related_name='kosh_populations')
     population_count = models.BigIntegerField(null=True, blank=True)
@@ -71,8 +68,7 @@ class Kosh_Population(models.Model):
     updated_at = models.DateTimeField(auto_now=True,null=True,blank=True)
 
     def __str__(self):
-        return f"{self.gram_panchayat} - {self.cast_category} - {self.population_count}"
-
+        return f"{self.kosh} - {self.cast_category} - {self.population_count}"
 
 class Kosh_Total_Population(models.Model):
     kosh = models.ForeignKey('Kosh',on_delete=models.SET_NULL,null=True,blank=True, related_name='kosh_total_populations')
@@ -91,8 +87,7 @@ class Kosh_User(models.Model):
         ('Inactive', 'Inactive'),
     )
 
-    kosh = models.ForeignKey('Kosh',on_delete=models.SET_NULL,null=True,blank=True, related_name='kosh_users')
-    kosh_name = models.CharField(max_length=255,null=True,blank=True)
+    kosh = models.ManyToManyField('Kosh',null=True,blank=True, related_name='kosh_users')
     name = models.CharField(max_length=255,null=True,blank=True)
     mobile = models.CharField(max_length=255,null=True,blank=True)
     email = models.EmailField(null=True,blank=True)
@@ -151,6 +146,7 @@ class Kosh_Committee(models.Model):
     def __str__(self):
         return self.name if self.name else "Kosh Committee"
 
+
 class Kosh_Bank_Detail(models.Model):
     STATUS_CHOICES = (
         ('Active', 'Active'),
@@ -169,7 +165,9 @@ class Kosh_Bank_Detail(models.Model):
     current_balance = models.DecimalField(max_digits=15,decimal_places=2,default=0,null=True,blank=True)
     bank_address = models.TextField(null=True,blank=True)
 
-
+    status = models.CharField(max_length=20,choices=STATUS_CHOICES,default='Active',null=True,blank=True)
+    created_at = models.DateTimeField(auto_now_add=True,null=True,blank=True)
+    updated_at = models.DateTimeField(auto_now=True,null=True,blank=True)
 
 
 

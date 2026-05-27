@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import (
     Financial_Year,
+    Kosh_Head,
     Super_User,
     District,
     Taluka,
@@ -32,3 +33,14 @@ class TalukaAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'district')
     search_fields = ('name', 'district__name')
     list_filter = ('district',)
+
+
+
+@admin.register(Kosh_Head)
+class KoshHeadAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'status', 'created_at', 'updated_at')
+    list_filter = ('status',)
+    search_fields = ('name',)
+    ordering = ('-created_at',)
+
+

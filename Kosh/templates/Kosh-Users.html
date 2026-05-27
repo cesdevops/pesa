@@ -1,0 +1,526 @@
+{% extends 'Superuser-base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  /* Pagination Styles */
+.pagination-wrapper {
+  padding: 20px;
+  background: #fff;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.pagination {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+}
+
+.pagination-btn {
+  padding: 6px 12px;
+  border: 1px solid #d1d5db;
+  background: white;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pagination-btn:hover {
+  background: #f1f5f9;
+  border-color: #1e88e5;
+  color: #1e88e5;
+}
+
+.pagination-btn.active {
+  background: linear-gradient(135deg, #1e88e5, #1565c0);
+  color: white;
+  border-color: #1e88e5;
+}
+
+.pagination-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.pagination-ellipsis {
+  padding: 6px 10px;
+  color: #94a3b8;
+}
+
+.pagination-info {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.user-card {
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+
+.user-card:hover {
+  transform: translateY(-5px);
+}
+
+.profile-img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.kosh-name-clickable {
+  cursor: pointer;
+  color: #1e88e5;
+  font-weight: 600;
+  transition: all 0.2s;
+  display: inline-block;
+  margin: 2px;
+}
+
+.kosh-name-clickable:hover {
+  color: #0d47a1;
+  text-decoration: underline;
+}
+
+.modal-details {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.detail-row {
+  display: flex;
+  padding: 8px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.detail-label {
+  width: 40%;
+  font-weight: 600;
+  color: #475569;
+}
+
+.detail-value {
+  width: 60%;
+  color: #1e293b;
+}
+
+.kosh-badge {
+  display: inline-block;
+  margin: 3px;
+  cursor: pointer;
+}
+</style>
+
+<div class="container-fluid px-4 py-3 bg-white">
+  
+<!-- पृष्ठ शीर्षक -->
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+
+  <!-- Left Section -->
+  <div class="d-inline-block">
+    <h3 class="h3 mb-1 fw-bold text-dark">
+      <i class="fas fa-users text-primary me-2"></i>
+      कोष यूजर व्यवस्थापन
+    </h3>
+
+    <div class="rounded-pill"
+         style="height: 2px; width: 100%;
+         background: linear-gradient(90deg, #1e88e5, #64b5f6);">
+    </div>
+
+    <p class="text-muted mt-2 mb-0">
+      <i class="fas fa-building me-1"></i>
+      कोष व्यवस्थापन आणि यूजर तपशील
+    </p>
+  </div>
+
+  <!-- Right Side Buttons -->
+  <div class="d-flex flex-wrap gap-2 ms-auto">
+
+    <!-- Back Button -->
+    <a href="{% url 'Kosh-Management' grampanchayat_id %}"
+       class="btn btn-outline-secondary d-flex align-items-center fw-semibold px-4 py-2 shadow-sm rounded-pill">
+
+      <i class="fas fa-arrow-left me-2"></i>
+      <span>मागे जा</span>
+
+    </a>
+
+    <!-- Add User Button -->
+    <a href="{% url 'Kosh-Add-User' grampanchayat_id %}" 
+       class="btn btn-warning d-flex align-items-center fw-semibold px-4 py-2 shadow-sm rounded-pill">
+
+      <i class="fas fa-user-plus me-2"></i>
+      <span>नवीन यूजर जोडा</span>
+
+    </a>
+
+  </div>
+
+</div>
+  
+  <!-- Filter Card -->
+  <div class="card shadow-sm border-0 rounded-4 mb-3">
+    <div class="card-body p-3">
+      <form method="GET" action="">
+        <div class="row g-2 align-items-end">
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold mb-1">कोष नाव</label>
+            <input type="text" name="kosh_name" class="form-control form-control-sm rounded-3"
+                   placeholder="कोष नाव" value="{{ kosh_name|default:'' }}">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold mb-1">यूजर नाव</label>
+            <input type="text" name="user_name" class="form-control form-control-sm rounded-3"
+                   placeholder="यूजर नाव" value="{{ user_name|default:'' }}">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold mb-1">मोबाइल</label>
+            <input type="text" name="mobile" class="form-control form-control-sm rounded-3"
+                   placeholder="मोबाइल" value="{{ mobile|default:'' }}">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold mb-1">स्थिती</label>
+            <select name="status" class="form-select form-select-sm rounded-3">
+              <option value="all" {% if status_filter == 'all' %}selected{% endif %}>सर्व</option>
+              <option value="active" {% if status_filter == 'active' %}selected{% endif %}>सक्रिय</option>
+              <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>निष्क्रिय</option>
+            </select>
+          </div>
+          <div class="col-md-2 d-flex gap-1">
+            <button type="submit" class="btn btn-primary btn-sm rounded-3 w-100">
+              <i class="fas fa-search me-1"></i> शोधा
+            </button>
+            <a href="{% url 'Kosh-Users' %}" class="btn btn-outline-secondary btn-sm rounded-3 w-100">
+              <i class="fas fa-undo-alt me-1"></i> रीसेट
+            </a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Kosh Users Details Table - One row per user -->
+  <div class="card shadow-sm border-0 rounded-4">
+    <div class="card-header bg-white border-0 pt-4 px-4">
+      <h5 class="mb-0 fw-bold">
+        <i class="fas fa-users text-primary me-2"></i>
+        कोष यूजर तपशील
+      </h5>
+    </div>
+    <div class="card-body p-0 overflow-auto">
+      <table class="table table-hover mb-0">
+        <thead class="bg-light">
+          <tr>
+            <th class="ps-4 py-3" style="width: 50px;">#</th>
+            <th class="py-3">नाव</th>
+            <th class="py-3">मोबाइल</th>
+            <th class="py-3">ईमेल</th>
+            <th class="py-3">यूजरनेम</th>
+            <th class="py-3">कोष</th>
+            <th class="py-3">स्थिती</th>
+            <th class="pe-4 py-3" style="width: 100px;">प्रोफाईल</th>
+            <th class="pe-4 py-3" style="width: 120px;">क्रिया</th>
+
+          </tr>
+        </thead>
+        <tbody>
+          {% if user_list %}
+            {% for user in user_list %}
+            <tr>
+              <td class="ps-4">{{ forloop.counter0|add:user_start_index|default:forloop.counter }}</td>
+              <td class="fw-semibold">{{ user.name|default:"—" }}</td>
+              <td>{{ user.mobile|default:"—" }}</td>
+              <td>{{ user.email|default:"—" }}</td>
+              <td><code class="bg-light px-2 py-1 rounded">{{ user.username|default:"—" }}</code></td>
+            <td>
+                <div class="row g-2">
+
+                    {% for kosh in user.kosh.all %}
+
+                        <div class="col-4">
+                            <span class="badge bg-info bg-opacity-10 fw-bold text-primary px-3 py-2 rounded-pill w-100 text-start kosh-badge"
+                                data-bs-toggle="modal"
+                                data-bs-target="#koshDetailModal{{ kosh.id }}"
+                                style="cursor: pointer;">
+
+                                <i class="fas fa-database me-1"></i>
+                                {{ kosh.kosh_name|default:"—" }}
+
+                            </span>
+                        </div>
+
+                    {% empty %}
+
+                        <div class="col-12">
+                            <span class="text-muted">—</span>
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+            </td>
+              
+              
+                <td>
+                {% if user.status == 'Active' %}
+                  <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
+                    <i class="fas fa-circle fs-10 me-1"></i> सक्रिय
+                  </span>
+                {% else %}
+                  <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill">
+                    <i class="fas fa-circle fs-10 me-1"></i> निष्क्रिय
+                  </span>
+                {% endif %}
+              </td>
+              <td class="pe-4">
+
+                  {% if user.profile %}
+                      <a href="{{ user.profile.url }}" target="_blank">
+                          <img src="{{ user.profile.url }}"
+                              alt="Profile"
+                              class="profile-img border border-2 border-light shadow-sm"
+                              style="width: 40px;
+                                      height: 40px;
+                                      border-radius: 50%;
+                                      object-fit: cover;
+                                      cursor: pointer;
+                                      transition: 0.3s;">
+                      </a>
+                  {% else %}
+                      <span class="text-muted fw-semibold">---</span>
+                  {% endif %}
+
+              </td>
+                <td class="pe-4">
+                    <div class="d-flex gap-2">
+                        <!-- Edit Button -->
+                        <a href="{% url 'Kosh-Edit-User' grampanchayat_id user.id %}" 
+                        class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                        <i class="fas fa-edit me-1"></i> संपादित करा
+                    </a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="8" class="text-center py-5">
+                <div class="py-5">
+                  <i class="fas fa-users fa-3x text-secondary mb-3 d-block"></i>
+                  <p class="text-secondary mb-0">यूजर आढळला नाही</p>
+                </div>
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Users Pagination -->
+    {% if user_list and user_list.paginator and user_list.paginator.num_pages > 1 %}
+    <div class="pagination-wrapper">
+      <div class="pagination-info">
+        <i class="fas fa-table me-1"></i> 
+        दर्शवित आहे {{ user_list.start_index }} - {{ user_list.end_index }} of {{ user_list.paginator.count }} यूजर
+      </div>
+      <div class="pagination">
+        {% if user_list.has_previous %}
+          <a href="?page=1{% if kosh_name %}&kosh_name={{ kosh_name }}{% endif %}{% if user_name %}&user_name={{ user_name }}{% endif %}{% if mobile %}&mobile={{ mobile }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn"><i class="fas fa-angle-double-left"></i> First</a>
+        {% else %}
+          <span class="pagination-btn disabled"><i class="fas fa-angle-double-left"></i> First</span>
+        {% endif %}
+        
+        {% if user_list.has_previous %}
+          <a href="?page={{ user_list.previous_page_number }}{% if kosh_name %}&kosh_name={{ kosh_name }}{% endif %}{% if user_name %}&user_name={{ user_name }}{% endif %}{% if mobile %}&mobile={{ mobile }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn"><i class="fas fa-angle-left"></i> Prev</a>
+        {% else %}
+          <span class="pagination-btn disabled"><i class="fas fa-angle-left"></i> Prev</span>
+        {% endif %}
+        
+        <span class="pagination-btn active">{{ user_list.number }}</span>
+        
+        {% if user_list.has_next %}
+          <a href="?page={{ user_list.next_page_number }}{% if kosh_name %}&kosh_name={{ kosh_name }}{% endif %}{% if user_name %}&user_name={{ user_name }}{% endif %}{% if mobile %}&mobile={{ mobile }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">Next <i class="fas fa-angle-right"></i></a>
+        {% else %}
+          <span class="pagination-btn disabled">Next <i class="fas fa-angle-right"></i></span>
+        {% endif %}
+        
+        {% if user_list.has_next %}
+          <a href="?page={{ user_list.paginator.num_pages }}{% if kosh_name %}&kosh_name={{ kosh_name }}{% endif %}{% if user_name %}&user_name={{ user_name }}{% endif %}{% if mobile %}&mobile={{ mobile }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">Last <i class="fas fa-angle-double-right"></i></a>
+        {% else %}
+          <span class="pagination-btn disabled">Last <i class="fas fa-angle-double-right"></i></span>
+        {% endif %}
+      </div>
+      
+      <div class="pagination-info">
+        <i class="fas fa-file-alt me-1"></i> 
+        पृष्ठ {{ user_list.number }} of {{ user_list.paginator.num_pages }}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- ================================================= -->
+<!-- KOSH DETAIL MODALS -->
+<!-- ================================================= -->
+{% for user in user_list %}
+  {% for kosh in user.kosh.all %}
+  <div class="modal fade" id="koshDetailModal{{ kosh.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content rounded-4 border-0">
+        <div class="modal-header bg-dark text-white rounded-top-4 border-0">
+          <h5 class="modal-title">
+            <i class="fas fa-database me-2"></i> कोष तपशील - {{ kosh.kosh_name|default:"—" }}
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+<div class="modal-body p-4">
+  <div class="container-fluid">
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <div class="detail-row">
+          <div class="detail-label">कोष नाव :</div>
+          <div class="detail-value">{{ kosh.kosh_name|default:"—" }}</div>
+        </div>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <div class="detail-row">
+          <div class="detail-label">कोष कोड :</div>
+          <div class="detail-value">{{ kosh.kosh_code|default:"—" }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <div class="detail-row">
+          <div class="detail-label">ग्रामपंचायत :</div>
+          <div class="detail-value">
+            {{ kosh.grampanchayat.gram_panchayat_name|default:"—" }}
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <div class="detail-row">
+          <div class="detail-label">पंचायत समिती :</div>
+          <div class="detail-value">
+            {{ kosh.grampanchayat.panchayat_samiti.panchayat_samiti_name|default:"—" }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <div class="detail-row">
+          <div class="detail-label">तालुका :</div>
+          <div class="detail-value">
+            {{ kosh.grampanchayat.panchayat_samiti.taluka.name|default:"—" }}
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <div class="detail-row">
+          <div class="detail-label">जिल्हा :</div>
+          <div class="detail-value">
+            {{ kosh.grampanchayat.panchayat_samiti.taluka.district.name|default:"—" }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <div class="detail-row">
+          <div class="detail-label">प्राथमिक कोष :</div>
+          <div class="detail-value">
+            {% if kosh.is_primary %}
+              <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill">
+                <i class="fas fa-star me-1"></i> प्राथमिक
+              </span>
+            {% else %}
+              <span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-pill">
+                <i class="fas fa-circle me-1"></i> दुय्यम
+              </span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <div class="detail-row">
+          <div class="detail-label">स्थिती :</div>
+          <div class="detail-value">
+            {% if kosh.status == 'Active' %}
+              <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
+                <i class="fas fa-circle fs-10 me-1"></i> सक्रिय
+              </span>
+            {% elif kosh.status == 'Inactive' %}
+              <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill">
+                <i class="fas fa-circle fs-10 me-1"></i> निष्क्रिय
+              </span>
+            {% else %}
+              <span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-pill">
+                <i class="fas fa-circle fs-10 me-1"></i> बंद
+              </span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <div class="detail-row">
+          <div class="detail-label">तयार दिनांक :</div>
+          <div class="detail-value">
+            {{ kosh.created_at|date:"d/m/Y H:i"|default:"—" }}
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <div class="detail-row">
+          <div class="detail-label">शेवटचा अद्यतन :</div>
+          <div class="detail-value">
+            {{ kosh.updated_at|date:"d/m/Y H:i"|default:"—" }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+        <div class="modal-footer bg-light rounded-bottom-4 border-0">
+          <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">बंद करा</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+{% endfor %}
+
+{% endblock %}

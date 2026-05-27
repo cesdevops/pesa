@@ -10,7 +10,6 @@ class Panchayat_Samiti(models.Model):
     )
 
     zilla_parishad = models.ForeignKey(Zilla_Parishad,on_delete=models.SET_NULL,null=True,blank=True, related_name='panchayat_samitis')
-    zilla_parishad_name = models.CharField(max_length=255,null=True,blank=True)
     panchayat_samiti_name = models.CharField(max_length=255,null=True,blank=True)
     panchayat_samiti_code = models.CharField(max_length=255,unique=True,null=True,blank=True)
     taluka = models.ForeignKey(Taluka,on_delete=models.SET_NULL,null=True,blank=True,related_name='panchayat_samitis')
@@ -29,6 +28,7 @@ class Panchayat_Samiti_User(models.Model):
     mobile = models.CharField(max_length=20,null=True,blank=True)
     email = models.EmailField(null=True,blank=True)
     address = models.TextField(null=True,blank=True)
+    role = models.CharField(max_length=255,null=True,blank=True)
 
     username = models.CharField(max_length=255,unique=True,null=True,blank=True)
     password = models.CharField(max_length=255,null=True,blank=True)
@@ -49,6 +49,7 @@ class Panchayat_Samiti_User(models.Model):
 
     def check_password(self, raw_password):
         return check_password(raw_password, self.password)  
+
 
 
 

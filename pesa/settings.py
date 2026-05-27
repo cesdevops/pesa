@@ -30,8 +30,6 @@ DEBUG = True
 ALLOWED_HOSTS = ['60.254.61.169','127.0.0.1']
 
 
-# Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -43,7 +41,9 @@ INSTALLED_APPS = [
     'ZillaParishad',
     'PanchayatSamiti',
     'Kosh',
+    # 'Activity',
     'Navbar',
+    'FundRelease',
 
 
 
@@ -76,7 +76,6 @@ TEMPLATES = [
     },
 ]
 WSGI_APPLICATION = 'pesa.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

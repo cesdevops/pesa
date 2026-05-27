@@ -1,0 +1,480 @@
+{% extends 'Superuser-base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  /* Pagination Styles */
+.pagination-wrapper {
+  padding: 20px;
+  background: #fff;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.pagination {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+}
+
+.pagination-btn {
+  padding: 6px 12px;
+  border: 1px solid #d1d5db;
+  background: white;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pagination-btn:hover {
+  background: #f1f5f9;
+  border-color: #1e88e5;
+  color: #1e88e5;
+}
+
+.pagination-btn.active {
+  background: linear-gradient(135deg, #1e88e5, #1565c0);
+  color: white;
+  border-color: #1e88e5;
+}
+
+.pagination-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.pagination-ellipsis {
+  padding: 6px 10px;
+  color: #94a3b8;
+}
+
+.pagination-info {
+  font-size: 12px;
+  color: #64748b;
+}
+</style>
+
+<div class="container-fluid px-4 py-3 bg-white">
+  
+  <!-- पृष्ठ शीर्षक -->
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <div class="d-inline-block">
+      <h3 class="h3 mb-1 fw-bold text-dark">
+        <i class="fas fa-building text-warning me-2"></i>
+        ग्रामपंचायत व्यवस्थापन
+      </h3>
+      <div class="rounded-pill" style="height: 2px; width: 100%; background: linear-gradient(90deg, #f59e0b, #fbbf24);"></div>
+    </div>
+
+    <!-- Right Side Buttons -->
+    <div class="d-flex flex-wrap gap-3 ms-auto">
+      <!-- Add Gram Panchayat Button -->
+      <button type="button"
+              class="btn btn-warning d-flex align-items-center fw-semibold px-4 py-2 shadow-sm rounded-pill"
+              data-bs-toggle="modal"
+              data-bs-target="#addModal">
+        <i class="fas fa-plus-circle me-2"></i>
+        <span>नवीन ग्रामपंचायत जोडा</span>
+      </button>
+    </div>
+  </div>
+
+  
+  <!-- फिल्टर कार्ड -->
+  <div class="card shadow-sm border-0 rounded-4 mb-3">
+    <div class="card-body p-3">
+      <form method="GET" action="{% url 'Kosh-Manage-Grampanchayat' %}">
+        <div class="row g-2 align-items-end">
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold mb-1">ग्रामपंचायत नाव</label>
+            <input type="text" name="gram_panchayat_name" class="form-control form-control-sm rounded-3"
+                   placeholder="ग्रामपंचायत नाव" value="{{ gram_panchayat_name|default:'' }}">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold mb-1">पंचायत समिती</label>
+            <input type="text" name="panchayat_samiti_name" class="form-control form-control-sm rounded-3"
+                   placeholder="पंचायत समिती" value="{{ panchayat_samiti_name|default:'' }}">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold mb-1">कोड</label>
+            <input type="text" name="gram_panchayat_code" class="form-control form-control-sm rounded-3"
+                   placeholder="कोड" value="{{ gram_panchayat_code|default:'' }}">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small fw-semibold mb-1">स्थिती</label>
+            <select name="status" class="form-select form-select-sm rounded-3">
+              <option value="all" {% if status_filter == 'all' %}selected{% endif %}>सर्व</option>
+              <option value="active" {% if status_filter == 'active' %}selected{% endif %}>सक्रिय</option>
+              <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>निष्क्रिय</option>
+            </select>
+          </div>
+          <div class="col-md-2 d-flex gap-1">
+            <button type="submit" class="btn btn-primary btn-sm rounded-3 w-100">
+              <i class="fas fa-search me-1"></i> शोधा
+            </button>
+            <a href="{% url 'Kosh-Manage-Grampanchayat' %}?reset=1" class="btn btn-outline-secondary btn-sm rounded-3 w-100">
+              <i class="fas fa-undo-alt me-1"></i> रीसेट करा
+            </a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- डेटा सारणी -->
+  <div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-0 overflow-auto">
+      <table class="table table-hover mb-0">
+        <thead class="bg-light">
+          <tr>
+            <th class="ps-4 py-3" style="width: 50px;">#</th>
+            <th class="py-3">ग्रामपंचायत नाव</th>
+            <th class="py-3">पंचायत समिती</th>
+            <th class="py-3">ग्रामपंचायत कोड</th>
+            <th class="py-3">पत्ता</th>
+            <th class="py-3">स्थिती</th>
+            <th class="py-3">कोष व्यवस्थापन</th>
+            <th class="pe-4 py-3" style="width: 160px;">क्रिया</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if grampanchayats %}
+            {% for gp in grampanchayats %}
+            <tr>
+              <td class="ps-4">{{ forloop.counter0|add:start_index|default:forloop.counter }}</td>
+              <td class="fw-semibold">{{ gp.gram_panchayat_name|default:"—" }}</td>
+              <td>{{ gp.panchayat_samiti.panchayat_samiti_name|default:"—" }}</td>
+              <td><code class="bg-light px-2 py-1 rounded">{{ gp.gram_panchayat_code|default:"—" }}</code></td>
+              <td>{{ gp.address|default:"—"|truncatechars:50 }}</td>
+
+
+              <td>
+                {% if gp.status == 'Active' %}
+                  <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
+                    <i class="fas fa-circle fs-10 me-1"></i> सक्रिय
+                  </span>
+                {% else %}
+                  <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill">
+                    <i class="fas fa-circle fs-10 me-1"></i> निष्क्रिय
+                  </span>
+                {% endif %}
+              </td>
+            <td class="pe-4">
+                <div class="d-flex gap-2">
+                  <!-- Manage Kosh Button -->
+                  <a href="{% url 'Kosh-Management' gp.id %}" 
+                     class="fw-bold">
+                    <i class="fas fa-database me-1"></i> कोष व्यवस्थापन
+                </a>
+            </div>
+                </td>
+              <td class="pe-4">
+                <div class="d-flex gap-2">
+                  <button class="btn btn-sm btn-outline-primary " 
+                          data-bs-toggle="modal" data-bs-target="#editModal{{ gp.id }}">
+                    <i class="fas fa-edit me-1"></i> संपादित करा
+                  </button>
+                  <form method="POST" action="{% url 'Kosh-Manage-Grampanchayat' %}" 
+                        style="display: inline;" 
+                        onsubmit="return confirm('⚠️ कृपया खात्री करा? ही ग्रामपंचायत कायमची हटविली जाईल!');">
+                    {% csrf_token %}
+                    <input type="hidden" name="delete_grampanchayat" value="1">
+                    <input type="hidden" name="grampanchayat_id" value="{{ gp.id }}">
+                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                      <i class="fas fa-trash-alt me-1"></i> हटवा
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="7" class="text-center py-5">
+                <div class="py-5">
+                  <i class="fas fa-building fa-3x text-secondary mb-3 d-block"></i>
+                  <p class="text-secondary mb-3">ग्रामपंचायत आढळली नाही</p>
+                  <button type="button" class="btn btn-success text-white rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#addModal">
+                    <i class="fas fa-plus me-1"></i> प्रथम ग्रामपंचायत जोडा
+                  </button>
+                </div>
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Pagination Section -->
+    {% if grampanchayats and grampanchayats.paginator and grampanchayats.paginator.num_pages > 1 %}
+    <div class="pagination-wrapper">
+      <div class="pagination-info">
+        <i class="fas fa-table me-1"></i> 
+        Showing {{ grampanchayats.start_index }} - {{ grampanchayats.end_index }} of {{ grampanchayats.paginator.count }} grampanchayats
+      </div>
+      
+      <div class="pagination">
+        <!-- First Page -->
+        {% if grampanchayats.has_previous %}
+          <a href="?page=1{% if gram_panchayat_name %}&gram_panchayat_name={{ gram_panchayat_name }}{% endif %}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if gram_panchayat_code %}&gram_panchayat_code={{ gram_panchayat_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" 
+            class="pagination-btn" title="First Page">
+            <i class="fas fa-angle-double-left"></i> First
+          </a>
+        {% else %}
+          <span class="pagination-btn disabled">
+            <i class="fas fa-angle-double-left"></i> First
+          </span>
+        {% endif %}
+        
+        <!-- Previous Page -->
+        {% if grampanchayats.has_previous %}
+          <a href="?page={{ grampanchayats.previous_page_number }}{% if gram_panchayat_name %}&gram_panchayat_name={{ gram_panchayat_name }}{% endif %}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if gram_panchayat_code %}&gram_panchayat_code={{ gram_panchayat_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" 
+            class="pagination-btn" title="Previous Page">
+            <i class="fas fa-angle-left"></i> Prev
+          </a>
+        {% else %}
+          <span class="pagination-btn disabled">
+            <i class="fas fa-angle-left"></i> Prev
+          </span>
+        {% endif %}
+        
+        <!-- Page Numbers -->
+        {% with current_page=grampanchayats.number total_pages=grampanchayats.paginator.num_pages %}
+          {% if total_pages <= 7 %}
+            {% for page_num in grampanchayats.paginator.page_range %}
+              {% if page_num == current_page %}
+                <span class="pagination-btn active">{{ page_num }}</span>
+              {% else %}
+                <a href="?page={{ page_num }}{% if gram_panchayat_name %}&gram_panchayat_name={{ gram_panchayat_name }}{% endif %}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if gram_panchayat_code %}&gram_panchayat_code={{ gram_panchayat_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ page_num }}</a>
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            {% if current_page <= 3 %}
+              {% for page_num in grampanchayats.paginator.page_range|slice:":5" %}
+                {% if page_num == current_page %}
+                  <span class="pagination-btn active">{{ page_num }}</span>
+                {% else %}
+                  <a href="?page={{ page_num }}{% if gram_panchayat_name %}&gram_panchayat_name={{ gram_panchayat_name }}{% endif %}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if gram_panchayat_code %}&gram_panchayat_code={{ gram_panchayat_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ page_num }}</a>
+                {% endif %}
+              {% endfor %}
+              <span class="pagination-ellipsis">...</span>
+              <a href="?page={{ total_pages }}{% if gram_panchayat_name %}&gram_panchayat_name={{ gram_panchayat_name }}{% endif %}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if gram_panchayat_code %}&gram_panchayat_code={{ gram_panchayat_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ total_pages }}</a>
+            {% elif current_page >= total_pages|add:-2 %}
+              <a href="?page=1{% if gram_panchayat_name %}&gram_panchayat_name={{ gram_panchayat_name }}{% endif %}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if gram_panchayat_code %}&gram_panchayat_code={{ gram_panchayat_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">1</a>
+              <span class="pagination-ellipsis">...</span>
+              {% for page_num in grampanchayats.paginator.page_range|slice:total_pages|add:-5 %}
+                {% if page_num == current_page %}
+                  <span class="pagination-btn active">{{ page_num }}</span>
+                {% else %}
+                  <a href="?page={{ page_num }}{% if gram_panchayat_name %}&gram_panchayat_name={{ gram_panchayat_name }}{% endif %}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if gram_panchayat_code %}&gram_panchayat_code={{ gram_panchayat_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ page_num }}</a>
+                {% endif %}
+              {% endfor %}
+            {% else %}
+              <a href="?page=1{% if gram_panchayat_name %}&gram_panchayat_name={{ gram_panchayat_name }}{% endif %}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if gram_panchayat_code %}&gram_panchayat_code={{ gram_panchayat_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">1</a>
+              <span class="pagination-ellipsis">...</span>
+              {% for page_num in grampanchayats.paginator.page_range %}
+                {% if page_num >= current_page|add:-1 and page_num <= current_page|add:1 %}
+                  {% if page_num == current_page %}
+                    <span class="pagination-btn active">{{ page_num }}</span>
+                  {% else %}
+                    <a href="?page={{ page_num }}{% if gram_panchayat_name %}&gram_panchayat_name={{ gram_panchayat_name }}{% endif %}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if gram_panchayat_code %}&gram_panchayat_code={{ gram_panchayat_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ page_num }}</a>
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+              <span class="pagination-ellipsis">...</span>
+              <a href="?page={{ total_pages }}{% if gram_panchayat_name %}&gram_panchayat_name={{ gram_panchayat_name }}{% endif %}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if gram_panchayat_code %}&gram_panchayat_code={{ gram_panchayat_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">{{ total_pages }}</a>
+            {% endif %}
+          {% endif %}
+        {% endwith %}
+        
+        <!-- Next Page -->
+        {% if grampanchayats.has_next %}
+          <a href="?page={{ grampanchayats.next_page_number }}{% if gram_panchayat_name %}&gram_panchayat_name={{ gram_panchayat_name }}{% endif %}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if gram_panchayat_code %}&gram_panchayat_code={{ gram_panchayat_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" 
+            class="pagination-btn" title="Next Page">
+            Next <i class="fas fa-angle-right"></i>
+          </a>
+        {% else %}
+          <span class="pagination-btn disabled">
+            Next <i class="fas fa-angle-right"></i>
+          </span>
+        {% endif %}
+        
+        <!-- Last Page -->
+        {% if grampanchayats.has_next %}
+          <a href="?page={{ grampanchayats.paginator.num_pages }}{% if gram_panchayat_name %}&gram_panchayat_name={{ gram_panchayat_name }}{% endif %}{% if panchayat_samiti_name %}&panchayat_samiti_name={{ panchayat_samiti_name }}{% endif %}{% if gram_panchayat_code %}&gram_panchayat_code={{ gram_panchayat_code }}{% endif %}{% if status_filter and status_filter != 'all' %}&status={{ status_filter }}{% endif %}" 
+            class="pagination-btn" title="Last Page">
+            Last <i class="fas fa-angle-double-right"></i>
+          </a>
+        {% else %}
+          <span class="pagination-btn disabled">
+            Last <i class="fas fa-angle-double-right"></i>
+          </span>
+        {% endif %}
+      </div>
+      
+      <div class="pagination-info">
+        <i class="fas fa-file-alt me-1"></i> 
+        Page {{ grampanchayats.number }} of {{ grampanchayats.paginator.num_pages }}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- ================================================= -->
+<!-- जोडा मॉडल (ADD MODAL) -->
+<!-- ================================================= -->
+<div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content rounded-4 border-0">
+      <div class="modal-header bg-dark text-white rounded-top-4 border-0">
+        <h5 class="modal-title">
+          <i class="fas fa-plus-circle me-2"></i> नवीन ग्रामपंचायत जोडा
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" action="{% url 'Kosh-Manage-Grampanchayat' %}" id="addGrampanchayatForm">
+        {% csrf_token %}
+        <input type="hidden" name="add_grampanchayat" value="1">
+        <div class="modal-body p-4">
+          <!-- Row 1: Gram Panchayat Name & Panchayat Samiti -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">ग्रामपंचायत नाव <span class="text-danger">*</span></label>
+              <input type="text" name="gram_panchayat_name" class="form-control rounded-3" 
+                     placeholder="ग्रामपंचायत नाव प्रविष्ट करा..." required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">पंचायत समिती <span class="text-danger">*</span></label>
+              <select name="panchayat_samiti_id" class="form-select rounded-3" id="addPanchayatSamitiSelect" required>
+                <option value="">-- पंचायत समिती निवडा --</option>
+                {% for samiti in all_panchayat_samitis %}
+                  <option value="{{ samiti.id }}">{{ samiti.panchayat_samiti_name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          
+          <!-- Row 2: Gram Panchayat Code & Status -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">ग्रामपंचायत कोड</label>
+              <input type="text" name="gram_panchayat_code" class="form-control rounded-3" 
+                     placeholder="अद्वितीय कोड...">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">स्थिती</label>
+              <select name="status" class="form-select rounded-3">
+                <option value="Active">सक्रिय</option>
+                <option value="Inactive">निष्क्रिय</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Row 3: Address (Full Width) -->
+          <div class="row">
+            <div class="col-12">
+              <label class="form-label fw-semibold">पत्ता</label>
+              <textarea name="address" class="form-control rounded-3" rows="3" 
+                        placeholder="पूर्ण पत्ता प्रविष्ट करा..."></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer bg-light rounded-bottom-4 border-0">
+          <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">रद्द करा</button>
+          <button type="submit" class="btn btn-warning text-dark rounded-pill px-4">जतन करा</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================= -->
+<!-- संपादित करा मॉडल (EDIT MODAL) -->
+<!-- ================================================= -->
+{% for gp in grampanchayats %}
+<div class="modal fade" id="editModal{{ gp.id }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content rounded-4 border-0">
+      <div class="modal-header bg-dark text-white rounded-top-4 border-0">
+        <h5 class="modal-title">
+          <i class="fas fa-edit me-2"></i> ग्रामपंचायत संपादित करा
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" action="{% url 'Kosh-Manage-Grampanchayat' %}" class="editGrampanchayatForm">
+        {% csrf_token %}
+        <input type="hidden" name="edit_grampanchayat" value="1">
+        <input type="hidden" name="grampanchayat_id" value="{{ gp.id }}">
+        <div class="modal-body p-4">
+          <!-- Row 1: Gram Panchayat Name & Panchayat Samiti -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">ग्रामपंचायत नाव <span class="text-danger">*</span></label>
+              <input type="text" name="gram_panchayat_name" class="form-control rounded-3" 
+                     value="{{ gp.gram_panchayat_name|default:'' }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">पंचायत समिती <span class="text-danger">*</span></label>
+              <select name="panchayat_samiti_id" class="form-select rounded-3" required>
+                <option value="">-- पंचायत समिती निवडा --</option>
+                {% for samiti in all_panchayat_samitis %}
+                  <option value="{{ samiti.id }}" {% if gp.panchayat_samiti and gp.panchayat_samiti.id == samiti.id %}selected{% endif %}>
+                    {{ samiti.panchayat_samiti_name }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          
+          <!-- Row 2: Gram Panchayat Code & Status -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">ग्रामपंचायत कोड</label>
+              <input type="text" name="gram_panchayat_code" class="form-control rounded-3" 
+                     value="{{ gp.gram_panchayat_code|default:'' }}">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">स्थिती</label>
+              <select name="status" class="form-select rounded-3">
+                <option value="Active" {% if gp.status == 'Active' %}selected{% endif %}>सक्रिय</option>
+                <option value="Inactive" {% if gp.status == 'Inactive' %}selected{% endif %}>निष्क्रिय</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Row 3: Address (Full Width) -->
+          <div class="row">
+            <div class="col-12">
+              <label class="form-label fw-semibold">पत्ता</label>
+              <textarea name="address" class="form-control rounded-3" rows="3" 
+                        placeholder="पूर्ण पत्ता प्रविष्ट करा...">{{ gp.address|default:'' }}</textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer bg-light rounded-bottom-4 border-0">
+          <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">रद्द करा</button>
+          <button type="submit" class="btn btn-warning text-dark rounded-pill px-4">अद्यतनित करा</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+{% endblock %}
