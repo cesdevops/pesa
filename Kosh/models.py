@@ -88,7 +88,6 @@ class Kosh_User(models.Model):
     )
 
     kosh = models.ManyToManyField('Kosh',null=True,blank=True, related_name='kosh_users')
-    # kosh_name = models.CharField(max_length=255,null=True,blank=True)
     name = models.CharField(max_length=255,null=True,blank=True)
     mobile = models.CharField(max_length=255,null=True,blank=True)
     email = models.EmailField(null=True,blank=True)

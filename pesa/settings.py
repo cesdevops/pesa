@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'ZillaParishad',
     'PanchayatSamiti',
     'Kosh',
+    'Activity',
     'Navbar',
 
 
