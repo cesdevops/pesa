@@ -3,299 +3,939 @@
 
 {% block content %}
 
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 <style>
-    /* ── PURE CSS MODAL — completely independent of Bootstrap ── */
-    #fundReleaseOverlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.55);
-        z-index: 99999;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-    }
-    #fundReleaseOverlay.active {
-        display: flex;
-    }
-    #fundReleaseBox {
-        background: #fff;
-        border-radius: 12px;
-        width: 100%;
-        max-width: 680px;
-        max-height: 90vh;
-        overflow-y: auto;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        animation: modalPop 0.2s ease;
-    }
-    @keyframes modalPop {
-        from { transform: scale(0.95); opacity: 0; }
-        to   { transform: scale(1);    opacity: 1; }
-    }
-    #fundReleaseBox .modal-head {
-        background: #0d6efd;
-        color: #fff;
-        padding: 16px 20px;
-        border-radius: 12px 12px 0 0;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-    #fundReleaseBox .modal-head h5 {
-        margin: 0;
-        font-size: 16px;
-        font-weight: 700;
-    }
-    #fundReleaseBox .modal-head button {
-        background: none;
-        border: none;
-        color: #fff;
-        font-size: 22px;
-        cursor: pointer;
-        line-height: 1;
-        opacity: 0.85;
-        padding: 0 4px;
-    }
-    #fundReleaseBox .modal-head button:hover { opacity: 1; }
-    #fundReleaseBox .modal-body-inner { padding: 24px; }
-    #fundReleaseBox .modal-foot {
-        padding: 14px 24px;
-        border-top: 1px solid #dee2e6;
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-    }
+  /* ──────────────────────────────────────────────────────────────
+     GLOBAL VARIABLES & RESET
+  ────────────────────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #0d2b45;
+    --navy2: #154360;
+    --navy3: #1a5276;
+    --gold: #e67e00;
+    --gold2: #f39c12;
+    --surface: #F6F8FA;
+    --border: rgba(0,0,0,0.08);
+    --border-md: rgba(0,0,0,0.12);
+    --text-1: #0B1628;
+    --text-2: #4A5568;
+    --text-3: #8A97A8;
+    --white: #ffffff;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.07);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.14);
+    --red: #E53E3E;
+    --red-50: #FFF5F5;
+    --red-100: #FED7D7;
+    --green: #085041;
+    --green-bg: #E1F5EE;
+    --green-border: #9FE1CB;
+    --blue: #2B6CB0;
+    --blue-bg: #EBF4FF;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--text-1); }
+
+  .km-page { padding: 28px; }
+
+  /* header */
+  .km-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .km-header-left h1 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-1);
+    letter-spacing: -0.02em;
+  }
+  .km-header-left p {
+    font-size: 13px;
+    color: var(--text-3);
+    margin-top: 4px;
+  }
+  .km-btn-add {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--gold);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+  .km-btn-add:hover { background: var(--navy); }
+  .km-btn-add i { font-size: 13px; }
+
+  /* stat cards */
+  .km-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+  .km-stat {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px 18px;
+    box-shadow: var(--shadow-sm);
+  }
+  .km-stat .st-label {
+    font-size: 12px;
+    color: var(--text-3);
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .km-stat .st-val {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-1);
+    letter-spacing: -0.02em;
+  }
+
+  /* flash messages */
+  .km-messages { margin-bottom: 16px; }
+  .km-msg {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .km-msg.success {
+    background: var(--green-bg);
+    color: var(--green);
+    border: 1px solid var(--green-border);
+  }
+  .km-msg.error {
+    background: var(--red-50);
+    color: var(--red);
+    border: 1px solid var(--red-100);
+  }
+
+  /* filter bar */
+  .km-filter-bar {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow-sm);
+  }
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+    min-width: 140px;
+  }
+  .filter-group label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .km-filter-bar input,
+  .km-filter-bar select {
+    border: 1px solid var(--border-md);
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text-1);
+    background: var(--surface);
+    outline: none;
+    transition: border-color 0.15s;
+    width: 100%;
+  }
+  .km-filter-bar input:focus,
+  .km-filter-bar select:focus {
+    border-color: var(--gold);
+    background: var(--white);
+  }
+  .km-filter-btn {
+    background: var(--gold);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .km-filter-btn:hover { background: var(--navy); }
+  .km-clear-btn {
+    background: var(--white);
+    color: var(--text-2);
+    border: 1px solid var(--border-md);
+    border-radius: var(--radius-md);
+    padding: 8px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.15s;
+  }
+  .km-clear-btn:hover { background: var(--surface); }
+
+  /* table card */
+  .km-table-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .km-table-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .km-table-head .th-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-1);
+  }
+  .km-table-head .th-count {
+    font-size: 12px;
+    color: var(--text-3);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  thead tr { background: var(--surface); }
+  thead th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface); }
+  tbody td {
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--text-1);
+    vertical-align: middle;
+  }
+
+  /* badges */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+  .badge-year {
+    background: var(--blue-bg);
+    color: var(--blue);
+    border: 1px solid #BEE3F8;
+  }
+  .badge-installment {
+    background: var(--green-bg);
+    color: var(--green);
+    border: 1px solid var(--green-border);
+  }
+  .badge-dist-yes {
+    background: var(--green-bg);
+    color: var(--green);
+    border: 1px solid var(--green-border);
+  }
+  .badge-dist-no {
+    background: #F7FAFC;
+    color: var(--text-3);
+    border: 1px solid var(--border-md);
+  }
+
+  .td-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-md);
+    background: var(--white);
+    cursor: pointer;
+    transition: all 0.13s;
+    color: var(--text-2);
+    text-decoration: none;
+  }
+  .btn-icon:hover { background: var(--surface); }
+  .btn-icon.edit:hover {
+    border-color: var(--green-border);
+    color: var(--green);
+    background: var(--green-bg);
+  }
+  .btn-icon.del:hover {
+    border-color: var(--red-100);
+    color: var(--red);
+    background: var(--red-50);
+  }
+  .btn-icon i { font-size: 13px; }
+
+  .km-empty {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--text-3);
+  }
+  .km-empty i {
+    font-size: 40px;
+    margin-bottom: 12px;
+    opacity: 0.35;
+  }
+  .km-empty p { font-size: 14px; }
+
+  /* pagination */
+  .km-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .km-pagination .pg-info {
+    font-size: 12px;
+    color: var(--text-3);
+  }
+  .pg-links {
+    display: flex;
+    gap: 5px;
+  }
+  .pg-links a, .pg-links span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    border: 1px solid var(--border-md);
+    color: var(--text-2);
+    transition: all 0.12s;
+  }
+  .pg-links a:hover { background: var(--surface); }
+  .pg-links .current {
+    background: var(--gold);
+    color: #fff;
+    border-color: var(--gold);
+  }
+
+  /* modal overlay */
+  .km-modal-bg {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    background: rgba(11, 22, 40, 0.45);
+    backdrop-filter: blur(3px);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .km-modal-bg.open { display: flex; }
+
+  .km-modal {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 560px;
+    box-shadow: var(--shadow-lg);
+    animation: slideUp 0.2s ease;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(16px); opacity: 0; }
+    to { transform: none; opacity: 1; }
+  }
+
+  .km-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px 14px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--white);
+    z-index: 1;
+  }
+  .km-modal-header h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-1);
+  }
+  .km-modal-close {
+    width: 30px;
+    height: 30px;
+    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-md);
+    background: var(--white);
+    cursor: pointer;
+    color: var(--text-3);
+    font-size: 18px;
+    line-height: 1;
+    transition: all 0.13s;
+  }
+  .km-modal-close:hover {
+    background: var(--surface);
+    color: var(--text-1);
+  }
+
+  .km-modal-body { padding: 20px 22px; }
+
+  .km-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .km-form-grid .full { grid-column: 1 / -1; }
+  .fm-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .fm-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-2);
+    letter-spacing: 0.02em;
+  }
+  .fm-label .req {
+    color: var(--red);
+    margin-left: 2px;
+  }
+  .fm-input, .fm-select, .fm-textarea {
+    border: 1px solid var(--border-md);
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text-1);
+    background: var(--white);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .fm-input:focus, .fm-select:focus, .fm-textarea:focus {
+    border-color: var(--gold);
+  }
+  .fm-textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .km-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 14px 22px 18px;
+    border-top: 1px solid var(--border);
+    position: sticky;
+    bottom: 0;
+    background: var(--white);
+  }
+  .btn-cancel {
+    background: var(--white);
+    border: 1px solid var(--border-md);
+    border-radius: var(--radius-md);
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--text-2);
+    transition: background 0.13s;
+  }
+  .btn-cancel:hover { background: var(--surface); }
+  .btn-submit {
+    background: var(--gold);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 8px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-submit:hover { background: var(--navy); }
+
+  /* delete modal */
+  .km-del-modal {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 400px;
+    box-shadow: var(--shadow-lg);
+    animation: slideUp 0.2s ease;
+    padding: 28px 26px;
+    text-align: center;
+  }
+  .del-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--red-50);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+  }
+  .del-icon i {
+    font-size: 22px;
+    color: var(--red);
+  }
+  .del-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-1);
+    margin-bottom: 6px;
+  }
+  .del-sub {
+    font-size: 13px;
+    color: var(--text-3);
+    margin-bottom: 20px;
+  }
+  .del-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+  .btn-del-confirm {
+    background: var(--red);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 9px 22px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    text-decoration: none;
+    transition: opacity 0.15s;
+  }
+  .btn-del-confirm:hover { opacity: 0.88; }
+
+  @media (max-width: 640px) {
+    .km-form-grid { grid-template-columns: 1fr; }
+    .km-page { padding: 16px; }
+    .km-filter-bar { flex-direction: column; align-items: stretch; }
+    .filter-group { width: 100%; }
+    .km-filter-btn, .km-clear-btn { justify-content: center; }
+    table { display: block; overflow-x: auto; }
+  }
 </style>
 
-<div class="container-fluid py-4">
+<div class="km-page">
 
-    <!-- PAGE HEADER -->
-    <div class="card border-0 shadow-sm rounded-4 mb-4">
-        <div class="card-body p-4">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div>
-                    <h3 class="fw-bold mb-1">Fund Release Management</h3>
-                    <p class="text-muted mb-0">Manage and track all fund release records</p>
-                </div>
-                <button type="button" class="btn btn-primary px-4 py-2 rounded-3" onclick="openFundModal()">
-                    <i class="fa fa-plus me-2"></i> Add Fund Release
-                </button>
-            </div>
-        </div>
+  <!-- HEADER -->
+  <div class="km-header">
+    <div class="km-header-left">
+      <h1>निधी वितरण व्यवस्थापन</h1>
+      <p>सर्व निधी वितरण नोंदी पहा व व्यवस्थापित करा</p>
+    </div>
+    <button class="km-btn-add" onclick="openAddModal()">
+      <i class="fas fa-plus"></i> नवीन निधी वितरण
+    </button>
+  </div>
+
+  <!-- MESSAGES -->
+  {% if messages %}
+  <div class="km-messages">
+    {% for message in messages %}
+    <div class="km-msg {{ message.tags }}">
+      {% if message.tags == 'success' %}
+        <i class="fas fa-check-circle"></i>
+      {% else %}
+        <i class="fas fa-exclamation-circle"></i>
+      {% endif %}
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  
+
+  <!-- FILTER BAR -->
+  <form method="GET" class="km-filter-bar">
+    <div class="filter-group">
+      <label>शोधा</label>
+      <input type="text" name="search" value="{{ search|default:'' }}" placeholder="वितरण नाव / आदेश क्र...">
+    </div>
+    <div class="filter-group">
+      <label>आर्थिक वर्ष</label>
+      <select name="financial_year">
+        <option value="">सर्व वर्षे</option>
+        {% for fy in all_financial_years %}
+        <option value="{{ fy.id }}" {% if financial_year_id|stringformat:"s" == fy.id|stringformat:"s" %}selected{% endif %}>{{ fy.year }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>हप्ता</label>
+      <select name="installment">
+        <option value="">सर्व</option>
+        {% for i in "123456789" %}
+        <option value="{{ i }}" {% if installment == i %}selected{% endif %}>हप्ता {{ i }}</option>
+        {% endfor %}
+        <option value="10" {% if installment == "10" %}selected{% endif %}>हप्ता 10</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>दिनांकापासून</label>
+      <input type="date" name="from_date" value="{{ from_date|default:'' }}">
+    </div>
+    <div class="filter-group">
+      <label>दिनांकापर्यंत</label>
+      <input type="date" name="to_date" value="{{ to_date|default:'' }}">
+    </div>
+    <button type="submit" class="km-filter-btn">
+      <i class="fas fa-search"></i> शोधा
+    </button>
+    <a href="{% url 'ZP-Fund-Release' %}" class="km-clear-btn">
+      <i class="fas fa-undo-alt"></i> रीसेट
+    </a>
+  </form>
+
+  <!-- MAIN TABLE -->
+  <div class="km-table-card">
+    <div class="km-table-head">
+      <span class="th-title"><i class="fas fa-rupee-sign" style="margin-right: 6px;"></i> निधी वितरण नोंदी</span>
+      <span class="th-count">दाखवत आहे {{ all_fund_release|length }} पैकी {{ filtered_count }} नोंदी</span>
     </div>
 
-    <!-- FILTER CARD -->
-    <div class="card border-0 shadow-sm rounded-4 mb-4">
-        <div class="card-body p-4">
-            <form method="GET">
-                <div class="row g-3 align-items-end">
+    {% if all_fund_release %}
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>आर्थिक वर्ष</th>
+            <th>वितरण नाव</th>
+            <th>हप्ता</th>
+            <th>आदेश क्रमांक</th>
+            <th>वितरण दिनांक</th>
+            <th>रक्कम (₹)</th>
+            <th>वितरित</th>
+            <th>शेरा</th>
+            <th>कृती</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for release in all_fund_release %}
+          <tr>
+            <td style="color:var(--text-3); font-family:'DM Mono',monospace;">{{ forloop.counter }}</td>
+            <td><span class="badge badge-year">{{ release.financial_year.year }}</span></td>
+            <td><span class="fw-semibold">{{ release.release_name }}</span></td>
+            <td><span class="badge badge-installment">हप्ता {{ release.installment }}</span></td>
+            <td style="font-family:'DM Mono',monospace;">{{ release.release_order_no }}</td>
+            <td>{{ release.release_date|date:"d-m-Y" }}</td>
+            <td class="fw-bold" style="color: var(--green);">₹ {{ release.total_amount }}</td>
+            <td>
+              {% if release.fund_distributed %}
+                <span class="badge badge-dist-yes"><i class="fas fa-check-circle"></i> होय</span>
+              {% else %}
+                <span class="badge badge-dist-no"><i class="fas fa-times-circle"></i> नाही</span>
+              {% endif %}
+            </td>
+            <td>{{ release.remarks|truncatechars:30|default:"—" }}</td>
+            <td>
+                <a href="{% url 'ZP-Allocation-Chart' release.financial_year.year release.added_by.id %}"
+                class="btn btn-sm btn-primary rounded-pill px-3">
 
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold">Search</label>
-                        <input type="text" name="search" class="form-control" placeholder="Search Here" value="{{ search }}">
-                    </div>
+                    वाटप तक्ता
 
-                    <div class="col-md-2">
-                        <label class="form-label fw-semibold">Financial Year</label>
-                        <select name="financial_year" class="form-select">
-                            <option value="">All Financial Years</option>
-                            {% for fy in all_financial_years %}
-                            <option value="{{ fy.id }}" {% if financial_year_id == fy.id|stringformat:"s" %}selected{% endif %}>
-                                {{ fy.year }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <div class="col-md-2">
-                        <label class="form-label fw-semibold">Installment</label>
-                        <select name="installment" class="form-select">
-                            <option value="">All Installments</option>
-                            {% for i in "123456789" %}
-                            <option value="{{ i }}" {% if installment == i %}selected{% endif %}>Installment {{ i }}</option>
-                            {% endfor %}
-                            <option value="10" {% if installment == "10" %}selected{% endif %}>Installment 10</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-2">
-                        <label class="form-label fw-semibold">From Date</label>
-                        <input type="date" name="from_date" class="form-control" value="{{ from_date }}">
-                    </div>
-
-                    <div class="col-md-2">
-                        <label class="form-label fw-semibold">To Date</label>
-                        <input type="date" name="to_date" class="form-control" value="{{ to_date }}">
-                    </div>
-
-                    <div class="col-md-1">
-                        <button type="submit" class="btn btn-dark w-100">
-                            <i class="fa fa-search"></i>
-                        </button>
-                    </div>
-
-                </div>
-            </form>
-        </div>
+                </a>
+            </td>           
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
 
-    <!-- TABLE CARD -->
-    <div class="card border-0 shadow-sm rounded-4">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-dark">
-                        <tr>
-                            <th class="ps-4">#</th>
-                            <th>Financial Year</th>
-                            <th>Release Name</th>
-                            <th>Installment</th>
-                            <th>Order No</th>
-                            <th>Date</th>
-                            <th>Amount</th>
-                            <th>Remarks</th>
-                            <th>Added By</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for i in all_fund_release %}
-                        <tr>
-                            <td class="ps-4">{{ forloop.counter }}</td>
-                            <td>{{ i.financial_year.year }}</td>
-                            <td>{{ i.release_name }}</td>
-                            <td><span class="badge bg-primary">Installment {{ i.installment }}</span></td>
-                            <td>{{ i.release_order_no }}</td>
-                            <td>{{ i.release_date }}</td>
-                            <td class="fw-bold text-success">₹ {{ i.total_amount }}</td>
-                            <td>{{ i.remarks|default:"-" }}</td>
-                            <td>{{ i.added_by.name }}</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="9" class="text-center py-5 text-muted">
-                                <i class="fa fa-inbox fa-2x mb-2 d-block"></i>
-                                No Fund Release Records Found
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    <!-- PAGINATION -->
+    {% if all_fund_release.has_other_pages %}
+    <div class="km-pagination">
+      <span class="pg-info">पान {{ all_fund_release.number }} of {{ all_fund_release.paginator.num_pages }}</span>
+      <div class="pg-links">
+        {% if all_fund_release.has_previous %}
+          <a href="?page={{ all_fund_release.previous_page_number }}&search={{ search }}&financial_year={{ financial_year_id }}&installment={{ installment }}&from_date={{ from_date }}&to_date={{ to_date }}">‹</a>
+        {% endif %}
+        {% for num in all_fund_release.paginator.page_range %}
+          {% if all_fund_release.number == num %}
+            <span class="current">{{ num }}</span>
+          {% elif num > all_fund_release.number|add:'-3' and num < all_fund_release.number|add:'3' %}
+            <a href="?page={{ num }}&search={{ search }}&financial_year={{ financial_year_id }}&installment={{ installment }}&from_date={{ from_date }}&to_date={{ to_date }}">{{ num }}</a>
+          {% endif %}
+        {% endfor %}
+        {% if all_fund_release.has_next %}
+          <a href="?page={{ all_fund_release.next_page_number }}&search={{ search }}&financial_year={{ financial_year_id }}&installment={{ installment }}&from_date={{ from_date }}&to_date={{ to_date }}">›</a>
+        {% endif %}
+      </div>
     </div>
+    {% endif %}
 
+    {% else %}
+    <div class="km-empty">
+      <i class="fas fa-inbox"></i>
+      <p>कोणतीही निधी वितरण नोंद सापडली नाही</p>
+    </div>
+    {% endif %}
+  </div>
 </div>
 
-
-<!-- ════════════════════════════════════════
-     PURE JS/CSS MODAL
-     z-index: 99999 — sits above ALL navbar JS
-════════════════════════════════════════ -->
-<div id="fundReleaseOverlay" onclick="overlayClick(event)">
-    <div id="fundReleaseBox">
-
-        <!-- HEADER -->
-        <div class="modal-head">
-            <h5><i class="fa fa-money-bill-wave me-2"></i> Add Fund Release</h5>
-            <button type="button" onclick="closeFundModal()" title="Close">&times;</button>
-        </div>
-
-        <!-- FORM -->
-        <form method="POST">
-            {% csrf_token %}
-
-            <div class="modal-body-inner">
-                <div class="row g-3">
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Financial Year</label>
-                        <input type="text" class="form-control bg-light" value="{{ financial_year.year }}" readonly>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Release Name <span class="text-danger">*</span></label>
-                        <input type="text" name="release_name" class="form-control" placeholder="Enter release name" required>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Installment <span class="text-danger">*</span></label>
-                        <select name="installment" class="form-select" required>
-                            <option value="">Select Installment</option>
-                            {% for i in "123456789" %}
-                            <option value="{{ i }}">Installment {{ i }}</option>
-                            {% endfor %}
-                            <option value="10">Installment 10</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Release Order Number <span class="text-danger">*</span></label>
-                        <input type="text" name="release_order_no" class="form-control" placeholder="Enter order number" required>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Total Amount <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <span class="input-group-text">₹</span>
-                            <input type="number" step="0.01" name="total_amount" class="form-control" placeholder="0.00" required>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Confirm Amount <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <span class="input-group-text">₹</span>
-                            <input type="number" step="0.01" name="confirm_amount" class="form-control" placeholder="0.00" required>
-                        </div>
-                    </div>
-
-                    <div class="col-md-12">
-                        <label class="form-label fw-semibold">Remarks</label>
-                        <textarea name="remarks" rows="3" class="form-control" placeholder="Optional remarks..."></textarea>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- FOOTER -->
-            <div class="modal-foot">
-                <button type="button" class="btn btn-light border px-4" onclick="closeFundModal()">
-                    <i class="fa fa-times me-1"></i> Close
-                </button>
-                <button type="submit" class="btn btn-primary px-4">
-                    <i class="fa fa-save me-1"></i> Save Fund Release
-                </button>
-            </div>
-
-        </form>
+<!-- ADD MODAL -->
+<div class="km-modal-bg" id="addModalBg">
+  <div class="km-modal">
+    <div class="km-modal-header">
+      <h2><i class="fas fa-plus-circle" style="margin-right: 8px;"></i> नवीन निधी वितरण जोडा</h2>
+      <button class="km-modal-close" onclick="closeModal('addModalBg')">✕</button>
     </div>
+    <form method="POST" id="addForm">
+      {% csrf_token %}
+      <div class="km-modal-body">
+        <div class="km-form-grid">
+          <div class="fm-group full">
+            <label class="fm-label">आर्थिक वर्ष</label>
+            <input type="text" class="fm-input" value="{{ financial_year.year }}" readonly style="background: var(--surface);">
+          </div>
+          <div class="fm-group full">
+            <label class="fm-label">वितरण नाव <span class="req">*</span></label>
+            <input class="fm-input" type="text" name="release_name" placeholder="वितरण नाव प्रविष्ट करा" required>
+          </div>
+          <div class="fm-group">
+            <label class="fm-label">हप्ता <span class="req">*</span></label>
+            <select name="installment" class="fm-select" required>
+              <option value="">हप्ता निवडा</option>
+              {% for i in available_installments %}
+              <option value="{{ i }}">हप्ता {{ i }}</option>
+              {% empty %}
+              <option value="">सर्व हप्ते आधीच जोडले गेले आहेत</option>
+              {% endfor %}
+              <option value="10">हप्ता 10</option>
+            </select>
+          </div>
+          <div class="fm-group">
+            <label class="fm-label">वितरण आदेश क्रमांक <span class="req">*</span></label>
+            <input class="fm-input" type="text" name="release_order_no" placeholder="आदेश क्रमांक प्रविष्ट करा" required>
+          </div>
+          <div class="fm-group">
+            <label class="fm-label">एकूण रक्कम (₹) <span class="req">*</span></label>
+            <input class="fm-input" type="number" step="0.01" name="total_amount" placeholder="0.00" required>
+          </div>
+          <div class="fm-group">
+            <label class="fm-label">पुष्टी रक्कम (₹) <span class="req">*</span></label>
+            <input class="fm-input" type="number" step="0.01" name="confirm_amount" placeholder="0.00" required>
+          </div>
+          <div class="fm-group full">
+            <label class="fm-label">शेरा</label>
+            <textarea class="fm-textarea" name="remarks" placeholder="ऐच्छिक शेरा..."></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="km-modal-footer">
+        <button type="button" class="btn-cancel" onclick="closeModal('addModalBg')">रद्द करा</button>
+        <button type="submit" class="btn-submit"><i class="fas fa-save"></i> वितरण जतन करा</button>
+      </div>
+    </form>
+  </div>
 </div>
 
+<!-- EDIT MODAL -->
+<div class="km-modal-bg" id="editModalBg">
+  <div class="km-modal">
+    <div class="km-modal-header">
+      <h2><i class="fas fa-edit" style="margin-right: 8px;"></i> निधी वितरण संपादित करा</h2>
+      <button class="km-modal-close" onclick="closeModal('editModalBg')">✕</button>
+    </div>
+    <form method="POST">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="edit">
+      <input type="hidden" name="edit_id" id="edit_id">
+      <div class="km-modal-body">
+        <div class="km-form-grid">
+          <div class="fm-group full">
+            <label class="fm-label">वितरण नाव <span class="req">*</span></label>
+            <input class="fm-input" type="text" name="release_name" id="edit_release_name" required>
+          </div>
+          <div class="fm-group">
+            <label class="fm-label">हप्ता <span class="req">*</span></label>
+            <select name="installment" id="edit_installment" class="fm-select" required>
+              <option value="">हप्ता निवडा</option>
+              {% for i in "123456789" %}
+              <option value="{{ i }}">हप्ता {{ i }}</option>
+              {% endfor %}
+              <option value="10">हप्ता 10</option>
+            </select>
+          </div>
+          <div class="fm-group">
+            <label class="fm-label">वितरण आदेश क्रमांक <span class="req">*</span></label>
+            <input class="fm-input" type="text" name="release_order_no" id="edit_release_order_no" required>
+          </div>
+          <div class="fm-group">
+            <label class="fm-label">एकूण रक्कम (₹) <span class="req">*</span></label>
+            <input class="fm-input" type="number" step="0.01" name="total_amount" id="edit_total_amount" required>
+          </div>
+          <div class="fm-group full">
+            <label class="fm-label">शेरा</label>
+            <textarea class="fm-textarea" name="remarks" id="edit_remarks" placeholder="शेरा..."></textarea>
+          </div>
+          <div class="fm-group full">
+            <label class="fm-label">निधी वितरित</label>
+            <select name="fund_distributed" id="edit_distributed" class="fm-select">
+              <option value="False">वितरित नाही</option>
+              <option value="True">वितरित</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="km-modal-footer">
+        <button type="button" class="btn-cancel" onclick="closeModal('editModalBg')">रद्द करा</button>
+        <button type="submit" class="btn-submit"><i class="fas fa-save"></i> अद्यतनित करा</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="km-modal-bg" id="deleteModalBg">
+  <div class="km-del-modal">
+    <div class="del-icon">
+      <i class="fas fa-trash-alt"></i>
+    </div>
+    <div class="del-title">निधी वितरण हटवा?</div>
+    <div class="del-sub" id="del-sub-text">ही क्रिया पूर्ववत करता येणार नाही.</div>
+    <div class="del-actions">
+      <button class="btn-cancel" onclick="closeModal('deleteModalBg')">रद्द करा</button>
+      <a href="#" class="btn-del-confirm" id="del-confirm-link">होय, हटवा</a>
+    </div>
+  </div>
+</div>
 
 <script>
-    /* ── Pure JS modal — ZERO Bootstrap dependency ── */
+  // MODAL helpers
+  function openAddModal() {
+    document.getElementById('addModalBg').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
 
-    function openFundModal() {
-        document.getElementById('fundReleaseOverlay').classList.add('active');
-        document.body.style.overflow = 'hidden';
+  function openEditModal(id, name, orderNo, amount, remarks, installment, distributed) {
+    document.getElementById('edit_id').value = id;
+    document.getElementById('edit_release_name').value = name;
+    document.getElementById('edit_release_order_no').value = orderNo;
+    document.getElementById('edit_total_amount').value = amount;
+    document.getElementById('edit_remarks').value = remarks || '';
+    
+    const instSelect = document.getElementById('edit_installment');
+    for (let i = 0; i < instSelect.options.length; i++) {
+      if (instSelect.options[i].value == installment) {
+        instSelect.selectedIndex = i;
+        break;
+      }
     }
+    const distSelect = document.getElementById('edit_distributed');
+    distSelect.value = (distributed === 'true' || distributed === true) ? 'True' : 'False';
+    
+    document.getElementById('editModalBg').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
 
-    function closeFundModal() {
-        document.getElementById('fundReleaseOverlay').classList.remove('active');
+  function openDeleteModal(id, name) {
+    document.getElementById('del-sub-text').innerHTML = '"' + name + '" ही नोंद हटवायची? ही क्रिया कायमची आहे.';
+    document.getElementById('del-confirm-link').href = '?delete_id=' + id;
+    document.getElementById('deleteModalBg').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // Close on backdrop click
+  document.querySelectorAll('.km-modal-bg').forEach(bg => {
+    bg.addEventListener('click', function(e) {
+      if (e.target === bg) {
+        bg.classList.remove('open');
         document.body.style.overflow = '';
-    }
-
-    /* Click backdrop to close — but NOT the modal box itself */
-    function overlayClick(e) {
-        if (e.target === document.getElementById('fundReleaseOverlay')) {
-            closeFundModal();
-        }
-    }
-
-    /* ESC key to close */
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') closeFundModal();
+      }
     });
+  });
+
+  // ESC key closes any open modal
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.km-modal-bg.open').forEach(bg => {
+        bg.classList.remove('open');
+        document.body.style.overflow = '';
+      });
+    }
+  });
 </script>
 
 {% endblock %}
