@@ -288,26 +288,27 @@
     color: #f39c12;
   }
 </style>
-
 <!-- Welcome Banner -->
 <div class="welcome-banner">
   <h2>
     <i class="fas fa-hand-peace"></i>
     नमस्कार, {{ kosh_user.name|default:"कोश अधिकारी" }}!
   </h2>
-  <p>कोश व्यवस्थापन प्रणालीमध्ये आपले स्वागत आहे. आपल्या कोशातील खर्च शीर्षे आणि टक्केवारी खालीलप्रमाणे आहेत.</p>
+
+  <p>
+    कोश व्यवस्थापन प्रणालीमध्ये आपले स्वागत आहे. आपल्या कोशातील खर्च शीर्षे आणि टक्केवारी खालीलप्रमाणे आहेत.
+  </p>
+
   <div class="district-info">
     <span><i class="fas fa-user-tag"></i> भूमिका: कोश व्यवस्थापक</span>
     <span><i class="fas fa-calendar-alt"></i> शेवटचे लॉगिन: {% now "d M Y, h:i A" %}</span>
   </div>
 </div>
 
-
-
 <!-- Section Title -->
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-  <h5 style="font-size: 16px; font-weight: 700; color: #0d2b45; margin: 0;">
-    <i class="fas fa-tags" style="color: #f39c12; margin-right: 8px;"></i>
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+  <h5 style="font-size:16px; font-weight:700; color:#0d2b45; margin:0;">
+    <i class="fas fa-tags" style="color:#f39c12; margin-right:8px;"></i>
     खर्च शीर्ष टक्केवारी तपशील
   </h5>
 </div>
@@ -315,86 +316,106 @@
 <!-- Heads Grid -->
 {% if heads_with_percentages %}
 <div class="heads-grid">
+
   {% for item in heads_with_percentages %}
   <div class="head-card">
+
     <div class="head-card-header">
       <h4>
         <i class="fas fa-tag"></i>
         {{ item.head.name|truncatechars:35 }}
       </h4>
     </div>
+
     <div class="head-card-body">
+
+      <!-- Percentage -->
       <div class="percentage-display">
         <div class="percentage-number">
-          {{ item.percentage|default:"0" }}<small>%</small>
+          {{ item.percentage }}<small>%</small>
         </div>
         <div class="percentage-label">वाटप टक्केवारी</div>
       </div>
-      
+
+      <!-- Progress Bar -->
       <div class="progress-bar-custom">
-        <div class="progress-fill" style="width: {{ item.percentage|default:'0' }}%"></div>
+        <div class="progress-fill"
+             style="width: {{ item.percentage|default:0 }}%"></div>
       </div>
-      
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+
+      <!-- Footer Info -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+
         <span class="status-badge {% if item.head.status == 'Active' %}status-active{% else %}status-inactive{% endif %}">
           <i class="fas {% if item.head.status == 'Active' %}fa-check-circle{% else %}fa-ban{% endif %}"></i>
           {% if item.head.status == 'Active' %}सक्रिय{% else %}निष्क्रिय{% endif %}
         </span>
-        <span style="font-size: 11px; color: #8a97a8;">
-          <i class="fas fa-calendar-alt"></i> 
-          {{ item.head.created_at|date:"d/m/Y"|default:"—" }}
+
+        <span style="font-size:11px; color:#8a97a8;">
+          <i class="fas fa-calendar-alt"></i>
+          {{ item.head.created_at|date:"d/m/Y" }}
         </span>
+
       </div>
+
     </div>
   </div>
   {% endfor %}
+
 </div>
 
-<!-- Overall Progress Section -->
+<!-- Overall Progress -->
 <div class="progress-section">
+
   <div class="progress-header">
     <span class="progress-title">
-      <i class="fas fa-chart-line" style="color: #f39c12; margin-right: 5px;"></i>
+      <i class="fas fa-chart-line" style="color:#f39c12; margin-right:5px;"></i>
       एकूण वाटप प्रगती
     </span>
-    <span class="progress-percentage">{{ total_percentage|default:"0" }}% / 100%</span>
+
+    <span class="progress-percentage">
+      {{ total_percentage }}% / 100%
+    </span>
   </div>
-  
+
+  <!-- Safe progress width -->
   <div class="main-progress-bar">
-    <div class="main-progress-fill" style="width: {% if total_percentage > 100 %}100{% else %}{{ total_percentage|default:'0' }}{% endif %}%"></div>
+    <div class="main-progress-fill"
+         style="width: {% if total_percentage > 100 %}100{% else %}{{ total_percentage }}{% endif %}%">
+    </div>
   </div>
-  
-  {% if remaining_percentage > 0 and remaining_percentage < 100 %}
+
+  <!-- Conditions -->
+  {% if remaining_percentage > 0 %}
   <div class="warning-box">
     <i class="fas fa-info-circle"></i>
-    <span class="warning-text">
-      उर्वरित <strong>{{ remaining_percentage }}%</strong> टक्केवारी पुढील वाटपासाठी उपलब्ध आहे.
-    </span>
-  </div>
+    उर्वरित <strong>{{ remaining_percentage }}%</strong> टक्केवारी उपलब्ध आहे.
+
   {% elif remaining_percentage == 0 %}
-  <div class="warning-box" style="background: #e8f5e9; border-left-color: #2e7d32;">
-    <i class="fas fa-check-circle" style="color: #2e7d32;"></i>
-    <span class="warning-text" style="color: #1b5e20;">
-      सर्व 100% टक्केवारीचे यशस्वीरित्या वाटप केले गेले आहे.
-    </span>
-  </div>
+  <div class="warning-box" style="background:#e8f5e9; border-left-color:#2e7d32;">
+    <i class="fas fa-check-circle" style="color:#2e7d32;"></i>
+    सर्व 100% वाटप पूर्ण झाले आहे.
+
   {% elif remaining_percentage < 0 %}
-  <div class="warning-box" style="background: #fdecea; border-left-color: #c62828;">
-    <i class="fas fa-exclamation-triangle" style="color: #c62828;"></i>
-    <span class="warning-text" style="color: #c62828;">
-      <strong>चेतावणी:</strong> एकूण टक्केवारी 100% पेक्षा जास्त आहे ({{ total_percentage }}%). कृपया त्वरित पुनरावलोकन करा!
-    </span>
+  <div class="warning-box" style="background:#fdecea; border-left-color:#c62828;">
+    <i class="fas fa-exclamation-triangle" style="color:#c62828;"></i>
+    चेतावणी: 100% पेक्षा जास्त वाटप झाले आहे ({{ total_percentage }}%).
   </div>
   {% endif %}
+
 </div>
 
 {% else %}
+
 <!-- Empty State -->
 <div class="empty-state-dashboard">
   <i class="fas fa-layer-group"></i>
   <p>कोणतेही खर्च शीर्ष उपलब्ध नाहीत</p>
-  <p style="font-size: 12px; margin-top: 8px;">कृपया प्रशासकाशी संपर्क साधा किंवा प्रथम खर्च शीर्ष तयार करा.</p>
+  <p style="font-size:12px; margin-top:8px;">
+    कृपया प्रथम खर्च शीर्ष तयार करा.
+  </p>
 </div>
+
 {% endif %}
 
 {% endblock %}

@@ -430,16 +430,22 @@ def ZP_Fund_Release(request):
 
 
 
+
+
 def ZP_Allocation_Chart(request, financial_year, zp_id):
 
+    # =========================
     # LOGIN CHECK
+    # =========================
     if not request.session.get('user_id'):
         return redirect('Login')
 
     if request.session.get('user_type') != 'ZillaParishad':
         return redirect('Login')
 
+    # =========================
     # USER
+    # =========================
     try:
         user = Zilla_Parishad_User.objects.get(
             id=zp_id,
@@ -448,24 +454,98 @@ def ZP_Allocation_Chart(request, financial_year, zp_id):
     except:
         return redirect('Login')
 
-    # FINANCIAL YEAR (BY NAME)
+    # =========================
+    # FINANCIAL YEAR
+    # =========================
     financial_year_obj = Financial_Year.objects.filter(
         year=financial_year,
         status='Active'
     ).first()
 
-    # CALL UTILITY
+    # =========================
+    # RAW DATA FROM UTILITY
+    # =========================
     allocation_data = calculate_kosh_release_amount(
         financial_year=financial_year,
         zilla_parishad_id=user.id
     )
 
-    return render(
-        request,
-        'ZP-Allocation-Chart.html',
-        {
-            'user': user,
-            'financial_year': financial_year_obj,
-            'allocation_data': allocation_data
-        }
-    )
+    # =========================
+    # FILTERS
+    # =========================
+    search = request.GET.get('search', '').strip()
+    kosh_filter = request.GET.get('kosh', '').strip()
+    gp_filter = request.GET.get('gram_panchayat', '').strip()
+
+    if search:
+        allocation_data = [
+            i for i in allocation_data
+            if search.lower() in i.get('release_name', '').lower()
+            or search.lower() in i.get('release_order_no', '').lower()
+        ]
+
+    if kosh_filter:
+        allocation_data = [
+            i for i in allocation_data
+            if i.get('kosh_name') == kosh_filter
+        ]
+
+    if gp_filter:
+        allocation_data = [
+            i for i in allocation_data
+            if i.get('gram_panchayat_name') == gp_filter
+        ]
+
+    # =========================
+    # UNIQUE DROPDOWNS
+    # =========================
+    unique_koshes = sorted(set(i.get('kosh_name') for i in allocation_data))
+    unique_gps = sorted(set(i.get('gram_panchayat_name') for i in allocation_data))
+
+    # =========================
+    # HEAD STRUCTURE (NAME + %)
+    # =========================
+    all_heads = []
+
+    for i in allocation_data:
+        for h in i.get('heads', []):
+            if h['head_name'] not in [x['name'] for x in all_heads]:
+                all_heads.append({
+                    "name": h['head_name'],
+                    "percentage": h['percentage']
+                })
+
+    # =========================
+    # HEAD VALUE MATRIX (ROW DATA)
+    # =========================
+    for i in allocation_data:
+
+        head_values = []
+
+        for h in all_heads:
+            value = 0
+
+            for item in i.get('heads', []):
+                if item['head_name'] == h['name']:
+                    value = item['head_amount']
+
+            head_values.append(value)
+
+        i['head_values'] = head_values
+
+    # =========================
+    # CONTEXT
+    # =========================
+    context = {
+        "user": user,
+        "financial_year": financial_year_obj,
+        "allocation_data": allocation_data,
+        "all_heads": all_heads,
+        "unique_koshes": unique_koshes,
+        "unique_gps": unique_gps,
+        "search": search,
+        "kosh_filter": kosh_filter,
+        "gp_filter": gp_filter,
+    }
+
+    return render(request, "ZP-Allocation-Chart.html", context)
