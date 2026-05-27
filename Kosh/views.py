@@ -46,30 +46,22 @@ def Kosh_Dashboard(request):
         messages.error(request, "User Not Found")
         return redirect('Login')
 
-    # Get all active Kosh Heads
+    # Get all heads
     all_heads = Kosh_Head.objects.filter(status='Active')
-    
-    # Prepare heads with their percentages
+
     heads_with_percentages = []
     total_percentage = 0
-    
+
     for head in all_heads:
-        # Get percentage for this head
-        percentage_obj = Head_Percentage.objects.filter(kosh_head=head).first()
-        percentage = float(percentage_obj.percentage) if percentage_obj else 0
+        percentage = float(head.percentage or 0)
         total_percentage += percentage
-        
+
         heads_with_percentages.append({
             'head': head,
             'percentage': percentage
         })
-    
-    # Calculate remaining percentage
+
     remaining_percentage = max(0, 100 - total_percentage)
-    
-    # Calculate statistics
-    total_heads = all_heads.count()
-    active_heads = all_heads.filter(status='Active').count()
 
     context = {
         'user_type': 'Kosh',
@@ -77,8 +69,7 @@ def Kosh_Dashboard(request):
         'heads_with_percentages': heads_with_percentages,
         'total_percentage': round(total_percentage, 2),
         'remaining_percentage': round(remaining_percentage, 2),
-        'total_heads': total_heads,
-        'active_heads': active_heads,
+        'total_heads': all_heads.count(),
         **switch_kosh(request),
     }
 
