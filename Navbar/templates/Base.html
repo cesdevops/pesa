@@ -1039,8 +1039,23 @@ body{
 
 {% endif %}
 
-<li><a href="#" data-tooltip="निधी व्यवस्थापन"><i class="fa fa-money-bill-wave"></i><span class="nav-label">निधी व्यवस्थापन</span></a></li>
-      <li><a href="#" data-tooltip="योजना"><i class="fa fa-tasks"></i><span class="nav-label">योजना</span></a></li>
+
+<li>
+    
+    <a href="{% url 'ZP-Fund-Release' %}" data-tooltip="निधी व्यवस्थापन">
+        
+        <i class="fa fa-money-bill-wave"></i>
+        
+        <span class="nav-label">
+            निधी व्यवस्थापन
+        </span>
+
+    </a>
+
+</li>
+
+
+<li><a href="#" data-tooltip="योजना"><i class="fa fa-tasks"></i><span class="nav-label">योजना</span></a></li>
     </ul>
 
     <div class="sidebar-divider"></div>

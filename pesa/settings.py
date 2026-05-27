@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'PanchayatSamiti',
     'Kosh',
     'Navbar',
+    'FundRelease',
 
 
 
