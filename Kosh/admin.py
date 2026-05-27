@@ -85,7 +85,6 @@ class KoshUserAdmin(admin.ModelAdmin):
         'name',
         'mobile',
         'username',
-        'get_kosh_names',
         'status',
         'is_retired',
     )
@@ -95,7 +94,6 @@ class KoshUserAdmin(admin.ModelAdmin):
         'mobile',
         'username',
         'email',
-        'kosh__kosh_name',
     )
 
     list_filter = (
@@ -141,6 +139,7 @@ class KoshBankDetailAdmin(admin.ModelAdmin):
         'branch_name',
         'account_holder_name',
         'account_number',
+        'status',
         'current_balance',
     )
     search_fields = (
