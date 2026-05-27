@@ -1,0 +1,301 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    /* ── PURE CSS MODAL — completely independent of Bootstrap ── */
+    #fundReleaseOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+        z-index: 99999;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    #fundReleaseOverlay.active {
+        display: flex;
+    }
+    #fundReleaseBox {
+        background: #fff;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 680px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        animation: modalPop 0.2s ease;
+    }
+    @keyframes modalPop {
+        from { transform: scale(0.95); opacity: 0; }
+        to   { transform: scale(1);    opacity: 1; }
+    }
+    #fundReleaseBox .modal-head {
+        background: #0d6efd;
+        color: #fff;
+        padding: 16px 20px;
+        border-radius: 12px 12px 0 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    #fundReleaseBox .modal-head h5 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 700;
+    }
+    #fundReleaseBox .modal-head button {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 22px;
+        cursor: pointer;
+        line-height: 1;
+        opacity: 0.85;
+        padding: 0 4px;
+    }
+    #fundReleaseBox .modal-head button:hover { opacity: 1; }
+    #fundReleaseBox .modal-body-inner { padding: 24px; }
+    #fundReleaseBox .modal-foot {
+        padding: 14px 24px;
+        border-top: 1px solid #dee2e6;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+</style>
+
+<div class="container-fluid py-4">
+
+    <!-- PAGE HEADER -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h3 class="fw-bold mb-1">Fund Release Management</h3>
+                    <p class="text-muted mb-0">Manage and track all fund release records</p>
+                </div>
+                <button type="button" class="btn btn-primary px-4 py-2 rounded-3" onclick="openFundModal()">
+                    <i class="fa fa-plus me-2"></i> Add Fund Release
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FILTER CARD -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4">
+            <form method="GET">
+                <div class="row g-3 align-items-end">
+
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Search</label>
+                        <input type="text" name="search" class="form-control" placeholder="Search Here" value="{{ search }}">
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">Financial Year</label>
+                        <select name="financial_year" class="form-select">
+                            <option value="">All Financial Years</option>
+                            {% for fy in all_financial_years %}
+                            <option value="{{ fy.id }}" {% if financial_year_id == fy.id|stringformat:"s" %}selected{% endif %}>
+                                {{ fy.year }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">Installment</label>
+                        <select name="installment" class="form-select">
+                            <option value="">All Installments</option>
+                            {% for i in "123456789" %}
+                            <option value="{{ i }}" {% if installment == i %}selected{% endif %}>Installment {{ i }}</option>
+                            {% endfor %}
+                            <option value="10" {% if installment == "10" %}selected{% endif %}>Installment 10</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">From Date</label>
+                        <input type="date" name="from_date" class="form-control" value="{{ from_date }}">
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">To Date</label>
+                        <input type="date" name="to_date" class="form-control" value="{{ to_date }}">
+                    </div>
+
+                    <div class="col-md-1">
+                        <button type="submit" class="btn btn-dark w-100">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TABLE CARD -->
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="ps-4">#</th>
+                            <th>Financial Year</th>
+                            <th>Release Name</th>
+                            <th>Installment</th>
+                            <th>Order No</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Remarks</th>
+                            <th>Added By</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in all_fund_release %}
+                        <tr>
+                            <td class="ps-4">{{ forloop.counter }}</td>
+                            <td>{{ i.financial_year.year }}</td>
+                            <td>{{ i.release_name }}</td>
+                            <td><span class="badge bg-primary">Installment {{ i.installment }}</span></td>
+                            <td>{{ i.release_order_no }}</td>
+                            <td>{{ i.release_date }}</td>
+                            <td class="fw-bold text-success">₹ {{ i.total_amount }}</td>
+                            <td>{{ i.remarks|default:"-" }}</td>
+                            <td>{{ i.added_by.name }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center py-5 text-muted">
+                                <i class="fa fa-inbox fa-2x mb-2 d-block"></i>
+                                No Fund Release Records Found
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- ════════════════════════════════════════
+     PURE JS/CSS MODAL
+     z-index: 99999 — sits above ALL navbar JS
+════════════════════════════════════════ -->
+<div id="fundReleaseOverlay" onclick="overlayClick(event)">
+    <div id="fundReleaseBox">
+
+        <!-- HEADER -->
+        <div class="modal-head">
+            <h5><i class="fa fa-money-bill-wave me-2"></i> Add Fund Release</h5>
+            <button type="button" onclick="closeFundModal()" title="Close">&times;</button>
+        </div>
+
+        <!-- FORM -->
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="modal-body-inner">
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Financial Year</label>
+                        <input type="text" class="form-control bg-light" value="{{ financial_year.year }}" readonly>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Release Name <span class="text-danger">*</span></label>
+                        <input type="text" name="release_name" class="form-control" placeholder="Enter release name" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Installment <span class="text-danger">*</span></label>
+                        <select name="installment" class="form-select" required>
+                            <option value="">Select Installment</option>
+                            {% for i in "123456789" %}
+                            <option value="{{ i }}">Installment {{ i }}</option>
+                            {% endfor %}
+                            <option value="10">Installment 10</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Release Order Number <span class="text-danger">*</span></label>
+                        <input type="text" name="release_order_no" class="form-control" placeholder="Enter order number" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Total Amount <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text">₹</span>
+                            <input type="number" step="0.01" name="total_amount" class="form-control" placeholder="0.00" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Confirm Amount <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text">₹</span>
+                            <input type="number" step="0.01" name="confirm_amount" class="form-control" placeholder="0.00" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label class="form-label fw-semibold">Remarks</label>
+                        <textarea name="remarks" rows="3" class="form-control" placeholder="Optional remarks..."></textarea>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="modal-foot">
+                <button type="button" class="btn btn-light border px-4" onclick="closeFundModal()">
+                    <i class="fa fa-times me-1"></i> Close
+                </button>
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="fa fa-save me-1"></i> Save Fund Release
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+<script>
+    /* ── Pure JS modal — ZERO Bootstrap dependency ── */
+
+    function openFundModal() {
+        document.getElementById('fundReleaseOverlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeFundModal() {
+        document.getElementById('fundReleaseOverlay').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    /* Click backdrop to close — but NOT the modal box itself */
+    function overlayClick(e) {
+        if (e.target === document.getElementById('fundReleaseOverlay')) {
+            closeFundModal();
+        }
+    }
+
+    /* ESC key to close */
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeFundModal();
+    });
+</script>
+
+{% endblock %}
