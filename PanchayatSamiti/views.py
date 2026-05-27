@@ -366,6 +366,11 @@ def PS_Manage_Users(request):
         request.session.flush()
         return redirect('SuperUser-Login')
 
+    # ========== ADD THESE TWO LINES HERE ==========
+    # Get pre-selected samiti from URL parameters
+    pre_selected_samiti_id = request.GET.get('pre_selected_samiti', '')
+    pre_selected_samiti_name = request.GET.get('samiti_name', '')
+
     # Get all Panchayat Samitis for dropdown
     panchayat_samitis = Panchayat_Samiti.objects.filter(status='Active')
 
@@ -391,14 +396,28 @@ def PS_Manage_Users(request):
             # Validate required fields
             if not name:
                 messages.error(request, 'नाव आवश्यक आहे')
+                # return redirect('PS-Manage-Users')
+                # Redirect back to samiti page if coming from there
+                if pre_selected_samiti_id:
+                    return redirect('PS-Manage-Panchayat-Samitis')
                 return redirect('PS-Manage-Users')
+
+
 
             if not username:
                 messages.error(request, 'यूजरनेम आवश्यक आहे')
+                # return redirect('PS-Manage-Users')
+                # Redirect back to samiti page if coming from there
+                if pre_selected_samiti_id:
+                    return redirect('PS-Manage-Panchayat-Samitis')
                 return redirect('PS-Manage-Users')
 
             if not raw_password:
                 messages.error(request, 'पासवर्ड आवश्यक आहे')
+                # return redirect('PS-Manage-Users')
+                # Redirect back to samiti page if coming from there
+                if pre_selected_samiti_id:
+                    return redirect('PS-Manage-Panchayat-Samitis')
                 return redirect('PS-Manage-Users')
 
             # Handle mobile number - store as is or empty string
@@ -652,6 +671,8 @@ def PS_Manage_Users(request):
         'panchayat_samitis': panchayat_samitis,
         'pagination_range': pagination_range,
         'total_pages': total_pages,
+        'pre_selected_samiti_id': pre_selected_samiti_id,
+        'pre_selected_samiti_name': pre_selected_samiti_name,
     }
 
     return render(request, 'PS-Manage-Users.html', context)

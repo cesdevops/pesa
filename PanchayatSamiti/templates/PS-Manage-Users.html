@@ -81,7 +81,14 @@
       <i class="fas fa-plus me-1"></i> नवीन यूजर जोडा
     </button>
   </div>
-  
+  <!-- Pre-selected Samiti Alert (if coming from Samiti page) -->
+{% if pre_selected_samiti_id %}
+<div class="alert alert-info alert-dismissible fade show rounded-4 mb-3" role="alert">
+  <i class="fas fa-info-circle me-2"></i>
+  <strong>पंचायत समिती:</strong> {{ pre_selected_samiti_name|default:"पंचायत समिती" }} साठी यूजर जोडत आहात
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endif %}
 
   
   <!-- फिल्टर कार्ड -->
@@ -372,7 +379,7 @@
             </div>
 
             <!-- पंचायत समिती -->
-            <div class="col-md-4 mb-3">
+            <!-- <div class="col-md-4 mb-3">
               <label class="form-label fw-semibold">पंचायत समिती</label>
               <select name="panchayat_samiti_id" class="form-select rounded-3">
                 <option value="">-- पंचायत समिती निवडा --</option>
@@ -380,7 +387,25 @@
                   <option value="{{ ps.id }}">{{ ps.panchayat_samiti_name }}</option>
                 {% endfor %}
               </select>
-            </div>
+            </div> -->
+
+          <!-- पंचायत समिती -->
+          <div class="col-md-4 mb-3">
+            <label class="form-label fw-semibold">पंचायत समिती</label>
+            <select name="panchayat_samiti_id" class="form-select rounded-3" {% if pre_selected_samiti_id %}disabled{% endif %}>
+              <option value="">-- पंचायत समिती निवडा --</option>
+              {% for ps in panchayat_samitis %}
+                <option value="{{ ps.id }}" {% if pre_selected_samiti_id|stringformat:"s" == ps.id|stringformat:"s" %}selected{% endif %}>
+                  {{ ps.panchayat_samiti_name }}
+                </option>
+              {% endfor %}
+            </select>
+            {% if pre_selected_samiti_id %}
+            <input type="hidden" name="panchayat_samiti_id" value="{{ pre_selected_samiti_id }}">
+            <small class="text-muted">पंचायत समिती पूर्व-निवडली आहे</small>
+            {% endif %}
+          </div>
+
 
             <!-- रोल -->
             <div class="col-md-4 mb-3">
@@ -535,6 +560,36 @@
   </div>
 </div>
 {% endfor %}
+
+
+<!-- ================================================= -->
+<!-- Auto-open Modal Script -->
+<!-- ================================================= -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Check if pre_selected_samiti_id exists
+    var preSelectedSamiti = '{{ pre_selected_samiti_id }}';
+    
+    if (preSelectedSamiti && preSelectedSamiti !== '') {
+      // Get the add modal element
+      var addModalElement = document.getElementById('addModal');
+      
+      // Check if Bootstrap is loaded and modal exists
+      if (addModalElement && typeof bootstrap !== 'undefined') {
+        var addModal = new bootstrap.Modal(addModalElement);
+        addModal.show();
+        
+        // Focus on name field after modal opens
+        addModalElement.addEventListener('shown.bs.modal', function() {
+          var firstNameInput = document.querySelector('#addModal input[name="name"]');
+          if (firstNameInput) {
+            firstNameInput.focus();
+          }
+        });
+      }
+    }
+  });
+</script>
 
 {% endblock %}
 

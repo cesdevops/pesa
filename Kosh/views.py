@@ -1266,9 +1266,6 @@ def Kosh_Add_User(request, grampanchayat_id):
                 messages.error(request, 'कृपया 10 अंकी वैध मोबाइल क्रमांक प्रविष्ट करा (सुरुवात 6,7,8,9 ने)')
                 return redirect('Kosh-Add-User', grampanchayat_id=grampanchayat_id)
             
-            if not mobile:
-                messages.error(request, 'मोबाइल क्रमांक आवश्यक आहे')
-                return redirect('Kosh-Add-User', grampanchayat_id=grampanchayat_id)
             
             # Email validation (don't use clean_text)
             email = None
@@ -1298,12 +1295,7 @@ def Kosh_Add_User(request, grampanchayat_id):
             if Kosh_User.objects.filter(username=username).exists():
                 messages.error(request, 'हा यूजरनेम आधीपासून अस्तित्वात आहे')
                 return redirect('Kosh-Add-User', grampanchayat_id=grampanchayat_id)
-            
-            # Check if mobile already exists
-            if Kosh_User.objects.filter(mobile=mobile).exists():
-                messages.error(request, 'हा मोबाइल क्रमांक आधीपासून नोंदणीकृत आहे')
-                return redirect('Kosh-Add-User', grampanchayat_id=grampanchayat_id)
-            
+                        
             # Handle profile image upload
             profile = request.FILES.get('profile')
             
