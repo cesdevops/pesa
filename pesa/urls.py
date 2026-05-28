@@ -26,6 +26,7 @@ urlpatterns = [
     path('PanchayatSamiti/', include('PanchayatSamiti.urls')),
     path('Kosh/', include('Kosh.urls')),
     path('FundRelease/', include('FundRelease.urls')),
+    path('Activity/', include('Activity.urls')),
 
 
 
