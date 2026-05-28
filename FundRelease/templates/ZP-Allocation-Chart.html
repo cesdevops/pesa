@@ -55,9 +55,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   PAGE WRAPPER
-══════════════════════════════════════════════════════════════ */
 .ac-page { padding: 28px; }
 
 /* ══════════════════════════════════════════════════════════════
@@ -76,7 +73,6 @@ body {
   flex-wrap: wrap;
   gap: 16px;
 }
-
 .ac-header-left h1 {
   font-size: 20px;
   font-weight: 700;
@@ -86,7 +82,6 @@ body {
   align-items: center;
   gap: 10px;
 }
-
 .ac-header-left h1 .icon-wrap {
   width: 36px; height: 36px;
   background: linear-gradient(135deg, var(--gold), var(--gold2));
@@ -98,21 +93,18 @@ body {
   font-size: 15px;
   flex-shrink: 0;
 }
-
 .ac-header-left p {
   font-size: 13px;
   color: var(--text-3);
   margin-top: 5px;
   margin-left: 46px;
 }
-
 .ac-header-badges {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   align-items: center;
 }
-
 .hbadge {
   display: inline-flex;
   align-items: center;
@@ -123,10 +115,10 @@ body {
   font-weight: 600;
   border: 1px solid;
 }
-.hbadge-year     { background: var(--blue-bg); color: var(--blue); border-color: var(--blue-border); }
-.hbadge-order    { background: var(--surface2); color: var(--text-2); border-color: var(--border-md); font-family: 'DM Mono', monospace; }
-.hbadge-amount   { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
-.hbadge-install  { background: var(--gold-light); color: var(--orange); border-color: var(--orange-border); }
+.hbadge-year    { background: var(--blue-bg);   color: var(--blue);   border-color: var(--blue-border); }
+.hbadge-order   { background: var(--surface2);  color: var(--text-2); border-color: var(--border-md); font-family: 'DM Mono', monospace; }
+.hbadge-amount  { background: var(--green-bg);  color: var(--green);  border-color: var(--green-border); }
+.hbadge-install { background: var(--gold-light);color: var(--orange); border-color: var(--orange-border); }
 
 /* ══════════════════════════════════════════════════════════════
    FLASH MESSAGES
@@ -143,9 +135,9 @@ body {
   margin-bottom: 8px;
   border: 1px solid;
 }
-.ac-msg.success { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
-.ac-msg.error   { background: var(--red-bg);   color: var(--red);   border-color: var(--red-border); }
-.ac-msg.warning { background: var(--orange-bg);color: var(--orange); border-color: var(--orange-border); }
+.ac-msg.success { background: var(--green-bg);  color: var(--green);  border-color: var(--green-border); }
+.ac-msg.error   { background: var(--red-bg);    color: var(--red);    border-color: var(--red-border); }
+.ac-msg.warning { background: var(--orange-bg); color: var(--orange); border-color: var(--orange-border); }
 
 /* ══════════════════════════════════════════════════════════════
    FILTER CARD
@@ -158,14 +150,12 @@ body {
   margin-bottom: 20px;
   box-shadow: var(--shadow-sm);
 }
-
 .filter-row {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
   align-items: flex-end;
 }
-
 .filter-group {
   flex: 1;
   min-width: 160px;
@@ -173,7 +163,6 @@ body {
   flex-direction: column;
   gap: 5px;
 }
-
 .filter-group label {
   font-size: 10.5px;
   font-weight: 700;
@@ -184,7 +173,6 @@ body {
   align-items: center;
   gap: 5px;
 }
-
 .filter-group input,
 .filter-group select {
   width: 100%;
@@ -198,13 +186,11 @@ body {
   outline: none;
   transition: border-color 0.15s, background 0.15s;
 }
-
 .filter-group input:focus,
 .filter-group select:focus {
   border-color: var(--gold);
   background: var(--white);
 }
-
 .btn-filter {
   background: var(--gold);
   color: #fff;
@@ -221,9 +207,8 @@ body {
   transition: background 0.15s, transform 0.1s;
   white-space: nowrap;
 }
-.btn-filter:hover { background: var(--navy); }
+.btn-filter:hover  { background: var(--navy); }
 .btn-filter:active { transform: scale(0.97); }
-
 .btn-clear {
   background: var(--white);
   color: var(--text-2);
@@ -252,7 +237,6 @@ body {
   box-shadow: var(--shadow-sm);
   overflow: hidden;
 }
-
 .ac-table-header {
   display: flex;
   align-items: center;
@@ -262,7 +246,6 @@ body {
   flex-wrap: wrap;
   gap: 10px;
 }
-
 .ac-table-header .th-title {
   font-size: 14px;
   font-weight: 700;
@@ -271,7 +254,6 @@ body {
   align-items: center;
   gap: 8px;
 }
-
 .ac-table-header .th-count {
   font-size: 12px;
   color: var(--text-3);
@@ -279,18 +261,14 @@ body {
   align-items: center;
   gap: 5px;
 }
-
 .table-scroll { overflow-x: auto; }
-
 table {
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
   min-width: 1300px;
 }
-
 thead tr { background: var(--surface); }
-
 thead th {
   text-align: left;
   font-size: 10.5px;
@@ -302,14 +280,12 @@ thead th {
   border-bottom: 1px solid var(--border);
   white-space: nowrap;
 }
-
 tbody tr {
   border-bottom: 1px solid var(--border);
   transition: background 0.1s;
 }
 tbody tr:last-child { border-bottom: none; }
 tbody tr:hover { background: var(--surface); }
-
 tbody td {
   padding: 11px 16px;
   color: var(--text-1);
@@ -317,7 +293,6 @@ tbody td {
   vertical-align: middle;
 }
 
-/* status badges */
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -329,18 +304,18 @@ tbody td {
   border: 1px solid;
   white-space: nowrap;
 }
-.status-done    { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+.status-done    { background: var(--green-bg);  color: var(--green);  border-color: var(--green-border); }
 .status-pending { background: var(--orange-bg); color: var(--orange); border-color: var(--orange-border); }
-.badge-fy       { background: var(--blue-bg); color: var(--blue); border-color: var(--blue-border); padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; border: 1px solid; }
-.badge-inst     { background: var(--green-bg); color: var(--green); border-color: var(--green-border); padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; border: 1px solid; }
-.badge-kosh     { background: var(--surface2); color: var(--text-2); border-color: var(--border-md); padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; border: 1px solid; }
 
-.text-amount     { font-weight: 700; color: var(--green); font-family: 'DM Mono', monospace; font-size: 13px; }
-.text-amount-sm  { font-weight: 500; color: var(--text-2); font-family: 'DM Mono', monospace; font-size: 12px; }
-.text-mono       { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text-2); }
-.text-counter    { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text-3); }
+.badge-fy   { background: var(--blue-bg);   color: var(--blue);   border-color: var(--blue-border);   padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; border: 1px solid; }
+.badge-inst { background: var(--green-bg);  color: var(--green);  border-color: var(--green-border);  padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; border: 1px solid; }
+.badge-kosh { background: var(--surface2);  color: var(--text-2); border-color: var(--border-md);     padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; border: 1px solid; }
 
-/* head columns */
+.text-amount    { font-weight: 700; color: var(--green);  font-family: 'DM Mono', monospace; font-size: 13px; }
+.text-amount-sm { font-weight: 500; color: var(--text-2); font-family: 'DM Mono', monospace; font-size: 12px; }
+.text-mono      { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text-2); }
+.text-counter   { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text-3); }
+
 .head-col { background: #FAFBFF; }
 
 /* ══════════════════════════════════════════════════════════════
@@ -362,11 +337,11 @@ tbody td {
   font-size: 26px;
   opacity: 0.5;
 }
-.ac-empty p { font-size: 14px; }
+.ac-empty p     { font-size: 14px; }
 .ac-empty small { font-size: 12px; margin-top: 5px; display: block; }
 
 /* ══════════════════════════════════════════════════════════════
-   DISTRIBUTE BAR
+   DISTRIBUTE BAR  (date picker REMOVED)
 ══════════════════════════════════════════════════════════════ */
 .ac-dist-bar {
   display: flex;
@@ -378,7 +353,6 @@ tbody td {
   border-top: 1px solid var(--border);
   background: var(--surface);
 }
-
 .db-info {
   font-size: 13px;
   color: var(--text-2);
@@ -394,39 +368,6 @@ tbody td {
   line-height: 1;
 }
 .db-info .db-label { font-size: 12px; color: var(--text-3); }
-
-.db-right {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  flex-wrap: wrap;
-}
-
-.db-date-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.db-date-group label {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-3);
-  white-space: nowrap;
-}
-.db-date-group input[type=date] {
-  border: 1px solid var(--border-md);
-  border-radius: var(--radius-md);
-  padding: 8px 12px;
-  font-size: 13px;
-  font-family: inherit;
-  outline: none;
-  background: var(--white);
-  color: var(--text-1);
-  transition: border-color 0.15s;
-}
-.db-date-group input[type=date]:focus { border-color: var(--gold); }
 
 .btn-allocate {
   background: linear-gradient(135deg, var(--gold), #d97706);
@@ -472,7 +413,7 @@ tbody td {
 .done-text strong { font-size: 14px; font-weight: 700; color: var(--green); display: block; }
 .done-text small  { font-size: 12px; color: var(--green); opacity: 0.75; margin-top: 2px; display: block; }
 
-/* warn banner (all done but flag not set) */
+/* warn banner */
 .ac-warn-banner {
   display: flex;
   align-items: center;
@@ -486,7 +427,7 @@ tbody td {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   CONFIRMATION MODAL
+   CONFIRMATION MODAL  (date picker REMOVED)
 ══════════════════════════════════════════════════════════════ */
 .modal-backdrop {
   display: none;
@@ -501,7 +442,6 @@ tbody td {
   padding: 20px;
 }
 .modal-backdrop.open { display: flex; }
-
 .modal-box {
   background: var(--white);
   border-radius: var(--radius-xl);
@@ -511,17 +451,14 @@ tbody td {
   animation: modalIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
   overflow: hidden;
 }
-
 @keyframes modalIn {
   from { transform: translateY(20px) scale(0.96); opacity: 0; }
   to   { transform: none; opacity: 1; }
 }
-
 .modal-top {
   padding: 32px 28px 24px;
   text-align: center;
 }
-
 .modal-icon-ring {
   width: 64px; height: 64px;
   border-radius: 50%;
@@ -533,7 +470,6 @@ tbody td {
   margin: 0 auto 18px;
 }
 .modal-icon-ring i { font-size: 26px; color: var(--gold); }
-
 .modal-title {
   font-size: 19px;
   font-weight: 700;
@@ -545,10 +481,7 @@ tbody td {
   font-size: 13px;
   color: var(--text-3);
   line-height: 1.6;
-  margin-bottom: 0;
 }
-
-/* summary grid inside modal */
 .modal-summary {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -559,10 +492,7 @@ tbody td {
   overflow: hidden;
   margin: 20px 28px;
 }
-.summary-cell {
-  background: var(--white);
-  padding: 12px 16px;
-}
+.summary-cell { background: var(--white); padding: 12px 16px; }
 .summary-cell .sc-label {
   font-size: 10px;
   font-weight: 700;
@@ -580,37 +510,6 @@ tbody td {
 .summary-cell .sc-val.green { color: var(--green); }
 .summary-cell .sc-val.gold  { color: var(--gold); }
 
-/* date picker inside modal */
-.modal-date-row {
-  padding: 0 28px 20px;
-}
-.modal-date-row label {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: var(--text-3);
-  display: block;
-  margin-bottom: 6px;
-}
-.modal-date-row input[type=date] {
-  width: 100%;
-  border: 1px solid var(--border-md);
-  border-radius: var(--radius-md);
-  padding: 9px 14px;
-  font-size: 14px;
-  font-family: inherit;
-  color: var(--text-1);
-  background: var(--surface);
-  outline: none;
-  transition: border-color 0.15s;
-}
-.modal-date-row input[type=date]:focus {
-  border-color: var(--gold);
-  background: var(--white);
-}
-
-/* warning stripe */
 .modal-warning {
   margin: 0 28px 20px;
   background: var(--red-bg);
@@ -624,8 +523,6 @@ tbody td {
   align-items: center;
   gap: 8px;
 }
-
-/* modal footer */
 .modal-footer {
   display: flex;
   gap: 10px;
@@ -645,7 +542,6 @@ tbody td {
   transition: background 0.13s;
 }
 .btn-modal-cancel:hover { background: var(--surface); }
-
 .btn-modal-confirm {
   flex: 2;
   background: linear-gradient(135deg, var(--gold), #d97706);
@@ -664,14 +560,8 @@ tbody td {
   transition: all 0.15s;
   box-shadow: 0 4px 12px rgba(230,126,0,0.30);
 }
-.btn-modal-confirm:hover {
-  background: linear-gradient(135deg, var(--navy), var(--navy2));
-}
-.btn-modal-confirm:disabled {
-  background: var(--text-3);
-  box-shadow: none;
-  cursor: not-allowed;
-}
+.btn-modal-confirm:hover    { background: linear-gradient(135deg, var(--navy), var(--navy2)); }
+.btn-modal-confirm:disabled { background: var(--text-3); box-shadow: none; cursor: not-allowed; }
 
 /* ══════════════════════════════════════════════════════════════
    RESPONSIVE
@@ -683,8 +573,7 @@ tbody td {
   .filter-group { width: 100%; min-width: 0; }
   .btn-filter, .btn-clear { justify-content: center; }
   .ac-dist-bar { flex-direction: column; align-items: flex-start; }
-  .db-right { width: 100%; flex-direction: column; align-items: stretch; }
-  .btn-allocate { justify-content: center; }
+  .btn-allocate { justify-content: center; width: 100%; }
   .modal-summary { grid-template-columns: 1fr; }
 }
 </style>
@@ -721,25 +610,7 @@ tbody td {
     </div>
   </div>
 
-  <!-- ═══════════════════════════════════════════
-       FLASH MESSAGES
-  ═══════════════════════════════════════════ -->
-  {% if messages %}
-  <div class="ac-messages">
-    {% for message in messages %}
-    <div class="ac-msg {{ message.tags }}">
-      {% if message.tags == 'success' %}
-        <i class="fas fa-check-circle"></i>
-      {% elif message.tags == 'error' %}
-        <i class="fas fa-exclamation-circle"></i>
-      {% else %}
-        <i class="fas fa-info-circle"></i>
-      {% endif %}
-      {{ message }}
-    </div>
-    {% endfor %}
-  </div>
-  {% endif %}
+ 
 
   <!-- ═══════════════════════════════════════════
        FILTER CARD
@@ -780,7 +651,7 @@ tbody td {
             <button type="submit" class="btn-filter">
               <i class="fas fa-filter"></i> गाळा लावा
             </button>
-            <a href="?{{ request.GET.urlencode }}" class="btn-clear">
+            <a href="?" class="btn-clear">
               <i class="fas fa-undo-alt"></i>
             </a>
           </div>
@@ -809,7 +680,7 @@ tbody td {
         </span>
         &nbsp;|&nbsp;
         <span style="color:var(--green);">
-          <i class="fas fa-check-circle"></i> {{ allocated_count }} वाटप झाले
+          <i class="fas fa-check-circle"></i> {{ allocated_count }} वाटप झाले
         </span>
       </span>
     </div>
@@ -860,13 +731,9 @@ tbody td {
 
             <td><span class="badge-fy">{{ i.financial_year }}</span></td>
 
-            <td>
-              <strong style="font-size:13px;">{{ i.release_name }}</strong>
-            </td>
+            <td><strong style="font-size:13px;">{{ i.release_name }}</strong></td>
 
-            <td>
-              <span class="badge-inst">हप्ता {{ i.installment }}</span>
-            </td>
+            <td><span class="badge-inst">हप्ता {{ i.installment }}</span></td>
 
             <td class="text-mono">{{ i.release_order_no }}</td>
 
@@ -887,6 +754,7 @@ tbody td {
             {% for v in i.head_values %}
               <td class="text-amount-sm head-col">₹&nbsp;{{ v }}</td>
             {% endfor %}
+
           </tr>
           {% endfor %}
         </tbody>
@@ -897,7 +765,7 @@ tbody td {
 
     {% if fund_release.fund_distributed %}
 
-      <!-- DONE BANNER — button permanently hidden -->
+      <!-- ALL DONE BANNER -->
       <div class="ac-done-banner">
         <div class="done-icon-wrap">
           <i class="fas fa-check"></i>
@@ -910,7 +778,7 @@ tbody td {
 
     {% elif pending_count == 0 %}
 
-      <!-- Edge case: all rows already allocated but flag not yet set -->
+      <!-- EDGE CASE: rows allocated but flag not yet set -->
       <div class="ac-warn-banner">
         <i class="fas fa-info-circle" style="font-size:20px;flex-shrink:0;"></i>
         <div>
@@ -923,7 +791,7 @@ tbody td {
 
     {% else %}
 
-      <!-- ALLOCATE BAR — shown only when pending kosh exist -->
+      <!-- ALLOCATE BAR — date picker removed, auto_now_add handles date -->
       <div class="ac-dist-bar">
         <div class="db-info">
           <div>
@@ -931,24 +799,17 @@ tbody td {
             <div class="db-label">कोष वाटपासाठी प्रतीक्षेत</div>
           </div>
         </div>
-        <div class="db-right">
-          <div class="db-date-group">
-            <label><i class="fas fa-calendar-check"></i> वाटप दिनांक</label>
-            <input type="date" id="alloc_date_picker"
-                   value="{{ fund_release.release_date|date:'Y-m-d' }}">
-          </div>
-          <button type="button" class="btn-allocate" onclick="openConfirmModal()">
-            <i class="fas fa-paper-plane"></i>
-            सर्व कोषांना निधी वाटप करा
-          </button>
-        </div>
+        <button type="button" class="btn-allocate" onclick="openConfirmModal()">
+          <i class="fas fa-paper-plane"></i>
+          सर्व कोषांना निधी वाटप करा
+        </button>
       </div>
 
     {% endif %}
 
     {% else %}
 
-    <!-- EMPTY -->
+    <!-- EMPTY STATE -->
     <div class="ac-empty">
       <div class="empty-icon"><i class="fas fa-chart-bar"></i></div>
       <p>कोणतीही वितरण नोंद सापडली नाही</p>
@@ -963,7 +824,7 @@ tbody td {
 
 
 <!-- ═══════════════════════════════════════════════════════════
-     CONFIRMATION MODAL
+     CONFIRMATION MODAL — date picker removed
 ═══════════════════════════════════════════════════════════ -->
 <div class="modal-backdrop" id="confirmModalBg">
   <div class="modal-box">
@@ -1003,26 +864,17 @@ tbody td {
       </div>
     </div>
 
-    <!-- Date picker inside modal -->
-    <div class="modal-date-row">
-      <label><i class="fas fa-calendar-check" style="margin-right:5px;"></i> वाटप दिनांक</label>
-      <input type="date" id="modal_alloc_date"
-             value="{{ fund_release.release_date|date:'Y-m-d' }}">
-    </div>
-
     <!-- Warning stripe -->
     <div class="modal-warning">
       <i class="fas fa-exclamation-triangle" style="flex-shrink:0;"></i>
       ही क्रिया कायमची आहे. सर्व {{ pending_count }} कोषांना एकाच वेळी निधी वाटप होईल.
     </div>
 
-    <!-- Hidden POST form — only submitted on confirm click -->
+    <!-- POST form — no date field needed, auto_now_add handles it -->
     <form method="POST"
           action="{% url 'ZP-Kosh-Fund-Allocation' financial_year zp_id fund_id %}"
           id="allocConfirmForm">
       {% csrf_token %}
-      <input type="hidden" name="allocation_date" id="hidden_alloc_date"
-             value="{{ fund_release.release_date|date:'Y-m-d' }}">
     </form>
 
     <div class="modal-footer">
@@ -1041,13 +893,7 @@ tbody td {
 
 
 <script>
-  /* ── Modal open / close ── */
   function openConfirmModal() {
-    // Sync date from the page-level date picker into the modal date picker
-    const pageDate = document.getElementById('alloc_date_picker');
-    if (pageDate) {
-      document.getElementById('modal_alloc_date').value = pageDate.value;
-    }
     document.getElementById('confirmModalBg').classList.add('open');
     document.body.style.overflow = 'hidden';
   }
@@ -1057,41 +903,20 @@ tbody td {
     document.body.style.overflow = '';
   }
 
-  /* ── Sync modal date into hidden form field + submit ── */
   function submitAllocation() {
-    const modalDate = document.getElementById('modal_alloc_date').value;
-    if (!modalDate) {
-      alert('कृपया वाटप दिनांक निवडा.');
-      return;
-    }
-
-    document.getElementById('hidden_alloc_date').value = modalDate;
-
     const btn = document.getElementById('confirmSubmitBtn');
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> प्रक्रिया सुरू आहे...';
-
     document.getElementById('allocConfirmForm').submit();
   }
 
-  /* ── Close on backdrop click ── */
   document.getElementById('confirmModalBg').addEventListener('click', function(e) {
     if (e.target === this) closeConfirmModal();
   });
 
-  /* ── ESC closes modal ── */
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeConfirmModal();
   });
-
-  /* ── Keep page-level date picker in sync with modal date picker ── */
-  const modalDateInput = document.getElementById('modal_alloc_date');
-  if (modalDateInput) {
-    modalDateInput.addEventListener('change', function() {
-      const pagePicker = document.getElementById('alloc_date_picker');
-      if (pagePicker) pagePicker.value = this.value;
-    });
-  }
 </script>
 
 {% endblock %}

@@ -10,7 +10,8 @@ from django.core.exceptions import ValidationError
 from decimal import Decimal
 from .utils import switch_kosh
 from django.contrib.auth.hashers import make_password, check_password
-
+from django.core.paginator import Paginator
+from django.db.models import Q
 
 
 def Switch_Kosh(request, kosh_id):
@@ -1799,13 +1800,8 @@ def Kosh_Manage_Kosh_Committee(request):
     return render(request, "Kosh-Manage-Kosh-Committee.html", context)
 
 
-
-
 def Kosh_fund_alloted_details(request):
 
-    # =========================
-    # LOGIN CHECK
-    # =========================
     if request.session.get('user_type') != 'Kosh':
         messages.error(request, "Unauthorized Access")
         return redirect('Login')
@@ -1818,14 +1814,93 @@ def Kosh_fund_alloted_details(request):
         messages.error(request, "User Not Found")
         return redirect('Login')
 
-    # =========================
-    # FUND ALLOCATION DATA
-    # =========================
-    fund_allocations = Kosh_Fund_Allocation.objects.all()
+    search           = request.GET.get('search', '').strip()
+    financial_year_f = request.GET.get('financial_year', '').strip()
+    fund_name_f      = request.GET.get('fund_name', '').strip()
+    installment_f    = request.GET.get('installment', '').strip()
+
+    # Current switched kosh from session
+    selected_kosh_id = request.session.get('active_kosh_id')
+
+    if selected_kosh_id:
+        selected_kosh_id = int(selected_kosh_id)
+        if not kosh_user.kosh.filter(id=selected_kosh_id).exists():
+            selected_kosh_id = None
+
+    if not selected_kosh_id:
+        first_kosh = kosh_user.kosh.first()
+        if first_kosh:
+            selected_kosh_id = first_kosh.id
+            request.session['active_kosh_id'] = first_kosh.id
+        else:
+            messages.error(request, "No Kosh Assigned")
+            return redirect('Login')
+
+    fund_allocations = Kosh_Fund_Allocation.objects.filter(
+        kosh_id=selected_kosh_id
+    ).select_related(
+        'fund_release',
+        'fund_release__financial_year',
+        'kosh',
+        'distributed_by',
+    ).prefetch_related(
+        'head_allocations__kosh_head'
+    ).order_by('-created_at')
+
+    if search:
+        fund_allocations = fund_allocations.filter(
+            Q(fund_release__release_name__icontains=search) |
+            Q(fund_release__release_order_no__icontains=search)
+        )
+
+    if financial_year_f:
+        fund_allocations = fund_allocations.filter(
+            fund_release__financial_year__id=financial_year_f
+        )
+
+    if fund_name_f:
+        fund_allocations = fund_allocations.filter(
+            fund_release__release_name__icontains=fund_name_f
+        )
+
+    if installment_f:
+        fund_allocations = fund_allocations.filter(
+            fund_release__installment=installment_f
+        )
+
+    all_financial_years = Financial_Year.objects.filter(
+        status='Active'
+    ).order_by('-id')
+
+    fund_names = Kosh_Fund_Allocation.objects.filter(
+        kosh_id=selected_kosh_id
+    ).select_related(
+        'fund_release'
+    ).values_list(
+        'fund_release__release_name',
+        flat=True
+    ).distinct()
+
+    installments = [str(i) for i in range(1, 11)]
+    current_kosh = Kosh.objects.filter(id=selected_kosh_id).first()
+
+    paginator    = Paginator(fund_allocations, 10)
+    page_number  = request.GET.get('page')
+    fund_allocations = paginator.get_page(page_number)
 
     context = {
-        'kosh_user': kosh_user,
-        'fund_allocations': fund_allocations,
+        'kosh_user'          : kosh_user,
+        'fund_allocations'   : fund_allocations,
+        'user_type'          : 'Kosh',
+        'search'             : search,
+        'financial_year_f'   : financial_year_f,
+        'fund_name_f'        : fund_name_f,
+        'installment_f'      : installment_f,
+        'all_financial_years': all_financial_years,
+        'fund_names'         : fund_names,
+        'installments'       : installments,
+        'current_kosh'       :current_kosh,
+        **switch_kosh(request),
     }
 
     return render(request, 'Kosh_fund_alloted_details.html', context)
