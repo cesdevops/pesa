@@ -1029,6 +1029,15 @@ body{
         <span class="nav-label">कोश समिती</span>
     </a>
 </li>
+<li>
+    <a href="{% url 'Activity-Work-Master' %}"
+       class="{% if request.resolver_match.url_name == 'Activity-Work-Master' %}active{% endif %}"
+       data-tooltip="काम व्यवस्थापन">
+
+        <i class="fa fa-users"></i>
+        <span class="nav-label">काम व्यवस्थापन</span>
+    </a>
+</li>
 
 <li>
     <a href="#" data-tooltip="लाभार्थी">

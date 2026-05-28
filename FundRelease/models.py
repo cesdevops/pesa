@@ -1,7 +1,7 @@
 from django.db import models
 from Main.models import Financial_Year ,Kosh_Head
 from Kosh.models import Kosh
-from ZillaParishad.models import Zilla_Parishad_User
+from ZillaParishad.models import Zilla_Parishad, Zilla_Parishad_User
 
 class Fund_Release(models.Model):
     financial_year = models.ForeignKey(
@@ -10,7 +10,13 @@ class Fund_Release(models.Model):
         null=True,
         blank=True
     )
-
+    zilla_parishad = models.ForeignKey(
+        Zilla_Parishad,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='fund_releases'
+    )
     added_by = models.ForeignKey(
         Zilla_Parishad_User,
         on_delete=models.SET_NULL,
@@ -23,13 +29,13 @@ class Fund_Release(models.Model):
     release_order_no = models.CharField(max_length=100, unique=True, null=True, blank=True)
     release_date = models.DateField(null=True, blank=True)
     total_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
+    fund_distributed = models.BooleanField(default=False)
     remarks = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
         return f"{self.release_name} - {self.release_order_no}"
-
 
 class Kosh_Fund_Allocation(models.Model):
 

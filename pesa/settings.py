@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-^bwlc8sur9ye_cek=9z*xz6d3t68kp2jm@y-u=4d=+-b_j(8@#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['60.254.61.169','127.0.0.1']
+ALLOWED_HOSTS = ['60.254.61.169','127.0.0.1', '192.168.0.115']
 
 
 INSTALLED_APPS = [
@@ -38,10 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Main',
+    'Activity',
     'ZillaParishad',
     'PanchayatSamiti',
     'Kosh',
-    'Activity',
+    # 'Activity',
     'Navbar',
     'FundRelease',
 

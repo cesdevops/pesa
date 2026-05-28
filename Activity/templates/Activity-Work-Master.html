@@ -1,0 +1,917 @@
+{% extends 'Base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+/* ══════════════════════════════════════
+   PAGE-LEVEL STYLES — Activity Work Master
+   Uses only base.html CSS variables
+══════════════════════════════════════ */
+
+/* Filter Card */
+.filter-card .card-body { padding: 14px 16px; }
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+}
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 130px;
+}
+.filter-group.narrow { flex: 0 0 110px; min-width: 90px; }
+.filter-group.actions { flex: 0 0 auto; }
+.filter-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.filter-input,
+.filter-select {
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--text);
+  background: #fff;
+  border: 1px solid var(--gray2);
+  border-radius: 4px;
+  padding: 6px 9px;
+  height: 32px;
+  transition: border-color .15s, box-shadow .15s;
+  width: 100%;
+  outline: none;
+}
+.filter-input:focus,
+.filter-select:focus {
+  border-color: var(--navy3);
+  box-shadow: 0 0 0 2px rgba(26,82,118,.12);
+}
+.filter-btn-row { display: flex; gap: 6px; }
+
+/* Work Cards Grid */
+.work-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+}
+
+/* Work Card */
+.work-card {
+  background: #fff;
+  border: 1px solid var(--gray2);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 6px rgba(13,43,69,.07);
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow .18s, transform .18s;
+}
+.work-card:hover {
+  box-shadow: 0 4px 16px rgba(13,43,69,.13);
+  transform: translateY(-1px);
+}
+.work-card-header {
+  background: var(--navy2);
+  padding: 11px 14px;
+  border-bottom: 2px solid var(--gold);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+.wc-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.35;
+  margin-bottom: 4px;
+}
+.wc-code {
+  font-family: monospace;
+  font-size: 10.5px;
+  background: rgba(0,0,0,.25);
+  color: #aed6f1;
+  padding: 2px 7px;
+  border-radius: 3px;
+  display: inline-block;
+}
+.wc-badge-done {
+  background: var(--green);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.work-card-body {
+  padding: 13px 14px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Meta rows inside card */
+.wc-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.wc-meta-row {
+  font-size: 11.5px;
+  color: var(--muted);
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  line-height: 1.4;
+}
+.wc-meta-row i { color: var(--navy3); font-size: 11px; margin-top: 1px; flex-shrink: 0; }
+.wc-meta-row strong { color: var(--text); font-weight: 600; }
+
+/* Description */
+.wc-desc {
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.wc-desc a {
+  color: var(--link);
+  text-decoration: none;
+  font-size: 11px;
+}
+.wc-desc a:hover { text-decoration: underline; }
+
+/* Amounts row */
+.wc-amounts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.wc-amount-box {
+  background: var(--gray1);
+  border: 1px solid var(--gray2);
+  border-radius: 5px;
+  padding: 7px 10px;
+}
+.wc-amount-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
+.wc-amount-val { font-size: 14px; font-weight: 700; margin-top: 2px; }
+.wc-amount-val.green { color: var(--green); }
+.wc-amount-val.blue  { color: var(--navy3); }
+
+/* Status badge */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 4px;
+  border: 1px solid;
+}
+.status-pending  { background: #fff8e1; border-color: #ffe082; color: #7d5a00; }
+.status-progress { background: #e8f4fd; border-color: #90caf9; color: #0c4a74; }
+.status-done     { background: #e8f5e9; border-color: #a5d6a7; color: #1b5e20; }
+.status-cancel   { background: #fdecea; border-color: #ef9a9a; color: #7f1d1d; }
+
+/* Progress bar section */
+.wc-progress-wrap {}
+.wc-progress-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10.5px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.wc-progress-bar-outer {
+  background: var(--gray2);
+  border-radius: 99px;
+  height: 7px;
+  overflow: hidden;
+}
+.wc-progress-bar-inner {
+  background: var(--green);
+  height: 100%;
+  border-radius: 99px;
+  transition: width .4s ease;
+}
+
+/* Card footer */
+.work-card-footer {
+  padding: 9px 14px;
+  border-top: 1px solid var(--gray2);
+  background: var(--gray1);
+}
+.work-card-footer .btn { width: 100%; justify-content: center; font-size: 12px; padding: 7px; }
+
+/* ── Pagination ── */
+.pager-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-top: 18px;
+  background: #fff;
+  border: 1px solid var(--gray2);
+  border-radius: 8px;
+  padding: 10px 16px;
+}
+.pagination {
+  display: flex;
+  gap: 4px;
+  list-style: none;
+}
+.pagination li a,
+.pagination li span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px; height: 28px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: var(--navy);
+  border: 1px solid var(--gray2);
+  background: #fff;
+  text-decoration: none;
+  transition: background .12s, border-color .12s;
+}
+.pagination li a:hover { background: var(--gray1); border-color: var(--navy3); }
+.pagination li.active span { background: var(--navy); color: #fff; border-color: var(--navy); }
+.pagination li.disabled span { color: var(--gray3); background: var(--gray1); cursor: default; }
+
+/* ── Modals (pure CSS, no Bootstrap) ── */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(10,31,48,.65);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid var(--gray2);
+  max-width: 720px;
+  width: 100%;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(13,43,69,.25);
+  animation: modal-in .18s ease;
+}
+@keyframes modal-in { from { opacity: 0; transform: scale(.96) translateY(10px); } }
+.modal-box.sm { max-width: 460px; }
+.modal-hdr {
+  background: var(--navy2);
+  border-bottom: 2px solid var(--gold);
+  padding: 11px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.modal-hdr .mh-title {
+  font-family: 'Noto Serif Devanagari', serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.modal-hdr .mh-title i { color: var(--gold2); }
+.modal-close {
+  background: rgba(255,255,255,.1);
+  border: none;
+  color: #aed6f1;
+  font-size: 18px;
+  width: 28px; height: 28px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s, color .15s;
+  flex-shrink: 0;
+}
+.modal-close:hover { background: rgba(255,255,255,.2); color: #fff; }
+.modal-body-scroll {
+  overflow-y: auto;
+  padding: 18px;
+  flex: 1;
+}
+.modal-ftr {
+  padding: 10px 16px;
+  border-top: 1px solid var(--gray2);
+  background: var(--gray1);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Detail modal: info grid */
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border: 1px solid var(--gray2);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+.detail-cell {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--gray2);
+  border-right: 1px solid var(--gray2);
+}
+.detail-cell:nth-child(even) { border-right: none; }
+.detail-cell:nth-last-child(-n+2) { border-bottom: none; }
+.detail-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin-bottom: 3px; }
+.detail-val { font-size: 12.5px; font-weight: 600; color: var(--text); }
+.detail-val.green { color: var(--green); }
+.detail-val.blue  { color: var(--navy3); }
+
+/* Stage table */
+.stage-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.stage-table th {
+  background: var(--navy);
+  color: #aed6f1;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  padding: 7px 10px;
+  text-align: left;
+  border-bottom: 2px solid var(--gold);
+}
+.stage-table td { padding: 7px 10px; border-bottom: 1px solid var(--gray2); color: var(--text); vertical-align: middle; }
+.stage-table tr:last-child td { border-bottom: none; }
+.stage-table tr:hover td { background: var(--gray1); }
+.stage-done { background: #e8f5e9; color: #1b5e20; border: 1px solid #a5d6a7; border-radius: 3px; padding: 2px 7px; font-size: 10.5px; font-weight: 700; }
+.stage-pend { background: var(--gray1); color: var(--muted); border: 1px solid var(--gray2); border-radius: 3px; padding: 2px 7px; font-size: 10.5px; font-weight: 700; }
+
+/* Summary stats bar */
+.stats-bar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.stats-bar-item {
+  background: #fff;
+  border: 1px solid var(--gray2);
+  border-radius: 6px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 120px;
+}
+.stats-bar-item i { font-size: 18px; color: var(--navy3); }
+.stats-bar-item .si-num { font-size: 18px; font-weight: 700; color: var(--navy); }
+.stats-bar-item .si-lbl { font-size: 10.5px; color: var(--muted); margin-top: 1px; }
+
+/* No data */
+.no-data {
+  background: #fff;
+  border: 1px solid var(--gray2);
+  border-radius: 8px;
+  padding: 50px 20px;
+  text-align: center;
+}
+.no-data i { font-size: 40px; color: var(--gray3); display: block; margin-bottom: 12px; }
+.no-data h5 { font-size: 15px; color: var(--muted); margin-bottom: 6px; }
+.no-data p  { font-size: 12px; color: var(--gray3); }
+
+/* Page-header bar */
+.page-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.page-hdr-left .ph-title {
+  font-family: 'Noto Serif Devanagari', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--navy);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.page-hdr-left .ph-sub { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+.ph-count-badge {
+  background: var(--gold);
+  color: var(--navy);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+</style>
+
+<!-- ════ PAGE HEADER ════ -->
+<div class="page-hdr">
+  <div class="page-hdr-left">
+    <div class="ph-title">
+      <i class="fa fa-tasks" style="color:var(--gold);"></i>
+      Activity Work Master Dashboard
+    </div>
+    <div class="ph-sub">कार्य मास्टर व्यवस्थापन — कामाची सर्व माहिती एकत्रित</div>
+  </div>
+  <div class="ph-count-badge">
+    <i class="fa fa-chart-line"></i>
+    एकूण कामे: {{ total_work_masters }}
+  </div>
+</div>
+
+<!-- ════ STATS BAR ════ -->
+<div class="stats-bar">
+  <div class="stats-bar-item">
+    <i class="fa fa-briefcase"></i>
+    <div>
+      <div class="si-num">{{ total_work_masters }}</div>
+      <div class="si-lbl">एकूण कामे</div>
+    </div>
+  </div>
+  <div class="stats-bar-item">
+    <i class="fa fa-check-circle" style="color:var(--green);"></i>
+    <div>
+      <div class="si-num" style="color:var(--green);">{{ work_masters|length }}</div>
+      <div class="si-lbl">दाखवलेली कामे</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ FILTER CARD ════ -->
+<div class="card mb-4 filter-card" style="margin-bottom:14px;">
+  <div class="card-header">
+    <i class="fa fa-filter" style="color:var(--gold2);"></i>
+    <span class="ch-title">फिल्टर / शोध</span>
+    <span class="ch-sub" style="margin-left:auto;font-size:11px;">सर्व फील्ड ऐच्छिक आहेत</span>
+  </div>
+  <div class="card-body" style="padding:14px 16px;">
+    <form method="GET" action="{% url 'Activity-Work-Master' %}">
+      <div class="filter-row">
+
+        <div class="filter-group">
+          <span class="filter-label">Work Name</span>
+          <input type="text" name="work_name" class="filter-input"
+                 placeholder="कामाचे नाव" value="{{ work_name|default:'' }}">
+        </div>
+
+        <div class="filter-group narrow">
+          <span class="filter-label">Work Code</span>
+          <input type="text" name="work_code" class="filter-input"
+                 placeholder="काम कोड" value="{{ work_code|default:'' }}">
+        </div>
+
+        <div class="filter-group">
+          <span class="filter-label">Activity</span>
+          <select name="activity_id" class="filter-select">
+            <option value="">सर्व क्रियाकलाप</option>
+            {% for activity in activities %}
+              <option value="{{ activity.id }}"
+                {% if activity_id|stringformat:"s" == activity.id|stringformat:"s" %}selected{% endif %}>
+                {{ activity.activity_name }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <span class="filter-label">Kosh</span>
+          <select name="kosh_id" class="filter-select">
+            <option value="">सर्व कोष</option>
+            {% for kosh in kosh_list %}
+              <option value="{{ kosh.id }}"
+                {% if kosh_id|stringformat:"s" == kosh.id|stringformat:"s" %}selected{% endif %}>
+                {{ kosh.kosh_name }} ({{ kosh.grampanchayat.gram_panchayat_name|default:"N/A" }})
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="filter-group narrow">
+          <span class="filter-label">Status</span>
+          <select name="overall_status" class="filter-select">
+            <option value="">सर्व स्थिती</option>
+            {% for status_code, status_label in status_choices %}
+              <option value="{{ status_code }}"
+                {% if overall_status == status_code %}selected{% endif %}>
+                {{ status_label }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="filter-group narrow">
+          <span class="filter-label">Completed</span>
+          <select name="is_fully_completed" class="filter-select">
+            <option value="">सर्व</option>
+            <option value="yes" {% if is_fully_completed_filter == 'yes' %}selected{% endif %}>होय</option>
+            <option value="no"  {% if is_fully_completed_filter == 'no'  %}selected{% endif %}>नाही</option>
+          </select>
+        </div>
+
+        <div class="filter-group actions">
+          <span class="filter-label">&nbsp;</span>
+          <div class="filter-btn-row">
+            <button type="submit" class="btn btn-primary">
+              <i class="fa fa-search"></i> शोधा
+            </button>
+            <a href="?reset=1" class="btn btn-secondary">
+              <i class="fa fa-undo-alt"></i> रीसेट
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ════ WORK CARDS GRID ════ -->
+{% if work_masters %}
+
+<div class="work-grid">
+  {% for work in work_masters %}
+
+  {# ── Calculate completed stages count ── #}
+  {% with
+    s1=work.administrative_sanction_completed|yesno:"1,0"
+    s2=work.technical_sanction_completed|yesno:"1,0"
+    s3=work.quotation_tender_completed|yesno:"1,0"
+    s4=work.work_order_completed|yesno:"1,0"
+    s5=work.work_start_completed|yesno:"1,0"
+    s6=work.work_progress_completed|yesno:"1,0"
+    s7=work.work_final_completed|yesno:"1,0"
+    s8=work.payment_completed|yesno:"1,0"
+    s9=work.physically_completed|yesno:"1,0"
+    s10=work.success_story_completed|yesno:"1,0"
+  %}
+
+  <div class="work-card">
+
+    <!-- Card Header -->
+    <div class="work-card-header">
+      <div>
+        <div class="wc-title">
+          <i class="fa fa-briefcase" style="font-size:11px;margin-right:4px;color:var(--gold2);"></i>
+          {{ work.work_name|default:"—"|truncatechars:32 }}
+        </div>
+        <span class="wc-code">{{ work.work_code|default:"No Code" }}</span>
+      </div>
+      {% if work.is_fully_completed %}
+        <span class="wc-badge-done">
+          <i class="fa fa-check-circle"></i> पूर्ण
+        </span>
+      {% endif %}
+    </div>
+
+    <!-- Card Body -->
+    <div class="work-card-body">
+
+      <!-- Meta info -->
+      <div class="wc-meta">
+        <div class="wc-meta-row">
+          <i class="fa fa-tag"></i>
+          <span><strong>क्रियाकलाप:</strong>
+            {{ work.activity.activity_name|default:"—" }}
+            {% if work.activity.kosh_head %}
+              <span style="color:var(--gray3);">({{ work.activity.kosh_head.name }})</span>
+            {% endif %}
+          </span>
+        </div>
+        <div class="wc-meta-row">
+          <i class="fa fa-database"></i>
+          <span><strong>कोष:</strong> {{ work.kosh_fund_allocation.kosh.kosh_name|default:"—" }}</span>
+        </div>
+        <div class="wc-meta-row">
+          <i class="fa fa-building"></i>
+          <span><strong>ग्रामपंचायत:</strong> {{ work.kosh_fund_allocation.kosh.grampanchayat.gram_panchayat_name|default:"—" }}</span>
+        </div>
+      </div>
+
+      <!-- Description -->
+      {% if work.work_description %}
+      <div class="wc-desc">
+        <i class="fa fa-align-left" style="font-size:10px;margin-right:4px;color:var(--muted);"></i>
+        {{ work.work_description|truncatechars:70 }}
+        <a href="#" onclick="openDescModal('descModal{{ work.id }}'); return false;">
+          <i class="fa fa-eye" style="margin-left:3px;"></i> अधिक
+        </a>
+      </div>
+      {% endif %}
+
+      <!-- Amounts -->
+      <div class="wc-amounts">
+        <div class="wc-amount-box">
+          <div class="wc-amount-lbl">अंदाजित रक्कम</div>
+          <div class="wc-amount-val green">₹{{ work.estimated_amount|default:"0"|floatformat:2 }}</div>
+        </div>
+        <div class="wc-amount-box">
+          <div class="wc-amount-lbl">मंजूर रक्कम</div>
+          <div class="wc-amount-val blue">₹{{ work.approved_amount|default:"0"|floatformat:2 }}</div>
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div>
+        {% if work.overall_status == 'Pending' %}
+          <span class="status-badge status-pending">
+            <i class="fa fa-clock"></i> प्रलंबित
+          </span>
+        {% elif work.overall_status == 'In Progress' %}
+          <span class="status-badge status-progress">
+            <i class="fa fa-spinner"></i> प्रगतीपथावर
+          </span>
+        {% elif work.overall_status == 'Completed' %}
+          <span class="status-badge status-done">
+            <i class="fa fa-check"></i> पूर्ण
+          </span>
+        {% else %}
+          <span class="status-badge status-cancel">
+            <i class="fa fa-times"></i> रद्द
+          </span>
+        {% endif %}
+      </div>
+
+      <!-- Progress -->
+      <div class="wc-progress-wrap">
+        <div class="wc-progress-header">
+          <span><i class="fa fa-chart-line" style="font-size:10px;margin-right:3px;"></i> टप्पा प्रगती</span>
+          <span>
+            {{ s1|add:s2|add:s3|add:s4|add:s5|add:s6|add:s7|add:s8|add:s9|add:s10 }} / 10 टप्पे
+          </span>
+        </div>
+        <div class="wc-progress-bar-outer">
+          <div class="wc-progress-bar-inner" style="width:{% widthratio s1|add:s2|add:s3|add:s4|add:s5|add:s6|add:s7|add:s8|add:s9|add:s10 10 100 %}%;"></div>
+        </div>
+      </div>
+
+    </div><!-- /card-body -->
+
+    <!-- Card Footer -->
+    <div class="work-card-footer">
+      <button class="btn btn-secondary"
+              onclick="openDetailModal('workDetailModal{{ work.id }}')">
+        <i class="fa fa-info-circle"></i> संपूर्ण तपशील पहा
+      </button>
+    </div>
+
+  </div><!-- /work-card -->
+
+
+  <!-- ════ Description Modal ════ -->
+  <div class="modal-overlay" id="descModal{{ work.id }}">
+    <div class="modal-box sm">
+      <div class="modal-hdr">
+        <div class="mh-title">
+          <i class="fa fa-align-left"></i> कामाचे वर्णन
+        </div>
+        <button class="modal-close" onclick="closeModal('descModal{{ work.id }}')" title="बंद करा">&times;</button>
+      </div>
+      <div class="modal-body-scroll">
+        <p style="font-size:13px;line-height:1.7;color:var(--text);">
+          {{ work.work_description|default:"वर्णन उपलब्ध नाही" }}
+        </p>
+      </div>
+      <div class="modal-ftr">
+        <button class="btn btn-secondary" onclick="closeModal('descModal{{ work.id }}')">बंद करा</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ Full Detail Modal ════ -->
+  <div class="modal-overlay" id="workDetailModal{{ work.id }}">
+    <div class="modal-box">
+      <div class="modal-hdr">
+        <div class="mh-title">
+          <i class="fa fa-info-circle"></i>
+          {{ work.work_name|default:"कामाचे तपशील"|truncatechars:40 }}
+        </div>
+        <button class="modal-close" onclick="closeModal('workDetailModal{{ work.id }}')" title="बंद करा">&times;</button>
+      </div>
+      <div class="modal-body-scroll">
+
+        <!-- Basic Info Grid -->
+        <div class="detail-grid" style="margin-bottom:14px;">
+          <div class="detail-cell">
+            <div class="detail-lbl"><i class="fa fa-code" style="font-size:9px;margin-right:3px;"></i> काम कोड</div>
+            <div class="detail-val">{{ work.work_code|default:"—" }}</div>
+          </div>
+          <div class="detail-cell">
+            <div class="detail-lbl"><i class="fa fa-map-marker-alt" style="font-size:9px;margin-right:3px;"></i> ठिकाण</div>
+            <div class="detail-val">{{ work.work_location|default:"—" }}</div>
+          </div>
+          <div class="detail-cell">
+            <div class="detail-lbl"><i class="fa fa-calculator" style="font-size:9px;margin-right:3px;"></i> अंदाजित रक्कम</div>
+            <div class="detail-val green">₹{{ work.estimated_amount|default:"0"|floatformat:2 }}</div>
+          </div>
+          <div class="detail-cell">
+            <div class="detail-lbl"><i class="fa fa-check-circle" style="font-size:9px;margin-right:3px;"></i> मंजूर रक्कम</div>
+            <div class="detail-val blue">₹{{ work.approved_amount|default:"0"|floatformat:2 }}</div>
+          </div>
+          <div class="detail-cell">
+            <div class="detail-lbl"><i class="fa fa-user" style="font-size:9px;margin-right:3px;"></i> कंत्राटदार</div>
+            <div class="detail-val">{{ work.contractor_name|default:"—" }}</div>
+          </div>
+          <div class="detail-cell">
+            <div class="detail-lbl"><i class="fa fa-calendar-alt" style="font-size:9px;margin-right:3px;"></i> काम सुरू तारीख</div>
+            <div class="detail-val">{{ work.work_start_date|date:"d/m/Y"|default:"—" }}</div>
+          </div>
+        </div>
+
+        <!-- Stage Status Table -->
+        <div style="font-family:'Noto Serif Devanagari',serif;font-size:13px;font-weight:700;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+          <i class="fa fa-list-ol" style="color:var(--gold);font-size:12px;"></i>
+          टप्पा निहाय स्थिती
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="stage-table">
+            <thead>
+              <tr>
+                <th style="width:40%;">टप्पा</th>
+                <th style="width:20%;">स्थिती</th>
+                <th style="width:40%;">पूर्णता तारीख</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>प्रशासकीय मंजुरी</td>
+                <td>{% if work.administrative_sanction_completed %}<span class="stage-done">पूर्ण</span>{% else %}<span class="stage-pend">प्रलंबित</span>{% endif %}</td>
+                <td>{{ work.administrative_sanction_completed_date|date:"d/m/Y H:i"|default:"—" }}</td>
+              </tr>
+              <tr>
+                <td>तांत्रिक मंजुरी</td>
+                <td>{% if work.technical_sanction_completed %}<span class="stage-done">पूर्ण</span>{% else %}<span class="stage-pend">प्रलंबित</span>{% endif %}</td>
+                <td>{{ work.technical_sanction_completed_date|date:"d/m/Y H:i"|default:"—" }}</td>
+              </tr>
+              <tr>
+                <td>कोटेशन / टेंडर</td>
+                <td>{% if work.quotation_tender_completed %}<span class="stage-done">पूर्ण</span>{% else %}<span class="stage-pend">प्रलंबित</span>{% endif %}</td>
+                <td>{{ work.quotation_tender_completed_date|date:"d/m/Y H:i"|default:"—" }}</td>
+              </tr>
+              <tr>
+                <td>काम आदेश</td>
+                <td>{% if work.work_order_completed %}<span class="stage-done">पूर्ण</span>{% else %}<span class="stage-pend">प्रलंबित</span>{% endif %}</td>
+                <td>{{ work.work_order_completed_date|date:"d/m/Y H:i"|default:"—" }}</td>
+              </tr>
+              <tr>
+                <td>काम सुरू</td>
+                <td>{% if work.work_start_completed %}<span class="stage-done">पूर्ण</span>{% else %}<span class="stage-pend">प्रलंबित</span>{% endif %}</td>
+                <td>{{ work.work_start_completed_date|date:"d/m/Y H:i"|default:"—" }}</td>
+              </tr>
+              <tr>
+                <td>प्रगतीपथावर</td>
+                <td>{% if work.work_progress_completed %}<span class="stage-done">पूर्ण</span>{% else %}<span class="stage-pend">प्रलंबित</span>{% endif %}</td>
+                <td>{{ work.work_progress_completed_date|date:"d/m/Y H:i"|default:"—" }}</td>
+              </tr>
+              <tr>
+                <td>काम अंतिम</td>
+                <td>{% if work.work_final_completed %}<span class="stage-done">पूर्ण</span>{% else %}<span class="stage-pend">प्रलंबित</span>{% endif %}</td>
+                <td>{{ work.work_final_completed_date|date:"d/m/Y H:i"|default:"—" }}</td>
+              </tr>
+              <tr>
+                <td>देयक प्रक्रिया</td>
+                <td>{% if work.payment_completed %}<span class="stage-done">पूर्ण</span>{% else %}<span class="stage-pend">प्रलंबित</span>{% endif %}</td>
+                <td>{{ work.payment_completed_date|date:"d/m/Y H:i"|default:"—" }}</td>
+              </tr>
+              <tr>
+                <td>भौतिक सत्यापन</td>
+                <td>{% if work.physically_completed %}<span class="stage-done">पूर्ण</span>{% else %}<span class="stage-pend">प्रलंबित</span>{% endif %}</td>
+                <td>{{ work.physically_completed_date|date:"d/m/Y H:i"|default:"—" }}</td>
+              </tr>
+              <tr>
+                <td>यशोगाथा</td>
+                <td>{% if work.success_story_completed %}<span class="stage-done">पूर्ण</span>{% else %}<span class="stage-pend">प्रलंबित</span>{% endif %}</td>
+                <td>{{ work.success_story_completed_date|date:"d/m/Y H:i"|default:"—" }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {% if work.is_fully_completed %}
+          <div class="alert success" style="margin-top:14px;">
+            <i class="fa fa-trophy"></i>
+            <div>
+              <strong>काम पूर्णतः पूर्ण झाले!</strong>
+              पूर्णता तारीख: {{ work.fully_completed_date|date:"d/m/Y H:i" }}
+            </div>
+          </div>
+        {% endif %}
+
+      </div><!-- /modal-body-scroll -->
+      <div class="modal-ftr">
+        <button class="btn btn-secondary" onclick="closeModal('workDetailModal{{ work.id }}')">बंद करा</button>
+      </div>
+    </div>
+  </div>
+
+  {% endfor %}
+</div><!-- /work-grid -->
+
+<!-- ════ PAGINATION ════ -->
+{% if work_masters.paginator and work_masters.paginator.num_pages > 1 %}
+<div class="pager-wrap">
+  <span>
+    <i class="fa fa-table" style="margin-right:4px;"></i>
+    दाखवित: {{ work_masters.start_index }} – {{ work_masters.end_index }} / {{ work_masters.paginator.count }} कामे
+  </span>
+
+  <ul class="pagination">
+    {% if work_masters.has_previous %}
+      <li><a href="?page=1{% if work_name %}&work_name={{ work_name }}{% endif %}{% if work_code %}&work_code={{ work_code }}{% endif %}{% if activity_id %}&activity_id={{ activity_id }}{% endif %}{% if kosh_id %}&kosh_id={{ kosh_id }}{% endif %}{% if overall_status %}&overall_status={{ overall_status }}{% endif %}{% if is_fully_completed_filter %}&is_fully_completed={{ is_fully_completed_filter }}{% endif %}" title="पहिले पृष्ठ"><i class="fa fa-angle-double-left"></i></a></li>
+      <li><a href="?page={{ work_masters.previous_page_number }}{% if work_name %}&work_name={{ work_name }}{% endif %}{% if work_code %}&work_code={{ work_code }}{% endif %}{% if activity_id %}&activity_id={{ activity_id }}{% endif %}{% if kosh_id %}&kosh_id={{ kosh_id }}{% endif %}{% if overall_status %}&overall_status={{ overall_status }}{% endif %}{% if is_fully_completed_filter %}&is_fully_completed={{ is_fully_completed_filter }}{% endif %}" title="मागील"><i class="fa fa-angle-left"></i></a></li>
+    {% else %}
+      <li class="disabled"><span><i class="fa fa-angle-double-left"></i></span></li>
+      <li class="disabled"><span><i class="fa fa-angle-left"></i></span></li>
+    {% endif %}
+
+    <li class="active"><span>{{ work_masters.number }}</span></li>
+
+    {% if work_masters.has_next %}
+      <li><a href="?page={{ work_masters.next_page_number }}{% if work_name %}&work_name={{ work_name }}{% endif %}{% if work_code %}&work_code={{ work_code }}{% endif %}{% if activity_id %}&activity_id={{ activity_id }}{% endif %}{% if kosh_id %}&kosh_id={{ kosh_id }}{% endif %}{% if overall_status %}&overall_status={{ overall_status }}{% endif %}{% if is_fully_completed_filter %}&is_fully_completed={{ is_fully_completed_filter }}{% endif %}" title="पुढील"><i class="fa fa-angle-right"></i></a></li>
+      <li><a href="?page={{ work_masters.paginator.num_pages }}{% if work_name %}&work_name={{ work_name }}{% endif %}{% if work_code %}&work_code={{ work_code }}{% endif %}{% if activity_id %}&activity_id={{ activity_id }}{% endif %}{% if kosh_id %}&kosh_id={{ kosh_id }}{% endif %}{% if overall_status %}&overall_status={{ overall_status }}{% endif %}{% if is_fully_completed_filter %}&is_fully_completed={{ is_fully_completed_filter }}{% endif %}" title="शेवटचे पृष्ठ"><i class="fa fa-angle-double-right"></i></a></li>
+    {% else %}
+      <li class="disabled"><span><i class="fa fa-angle-right"></i></span></li>
+      <li class="disabled"><span><i class="fa fa-angle-double-right"></i></span></li>
+    {% endif %}
+  </ul>
+
+  <span>
+    <i class="fa fa-file-alt" style="margin-right:4px;"></i>
+    पृष्ठ {{ work_masters.number }} / {{ work_masters.paginator.num_pages }}
+  </span>
+</div>
+{% endif %}
+
+{% else %}
+<!-- No Data -->
+<div class="no-data">
+  <i class="fa fa-tasks"></i>
+  <h5>कोणतीही कामे आढळली नाहीत</h5>
+  <p>कृपया आपले फिल्टर समायोजित करा किंवा नंतर पुन्हा प्रयत्न करा.</p>
+  <a href="?reset=1" class="btn btn-secondary" style="margin-top:12px;">
+    <i class="fa fa-undo-alt"></i> फिल्टर रीसेट करा
+  </a>
+</div>
+{% endif %}
+
+<script>
+function openDescModal(id) {
+  document.getElementById(id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function openDetailModal(id) {
+  document.getElementById(id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+// Close on backdrop click
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('modal-overlay')) {
+    e.target.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+});
+// Close on Escape
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.open').forEach(function(m) {
+      m.classList.remove('open');
+    });
+    document.body.style.overflow = '';
+  }
+});
+</script>
+
+{% endblock %}

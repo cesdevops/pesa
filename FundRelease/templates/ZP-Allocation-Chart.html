@@ -1,0 +1,361 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<style>
+  /* ──────────────────────────────────────────────────────────────
+     GLOBAL VARIABLES & RESET
+  ────────────────────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #0d2b45;
+    --navy2: #154360;
+    --navy3: #1a5276;
+    --gold: #e67e00;
+    --gold2: #f39c12;
+    --surface: #F6F8FA;
+    --border: rgba(0,0,0,0.08);
+    --border-md: rgba(0,0,0,0.12);
+    --text-1: #0B1628;
+    --text-2: #4A5568;
+    --text-3: #8A97A8;
+    --white: #ffffff;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.07);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.14);
+    --red: #E53E3E;
+    --green: #085041;
+    --green-bg: #E1F5EE;
+    --green-border: #9FE1CB;
+    --blue: #2B6CB0;
+    --blue-bg: #EBF4FF;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--text-1); }
+
+  .km-page { padding: 28px; }
+
+  /* header card */
+  .km-header-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+  .km-header-card h1 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-1);
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .km-header-card p {
+    font-size: 13px;
+    color: var(--text-3);
+  }
+  .km-header-card .badge-year {
+    display: inline-block;
+    margin-top: 8px;
+    background: var(--blue-bg);
+    color: var(--blue);
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  /* filter bar */
+  .km-filter-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+  .filter-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+  .filter-group {
+    flex: 1;
+    min-width: 160px;
+  }
+  .filter-group label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-3);
+    margin-bottom: 5px;
+  }
+  .filter-group input,
+  .filter-group select {
+    width: 100%;
+    border: 1px solid var(--border-md);
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text-1);
+    background: var(--surface);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .filter-group input:focus,
+  .filter-group select:focus {
+    border-color: var(--gold);
+    background: var(--white);
+  }
+  .km-filter-btn {
+    background: var(--gold);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 8px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.15s;
+    margin-bottom: 0;
+  }
+  .km-filter-btn:hover {
+    background: var(--navy);
+  }
+
+  /* table card */
+  .km-table-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow-x: auto;
+  }
+  .km-table-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .km-table-header .th-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-1);
+  }
+  .km-table-header .th-count {
+    font-size: 12px;
+    color: var(--text-3);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    min-width: 1200px;
+  }
+  thead tr {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  thead th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-3);
+    padding: 12px 16px;
+    white-space: nowrap;
+  }
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+  }
+  tbody tr:hover {
+    background: var(--surface);
+  }
+  tbody td {
+    padding: 12px 16px;
+    color: var(--text-1);
+    white-space: nowrap;
+  }
+
+  /* badges and styling */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .badge-installment {
+    background: var(--green-bg);
+    color: var(--green);
+    border: 1px solid var(--green-border);
+  }
+  .text-amount {
+    font-weight: 600;
+    color: var(--green);
+    font-family: 'DM Mono', monospace;
+  }
+  .text-amount-small {
+    font-weight: 500;
+    color: var(--text-2);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* empty state */
+  .km-empty {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--text-3);
+  }
+  .km-empty i {
+    font-size: 40px;
+    margin-bottom: 12px;
+    opacity: 0.35;
+  }
+  .km-empty p {
+    font-size: 14px;
+  }
+
+  @media (max-width: 768px) {
+    .km-page { padding: 16px; }
+    .filter-row { flex-direction: column; }
+    .filter-group { width: 100%; }
+    .km-filter-btn { width: 100%; justify-content: center; }
+  }
+</style>
+
+<div class="km-page">
+
+  <!-- HEADER CARD -->
+  <div class="km-header-card">
+    <h1><i class="fas fa-chart-pie" style="color: var(--gold); margin-right: 8px;"></i> वितरण तक्ता</h1>
+    <p>ग्रामपंचायत आणि कोष समितीनुसार निधी वितरणाचे तपशील पहा</p>
+    <span class="badge-year">
+      <i class="fas fa-calendar-alt" style="margin-right: 5px;"></i> आर्थिक वर्ष: {{ financial_year.year }}
+    </span>
+  </div>
+
+  <!-- FILTER CARD -->
+  <div class="km-filter-card">
+    <form method="GET">
+      <div class="filter-row">
+        <div class="filter-group">
+          <label><i class="fas fa-search"></i> शोधा</label>
+          <input type="text" name="search" value="{{ search }}" placeholder="वितरण नाव / आदेश क्र...">
+        </div>
+        <div class="filter-group">
+          <label><i class="fas fa-building"></i> कोष</label>
+          <select name="kosh">
+            <option value="">सर्व कोष</option>
+            {% for k in unique_koshes %}
+              <option value="{{ k }}" {% if k == kosh_filter %}selected{% endif %}>{{ k }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="filter-group">
+          <label><i class="fas fa-map-marker-alt"></i> ग्रामपंचायत</label>
+          <select name="gram_panchayat">
+            <option value="">सर्व ग्रामपंचायत</option>
+            {% for g in unique_gps %}
+              <option value="{{ g }}" {% if g == gp_filter %}selected{% endif %}>{{ g }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="filter-group" style="flex: 0 0 auto;">
+          <label>&nbsp;</label>
+          <button type="submit" class="km-filter-btn">
+            <i class="fas fa-filter"></i> गाळा
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- TABLE CARD -->
+  <div class="km-table-card">
+    <div class="km-table-header">
+      <span class="th-title">
+        <i class="fas fa-table" style="margin-right: 6px; color: var(--gold);"></i> वितरण तपशील
+      </span>
+      <span class="th-count">
+        <i class="fas fa-database"></i> एकूण नोंदी: {{ allocation_data|length }}
+      </span>
+    </div>
+
+    {% if allocation_data %}
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>आ.व.</th>
+            <th>वितरण नाव</th>
+            <th>हप्ता</th>
+            <th>आदेश क्रमांक</th>
+            <th>वितरण दिनांक</th>
+            <th>एकूण रक्कम</th>
+            <th>प्रति नागरिक</th>
+            <th>ग्रामपंचायत</th>
+            <th>कोष</th>
+            <th>कोष लोकसंख्या</th>
+            <th>कोष रक्कम</th>
+            {% for h in all_heads %}
+              <th>{{ h.name }}<br><span style="font-weight:400;">({{ h.percentage }}%)</span></th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in allocation_data %}
+          <tr>
+            <td style="color: var(--text-3); font-family: 'DM Mono', monospace;">{{ forloop.counter }}</td>
+            <td><span class="badge" style="background: var(--blue-bg); color: var(--blue);">{{ i.financial_year }}</span></td>
+            <td><span class="fw-semibold">{{ i.release_name }}</span></td>
+            <td><span class="badge badge-installment">हप्ता {{ i.installment }}</span></td>
+            <td style="font-family: 'DM Mono', monospace;">{{ i.release_order_no }}</td>
+            <td>{{ i.release_date }}</td>
+            <td class="text-amount">₹ {{ i.total_amount }}</td>
+            <td class="text-amount-small">₹ {{ i.per_citizen_amount }}</td>
+            <td>{{ i.gram_panchayat_name }}</td>
+            <td><span class="badge" style="background: var(--surface); color: var(--text-2); border: 1px solid var(--border);">{{ i.kosh_name }}</span></td>
+            <td style="font-family: 'DM Mono', monospace;">{{ i.kosh_population }}</td>
+            <td class="text-amount">₹ {{ i.kosh_amount }}</td>
+            {% for v in i.head_values %}
+              <td class="text-amount-small">₹ {{ v }}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="km-empty">
+      <i class="fas fa-chart-bar"></i>
+      <p>कोणतीही वितरण नोंद सापडली नाही</p>
+      <p style="font-size: 12px; margin-top: 6px;">कृपया आपले शोध किंवा गाळणी निकष बदला</p>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+
+{% endblock %}

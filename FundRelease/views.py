@@ -9,6 +9,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.shortcuts import render, redirect
 
+from FundRelease.utils import calculate_kosh_release_amount
 from Main.utils import validate_clean_text
 
 from .models import *
@@ -235,6 +236,18 @@ def ZP_Fund_Release(request):
 
             return redirect('ZP-Fund-Release')
 
+
+        if Fund_Release.objects.filter(
+            release_order_no=release_order_no
+        ).exists():
+
+            messages.error(
+                request,
+                "Release Order Number already exists."
+            )
+
+            return redirect('ZP-Fund-Release')
+
         # =====================================================
         # CREATE
         # =====================================================
@@ -242,13 +255,15 @@ def ZP_Fund_Release(request):
         Fund_Release.objects.create(
 
             financial_year=financial_year,
+            zilla_parishad=user.zilla_parishad,
             added_by=user,
             release_name=release_name,
             installment=installment,
             release_order_no=release_order_no,
             release_date=timezone.now().date(),
             total_amount=total_amount_decimal,
-            remarks=remarks
+            remarks=remarks,
+            fund_distributed=False,
 
         )
 
@@ -289,7 +304,9 @@ def ZP_Fund_Release(request):
 
     all_fund_release = Fund_Release.objects.select_related(
         'financial_year',
-        'added_by'
+        'added_by',
+        'zilla_parishad'
+
     ).filter(
         added_by=user
     ).order_by('-id')
@@ -366,7 +383,25 @@ def ZP_Fund_Release(request):
     all_financial_years = Financial_Year.objects.all().order_by(
         '-id'
     )
+    # =====================================================
+    # USED INSTALLMENTS
+    # =====================================================
 
+    used_installments = Fund_Release.objects.filter(
+        zilla_parishad=user.zilla_parishad,
+        financial_year=financial_year
+    ).values_list(
+        'installment',
+        flat=True
+    )
+
+    available_installments = []
+
+    for i in range(1, 11):
+
+        if str(i) not in used_installments:
+
+            available_installments.append(str(i))
     # =====================================================
     # CONTEXT
     # =====================================================
@@ -383,6 +418,7 @@ def ZP_Fund_Release(request):
         'installment': installment,
         'from_date': from_date,
         'to_date': to_date,
+        'available_installments': available_installments,
 
     }
 
@@ -394,3 +430,122 @@ def ZP_Fund_Release(request):
 
 
 
+
+
+def ZP_Allocation_Chart(request, financial_year, zp_id):
+
+    # =========================
+    # LOGIN CHECK
+    # =========================
+    if not request.session.get('user_id'):
+        return redirect('Login')
+
+    if request.session.get('user_type') != 'ZillaParishad':
+        return redirect('Login')
+
+    # =========================
+    # USER
+    # =========================
+    try:
+        user = Zilla_Parishad_User.objects.get(
+            id=zp_id,
+            status='Active'
+        )
+    except:
+        return redirect('Login')
+
+    # =========================
+    # FINANCIAL YEAR
+    # =========================
+    financial_year_obj = Financial_Year.objects.filter(
+        year=financial_year,
+        status='Active'
+    ).first()
+
+    # =========================
+    # RAW DATA FROM UTILITY
+    # =========================
+    allocation_data = calculate_kosh_release_amount(
+        financial_year=financial_year,
+        zilla_parishad_id=user.id
+    )
+
+    # =========================
+    # FILTERS
+    # =========================
+    search = request.GET.get('search', '').strip()
+    kosh_filter = request.GET.get('kosh', '').strip()
+    gp_filter = request.GET.get('gram_panchayat', '').strip()
+
+    if search:
+        allocation_data = [
+            i for i in allocation_data
+            if search.lower() in i.get('release_name', '').lower()
+            or search.lower() in i.get('release_order_no', '').lower()
+        ]
+
+    if kosh_filter:
+        allocation_data = [
+            i for i in allocation_data
+            if i.get('kosh_name') == kosh_filter
+        ]
+
+    if gp_filter:
+        allocation_data = [
+            i for i in allocation_data
+            if i.get('gram_panchayat_name') == gp_filter
+        ]
+
+    # =========================
+    # UNIQUE DROPDOWNS
+    # =========================
+    unique_koshes = sorted(set(i.get('kosh_name') for i in allocation_data))
+    unique_gps = sorted(set(i.get('gram_panchayat_name') for i in allocation_data))
+
+    # =========================
+    # HEAD STRUCTURE (NAME + %)
+    # =========================
+    all_heads = []
+
+    for i in allocation_data:
+        for h in i.get('heads', []):
+            if h['head_name'] not in [x['name'] for x in all_heads]:
+                all_heads.append({
+                    "name": h['head_name'],
+                    "percentage": h['percentage']
+                })
+
+    # =========================
+    # HEAD VALUE MATRIX (ROW DATA)
+    # =========================
+    for i in allocation_data:
+
+        head_values = []
+
+        for h in all_heads:
+            value = 0
+
+            for item in i.get('heads', []):
+                if item['head_name'] == h['name']:
+                    value = item['head_amount']
+
+            head_values.append(value)
+
+        i['head_values'] = head_values
+
+    # =========================
+    # CONTEXT
+    # =========================
+    context = {
+        "user": user,
+        "financial_year": financial_year_obj,
+        "allocation_data": allocation_data,
+        "all_heads": all_heads,
+        "unique_koshes": unique_koshes,
+        "unique_gps": unique_gps,
+        "search": search,
+        "kosh_filter": kosh_filter,
+        "gp_filter": gp_filter,
+    }
+
+    return render(request, "ZP-Allocation-Chart.html", context)
