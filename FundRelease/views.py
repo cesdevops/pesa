@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 from Main.models import Kosh_Head
 from django.db.models import Sum
+from django.core.paginator import Paginator
 
 # Create your views here.
 from decimal import Decimal
@@ -211,12 +212,8 @@ def ZP_Fund_Release(request):
 
     return render(request, 'ZP-Fund-Release.html', context)
 
-
-
-
 def ZP_Allocation_Chart(request, financial_year, zp_id, fund_id):
 
-    # Login, User, Fund, Filter & Allocation Data
     if not request.session.get('user_id') or request.session.get('user_type') != 'ZillaParishad':
         return redirect('Login')
 
@@ -239,14 +236,30 @@ def ZP_Allocation_Chart(request, financial_year, zp_id, fund_id):
         fund_id=fund_id
     )
 
-    kosh_map = {k.kosh_name: k.id for k in Kosh.objects.all()}
+    # ── Only kosh with full valid chain: ZP → PS → GP → Kosh ──
+    valid_kosh_qs = Kosh.objects.filter(
+        status='Active',
+        is_deleted=False,
+        grampanchayat__isnull=False,                              # must have GP
+        grampanchayat__status='Active',
+        grampanchayat__is_deleted=False,
+        grampanchayat__panchayat_samiti__isnull=False,            # must have PS
+        grampanchayat__panchayat_samiti__status='Active',
+        grampanchayat__panchayat_samiti__zilla_parishad=user.zilla_parishad,  # must belong to this ZP
+        grampanchayat__panchayat_samiti__zilla_parishad__isnull=False,
+    ).values('kosh_name', 'id')
 
-    search = request.GET.get('search', '').strip()
+    kosh_map = {k['kosh_name']: k['id'] for k in valid_kosh_qs}
+
+    search      = request.GET.get('search', '').strip()
     kosh_filter = request.GET.get('kosh', '').strip()
-    gp_filter = request.GET.get('gram_panchayat', '').strip()
+    gp_filter   = request.GET.get('gram_panchayat', '').strip()
 
     for item in allocation_data:
         item['kosh_id'] = kosh_map.get(item.get('kosh_name'))
+
+    # ── Drop rows where kosh_id is None (broken chain) ──
+    allocation_data = [i for i in allocation_data if i.get('kosh_id') is not None]
 
     if search:
         allocation_data = [
@@ -262,10 +275,9 @@ def ZP_Allocation_Chart(request, financial_year, zp_id, fund_id):
         allocation_data = [i for i in allocation_data if i.get('gram_panchayat_name') == gp_filter]
 
     unique_koshes = sorted(set(i.get('kosh_name') for i in allocation_data))
-    unique_gps = sorted(set(i.get('gram_panchayat_name') for i in allocation_data))
+    unique_gps    = sorted(set(i.get('gram_panchayat_name') for i in allocation_data))
 
     all_heads = []
-
     for item in allocation_data:
         for head in item.get('heads', []):
             if head['head_name'] not in [h['name'] for h in all_heads]:
@@ -274,35 +286,143 @@ def ZP_Allocation_Chart(request, financial_year, zp_id, fund_id):
                     'percentage': head['percentage']
                 })
 
+    for item in allocation_data:
         item['head_values'] = [
             next((h['head_amount'] for h in item.get('heads', []) if h['head_name'] == head['name']), 0)
             for head in all_heads
         ]
-
         item['already_allocated'] = item.get('kosh_id') in already_allocated_kosh_ids
 
-    pending_count = sum(1 for i in allocation_data if not i['already_allocated'])
-    allocated_count = len(allocation_data) - pending_count
-    
+    total_count     = len(allocation_data)
+    pending_count   = sum(1 for i in allocation_data if not i['already_allocated'])
+    allocated_count = total_count - pending_count
+
+    paginator   = Paginator(allocation_data, 15)
+    page_number = request.GET.get('page')
+    page_obj    = paginator.get_page(page_number)
+
     context = {
-        'user': user,
-        'financial_year': financial_year,
-        'allocation_data': allocation_data,
-        'all_heads': all_heads,
-        'unique_koshes': unique_koshes,
-        'unique_gps': unique_gps,
-        'search': search,
-        'kosh_filter': kosh_filter,
-        'gp_filter': gp_filter,
-        'fund_release': fund_release,
-        'zp_id': zp_id,
-        'fund_id': fund_id,
-        'already_allocated_kosh_ids': already_allocated_kosh_ids,
-        'pending_count': pending_count,
-        'allocated_count': allocated_count,
+        'user'                       : user,
+        'financial_year'             : financial_year,
+        'allocation_data'            : page_obj,
+        'all_heads'                  : all_heads,
+        'unique_koshes'              : unique_koshes,
+        'unique_gps'                 : unique_gps,
+        'search'                     : search,
+        'kosh_filter'                : kosh_filter,
+        'gp_filter'                  : gp_filter,
+        'fund_release'               : fund_release,
+        'zp_id'                      : zp_id,
+        'fund_id'                    : fund_id,
+        'already_allocated_kosh_ids' : already_allocated_kosh_ids,
+        'pending_count'              : pending_count,
+        'allocated_count'            : allocated_count,
+        'total_count'                : total_count,
+        'page_obj'                   : page_obj,
     }
 
     return render(request, 'ZP-Allocation-Chart.html', context)
+
+
+
+# def ZP_Allocation_Chart(request, financial_year, zp_id, fund_id):
+
+#     if not request.session.get('user_id') or request.session.get('user_type') != 'ZillaParishad':
+#         return redirect('Login')
+
+#     try:
+#         user = Zilla_Parishad_User.objects.get(id=zp_id, status='Active')
+#     except Zilla_Parishad_User.DoesNotExist:
+#         return redirect('Login')
+
+#     fund_release = Fund_Release.objects.filter(id=fund_id).first()
+
+#     already_allocated_kosh_ids = set(
+#         Kosh_Fund_Allocation.objects.filter(
+#             fund_release=fund_release
+#         ).values_list('kosh_id', flat=True)
+#     ) if fund_release else set()
+
+#     allocation_data = calculate_kosh_release_amount(
+#         financial_year=financial_year,
+#         zilla_parishad_id=user.id,
+#         fund_id=fund_id
+#     )
+
+#     kosh_map = {k.kosh_name: k.id for k in Kosh.objects.all()}
+
+#     search    = request.GET.get('search', '').strip()
+#     kosh_filter = request.GET.get('kosh', '').strip()
+#     gp_filter   = request.GET.get('gram_panchayat', '').strip()
+
+#     for item in allocation_data:
+#         item['kosh_id'] = kosh_map.get(item.get('kosh_name'))
+
+#     if search:
+#         allocation_data = [
+#             i for i in allocation_data
+#             if search.lower() in i.get('release_name', '').lower()
+#             or search.lower() in i.get('release_order_no', '').lower()
+#         ]
+
+#     if kosh_filter:
+#         allocation_data = [i for i in allocation_data if i.get('kosh_name') == kosh_filter]
+
+#     if gp_filter:
+#         allocation_data = [i for i in allocation_data if i.get('gram_panchayat_name') == gp_filter]
+
+#     # ── Dropdown data (from full filtered list, before pagination) ──
+#     unique_koshes = sorted(set(i.get('kosh_name') for i in allocation_data))
+#     unique_gps    = sorted(set(i.get('gram_panchayat_name') for i in allocation_data))
+
+#     # ── Build all_heads & head_values on full list ──
+#     all_heads = []
+#     for item in allocation_data:
+#         for head in item.get('heads', []):
+#             if head['head_name'] not in [h['name'] for h in all_heads]:
+#                 all_heads.append({
+#                     'name': head['head_name'],
+#                     'percentage': head['percentage']
+#                 })
+
+#     for item in allocation_data:
+#         item['head_values'] = [
+#             next((h['head_amount'] for h in item.get('heads', []) if h['head_name'] == head['name']), 0)
+#             for head in all_heads
+#         ]
+#         item['already_allocated'] = item.get('kosh_id') in already_allocated_kosh_ids
+
+#     # ── Counts on FULL filtered list (before pagination) ──
+#     total_count    = len(allocation_data)
+#     pending_count  = sum(1 for i in allocation_data if not i['already_allocated'])
+#     allocated_count = total_count - pending_count
+
+#     # ── Pagination ──
+#     paginator   = Paginator(allocation_data, 15)          # 15 rows per page
+#     page_number = request.GET.get('page')
+#     page_obj    = paginator.get_page(page_number)
+
+#     context = {
+#         'user'                       : user,
+#         'financial_year'             : financial_year,
+#         'allocation_data'            : page_obj,          # ← paginated now
+#         'all_heads'                  : all_heads,
+#         'unique_koshes'              : unique_koshes,
+#         'unique_gps'                 : unique_gps,
+#         'search'                     : search,
+#         'kosh_filter'                : kosh_filter,
+#         'gp_filter'                  : gp_filter,
+#         'fund_release'               : fund_release,
+#         'zp_id'                      : zp_id,
+#         'fund_id'                    : fund_id,
+#         'already_allocated_kosh_ids' : already_allocated_kosh_ids,
+#         'pending_count'              : pending_count,       # ← full list count
+#         'allocated_count'            : allocated_count,     # ← full list count
+#         'total_count'                : total_count,
+#         'page_obj'                   : page_obj,
+#     }
+
+#     return render(request, 'ZP-Allocation-Chart.html', context)
 
 
 
@@ -492,7 +612,7 @@ def Check_Lapsed_Amount(request):
         # =========================
         # TODAY DATE
         # =========================
-        today = timezone.now().date()
+        one_year_ago = timezone.now().date() - timedelta(days=365)
 
         print("\n==============================")
         print("CHECKING TODAY RECORDS")
@@ -502,7 +622,7 @@ def Check_Lapsed_Amount(request):
         # TODAY HEAD ALLOCATION
         # =========================
         expired_head_allocations = HeadAllocation.objects.filter(
-            created_at__date=today
+            created_at__date=one_year_ago
         ).order_by('-created_at')
 
         if expired_head_allocations.exists():
