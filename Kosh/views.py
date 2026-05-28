@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404, redirect, render
+from FundRelease.models import Kosh_Fund_Allocation
 from Main.models import Financial_Year, Kosh_Head, Super_User
 from Main.utils import validate_clean_text, validate_file, validate_mobile_number
 from PanchayatSamiti.models import Panchayat_Samiti
@@ -1800,4 +1801,31 @@ def Kosh_Manage_Kosh_Committee(request):
 
 
 
-    
+def Kosh_fund_alloted_details(request):
+
+    # =========================
+    # LOGIN CHECK
+    # =========================
+    if request.session.get('user_type') != 'Kosh':
+        messages.error(request, "Unauthorized Access")
+        return redirect('Login')
+
+    user_id = request.session.get('user_id')
+
+    try:
+        kosh_user = Kosh_User.objects.get(id=user_id, status='Active')
+    except Kosh_User.DoesNotExist:
+        messages.error(request, "User Not Found")
+        return redirect('Login')
+
+    # =========================
+    # FUND ALLOCATION DATA
+    # =========================
+    fund_allocations = Kosh_Fund_Allocation.objects.all()
+
+    context = {
+        'kosh_user': kosh_user,
+        'fund_allocations': fund_allocations,
+    }
+
+    return render(request, 'Kosh_fund_alloted_details.html', context)
