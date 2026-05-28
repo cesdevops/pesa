@@ -13,7 +13,7 @@ from Main.models import Kosh_Head
 from Main.utils import validate_clean_text
 from Kosh.models import Kosh, Kosh_User
 
-from Activity.models import Activity, Work_Master,Administrative_Sanction
+from Activity.models import Activity, Work_Master,Administrative_Sanction, Work_In_Progress, Work_Final, Technical_Sanction, Work_Order, Work_Start 
 from decimal import Decimal
 from django.contrib import messages
 from django.core.exceptions import ValidationError
@@ -27,6 +27,7 @@ from datetime import datetime
 from .models import Technical_Sanction, Work_Master, Work_Order, Work_Start
 from Kosh.utils import switch_kosh
 
+
 def Activity_Work_Master(request):
     if request.session.get('user_type') != 'Kosh':
         messages.error(request, "Unauthorized Access")
@@ -39,7 +40,6 @@ def Activity_Work_Master(request):
             id=user_id,
             status='Active'
         )
-
     except Kosh_User.DoesNotExist:
         messages.error(request, "User Not Found")
         return redirect('Login')
@@ -47,11 +47,10 @@ def Activity_Work_Master(request):
     # User Accessible Kosh IDs
     user_kosh_ids = kosh_user.kosh.values_list('id', flat=True)
 
-    # Work Master List
+    # Work Master List - Remove 'activity' from select_related
     work_masters = Work_Master.objects.filter(
         kosh_fund_allocation__kosh_id__in=user_kosh_ids
     ).select_related(
-        'activity',
         'kosh_fund_allocation',
         'kosh_fund_allocation__kosh'
     ).order_by('-id')
@@ -78,13 +77,11 @@ def Activity_Work_Master(request):
 
     # Pagination
     paginator = Paginator(work_masters, 15)
-
     page_number = request.GET.get('page')
     work_masters = paginator.get_page(page_number)
 
     context = {
         'user_type': 'Kosh',
-        
         'kosh_user': kosh_user,
         'work_masters': work_masters,
         'work_name': work_name,
@@ -98,6 +95,7 @@ def Activity_Work_Master(request):
         'Activity-Work-Master.html',
         context
     )
+
 
 def Activity_Add_Work_Master(request):
 
@@ -165,8 +163,7 @@ def Activity_Add_Work_Master(request):
             'overall_status'
         )
 
-        Work_Master.objects.create(
-            activity_id=activity_id,
+        work = Work_Master.objects.create(
             kosh_fund_allocation=kosh_fund_allocation,
             work_name=work_name,
             work_code=work_code,
@@ -185,7 +182,7 @@ def Activity_Add_Work_Master(request):
             "Work Master Added Successfully"
         )
 
-        return redirect('Activity-Work-Master')
+        return redirect('Activity-Work-Detail', work_id=work.id)
 
     context = {
 
@@ -195,6 +192,8 @@ def Activity_Add_Work_Master(request):
         'activities': activities,
         'active_kosh': active_kosh,
         'status_choices': Work_Master.WORK_STATUS_CHOICES,
+        **switch_kosh(request),
+
         # 'load_sidebar': "load_sidebar",
     }
 
@@ -204,8 +203,32 @@ def Activity_Add_Work_Master(request):
         context
     )
 
+def Activity_Work_Detail(request, work_id):
+    if request.session.get('user_type') != 'Kosh':
+        messages.error(request, "Unauthorized Access")
+        return redirect('Login')
 
-def Activity_Administrative_Sanction(request, work_id):
+    user_id = request.session.get('user_id')
+
+    try:
+        kosh_user = Kosh_User.objects.get(id=user_id, status='Active')
+    except Kosh_User.DoesNotExist:
+        messages.error(request, "User Not Found")
+        return redirect('Login')
+
+    work_master = get_object_or_404(Work_Master, id=work_id)
+
+    context = {
+        'user_type': 'Kosh',
+        'kosh_user': kosh_user,
+        'work_master': work_master,
+        'load_sidebar': 'load_sidebar',
+    }
+
+    return render(request, 'Activity-Work-Detail.html', context)
+
+
+def Activity_Administrative_Sanction_old(request, work_id):
     if request.session.get('user_type') != 'Kosh':
         messages.error(request, "Unauthorized Access")
         return redirect('Login')
@@ -403,6 +426,183 @@ def Activity_Administrative_Sanction(request, work_id):
     }
 
     return render(request, 'Activity-Administrative-Sanction.html', context)
+
+
+def Activity_Administrative_Sanction(request, work_id):
+    if request.session.get('user_type') != 'Kosh':
+        messages.error(request, "Unauthorized Access")
+        return redirect('Login')
+
+    user_id = request.session.get('user_id')
+
+    try:
+        kosh_user = Kosh_User.objects.get(id=user_id, status='Active')
+    except Kosh_User.DoesNotExist:
+        messages.error(request, "User Not Found")
+        return redirect('Login')
+
+    # Get Work Master by ID
+    work_master = get_object_or_404(Work_Master, id=work_id)
+    
+    # Check if Administrative Sanction already exists
+    try:
+        admin_sanction = Administrative_Sanction.objects.get(work_master=work_master)
+        is_edit = True
+    except Administrative_Sanction.DoesNotExist:
+        admin_sanction = None
+        is_edit = False
+
+    if request.method == 'POST':
+        try:
+            # Get form data
+            sanction_number = request.POST.get('sanction_number', '').strip() or None
+            department_name = request.POST.get('department_name', '').strip() or None
+            work_location = request.POST.get('work_location', '').strip() or None
+            objective = request.POST.get('objective', '').strip() or None
+            beneficiary_details = request.POST.get('beneficiary_details', '').strip() or None
+            resolution_number = request.POST.get('resolution_number', '').strip() or None
+            remarks = request.POST.get('remarks', '').strip() or None
+            status = request.POST.get('status', 'Pending')
+            
+            # Handle amounts
+            estimated_amount_str = request.POST.get('estimated_amount', '')
+            estimated_amount = None
+            if estimated_amount_str and estimated_amount_str.strip():
+                try:
+                    estimated_amount = Decimal(str(estimated_amount_str))
+                except:
+                    estimated_amount = None
+            
+            approved_amount_str = request.POST.get('approved_amount', '')
+            approved_amount = None
+            if approved_amount_str and approved_amount_str.strip():
+                try:
+                    approved_amount = Decimal(str(approved_amount_str))
+                except:
+                    approved_amount = None
+            
+            # Handle dates
+            sanction_date = request.POST.get('sanction_date', '') or None
+            proposal_date = request.POST.get('proposal_date', '') or None
+            resolution_date = request.POST.get('resolution_date', '') or None
+            
+            # Handle file uploads
+            resolution_document = request.FILES.get('resolution_document')
+            proposal_document = request.FILES.get('proposal_document')
+            budget_estimate_document = request.FILES.get('budget_estimate_document')
+            approval_letter_document = request.FILES.get('approval_letter_document')
+            other_document = request.FILES.get('other_document')
+            
+            # DEFINE REQUIRED FIELDS FOR WORK MASTER UPDATE
+            # Only these fields must be filled to update Work Master
+            all_required_fields_filled = all([
+                sanction_number,
+                department_name,
+                estimated_amount is not None,
+                approved_amount is not None,
+                sanction_date,
+                work_location,
+                objective,
+                resolution_number,
+                resolution_date
+            ])
+            
+            # ALWAYS save/update Administrative Sanction table (current table)
+            if is_edit:
+                # Update existing record
+                admin_sanction.sanction_number = sanction_number
+                admin_sanction.department_name = department_name
+                admin_sanction.estimated_amount = estimated_amount
+                admin_sanction.approved_amount = approved_amount
+                admin_sanction.sanction_date = sanction_date
+                admin_sanction.proposal_date = proposal_date
+                admin_sanction.work_location = work_location
+                admin_sanction.objective = objective
+                admin_sanction.beneficiary_details = beneficiary_details
+                admin_sanction.resolution_number = resolution_number
+                admin_sanction.resolution_date = resolution_date
+                admin_sanction.remarks = remarks
+                admin_sanction.status = status
+                admin_sanction.updated_at = timezone.now()
+                
+                if resolution_document:
+                    admin_sanction.resolution_document = resolution_document
+                if proposal_document:
+                    admin_sanction.proposal_document = proposal_document
+                if budget_estimate_document:
+                    admin_sanction.budget_estimate_document = budget_estimate_document
+                if approval_letter_document:
+                    admin_sanction.approval_letter_document = approval_letter_document
+                if other_document:
+                    admin_sanction.other_document = other_document
+                    
+                admin_sanction.save()
+                messages.success(request, "प्रशासकीय मान्यता यशस्वीरित्या अद्यतनित केली")
+            else:
+                # Create new record
+                admin_sanction = Administrative_Sanction.objects.create(
+                    work_master=work_master,
+                    sanction_number=sanction_number,
+                    department_name=department_name,
+                    estimated_amount=estimated_amount,
+                    approved_amount=approved_amount,
+                    sanction_date=sanction_date,
+                    proposal_date=proposal_date,
+                    work_location=work_location,
+                    objective=objective,
+                    beneficiary_details=beneficiary_details,
+                    resolution_number=resolution_number,
+                    resolution_date=resolution_date,
+                    remarks=remarks,
+                    status=status,
+                    resolution_document=resolution_document,
+                    proposal_document=proposal_document,
+                    budget_estimate_document=budget_estimate_document,
+                    approval_letter_document=approval_letter_document,
+                    other_document=other_document,
+                    created_by=kosh_user
+                )
+                messages.success(request, "प्रशासकीय मान्यता यशस्वीरित्या जतन केली")
+            
+            # UPDATE WORK MASTER ONLY IF ALL REQUIRED FIELDS ARE FILLED
+            if all_required_fields_filled and status == 'Approved':
+                work_master.administrative_sanction_completed = True
+                work_master.administrative_sanction_completed_date = timezone.now()
+                work_master.administrative_sanction_status = 'Completed'
+                if estimated_amount is not None:
+                    work_master.estimated_amount = estimated_amount
+                if approved_amount is not None:
+                    work_master.approved_amount = approved_amount
+                if work_master.overall_status == 'Pending':
+                    work_master.overall_status = 'In Progress'
+                work_master.save()
+                messages.success(request, "प्रशासकीय मान्यता पूर्ण झाली! सर्व माहिती बरोबर आहे.")
+            elif all_required_fields_filled and status == 'Rejected':
+                work_master.administrative_sanction_status = 'Rejected'
+                work_master.administrative_sanction_completed = False
+                work_master.save()
+                messages.warning(request, "प्रशासकीय मान्यता नाकारली गेली.")
+            elif not all_required_fields_filled:
+                # Work Master is NOT updated - only current table saved
+                messages.info(request, "प्रशासकीय मान्यता जतन केली. पूर्ण करण्यासाठी सर्व आवश्यक माहिती भरा. (आवश्यक फील्ड: मान्यता क्रमांक, विभाग, रक्कम, दिनांक, ठिकाण, उद्दिष्टे, ठराव क्रमांक व दिनांक)")
+            
+            return redirect('Activity-Administrative-Sanction', work_id=work_id)
+            
+        except Exception as e:
+            messages.error(request, f"एरर आली: {str(e)}")
+
+    context = {
+        'user_type': 'Kosh',
+        'kosh_user': kosh_user,
+        'work_master': work_master,
+        'admin_sanction': admin_sanction,
+        'is_edit': is_edit,
+        'load_sidebar': "load_sidebar",
+    }
+
+    return render(request, 'Activity-Administrative-Sanction.html', context)
+
+
 
 
 def Activity_Technical_Sanction(request, work_id):
@@ -1146,3 +1346,309 @@ def Activity_Work_Start(request, work_id):
 
     return render(request, 'Activity-Work-Start.html', context)
 
+
+
+def Activity_Work_In_Progress(request, work_id):
+    if request.session.get('user_type') != 'Kosh':
+        messages.error(request, "Unauthorized Access")
+        return redirect('Login')
+
+    user_id = request.session.get('user_id')
+
+    try:
+        kosh_user = Kosh_User.objects.get(id=user_id, status='Active')
+    except Kosh_User.DoesNotExist:
+        messages.error(request, "User Not Found")
+        return redirect('Login')
+
+    # Get Work Master by ID
+    work_master = get_object_or_404(Work_Master, id=work_id)
+    
+    # Check if Work In Progress already exists
+    try:
+        work_progress = Work_In_Progress.objects.get(work_master=work_master)
+        is_edit = True
+    except Work_In_Progress.DoesNotExist:
+        work_progress = None
+        is_edit = False
+
+    if request.method == 'POST':
+        try:
+            # Get form data
+            progress_title = request.POST.get('progress_title', '').strip() or None
+            completed_work_details = request.POST.get('completed_work_details', '').strip() or None
+            pending_work_details = request.POST.get('pending_work_details', '').strip() or None
+            site_inspection_details = request.POST.get('site_inspection_details', '').strip() or None
+            material_used_details = request.POST.get('material_used_details', '').strip() or None
+            current_site_status = request.POST.get('current_site_status', '').strip() or None
+            delay_reason = request.POST.get('delay_reason', '').strip() or None
+            next_work_plan = request.POST.get('next_work_plan', '').strip() or None
+            remarks = request.POST.get('remarks', '').strip() or None
+            
+            # Handle labour count
+            labour_count_str = request.POST.get('labour_count', '')
+            labour_count = None
+            if labour_count_str and labour_count_str.strip():
+                try:
+                    labour_count = int(labour_count_str)
+                except:
+                    labour_count = None
+            
+            # Handle dates
+            progress_date = None
+            progress_date_str = request.POST.get('progress_date', '')
+            if progress_date_str and progress_date_str.strip():
+                try:
+                    progress_date = progress_date_str
+                except:
+                    pass
+            
+            # Handle file uploads
+            progress_photo_1 = request.FILES.get('progress_photo_1')
+            progress_photo_2 = request.FILES.get('progress_photo_2')
+            progress_photo_3 = request.FILES.get('progress_photo_3')
+            inspection_report_document = request.FILES.get('inspection_report_document')
+            milestone_report_document = request.FILES.get('milestone_report_document')
+            other_document = request.FILES.get('other_document')
+            
+            if is_edit:
+                # Update existing record
+                work_progress.progress_title = progress_title
+                work_progress.progress_date = progress_date
+                work_progress.completed_work_details = completed_work_details
+                work_progress.pending_work_details = pending_work_details
+                work_progress.site_inspection_details = site_inspection_details
+                work_progress.labour_count = labour_count
+                work_progress.material_used_details = material_used_details
+                work_progress.current_site_status = current_site_status
+                work_progress.delay_reason = delay_reason
+                work_progress.next_work_plan = next_work_plan
+                work_progress.remarks = remarks
+                work_progress.updated_at = timezone.now()
+                work_progress.updated_by = kosh_user
+                
+                # Update documents
+                if progress_photo_1:
+                    work_progress.progress_photo_1 = progress_photo_1
+                if progress_photo_2:
+                    work_progress.progress_photo_2 = progress_photo_2
+                if progress_photo_3:
+                    work_progress.progress_photo_3 = progress_photo_3
+                if inspection_report_document:
+                    work_progress.inspection_report_document = inspection_report_document
+                if milestone_report_document:
+                    work_progress.milestone_report_document = milestone_report_document
+                if other_document:
+                    work_progress.other_document = other_document
+                    
+                work_progress.save()
+                messages.success(request, "प्रगती माहिती यशस्वीरित्या अद्यतनित केली")
+            else:
+                # Create new record
+                work_progress = Work_In_Progress.objects.create(
+                    work_master=work_master,
+                    progress_title=progress_title,
+                    progress_date=progress_date,
+                    completed_work_details=completed_work_details,
+                    pending_work_details=pending_work_details,
+                    site_inspection_details=site_inspection_details,
+                    labour_count=labour_count,
+                    material_used_details=material_used_details,
+                    current_site_status=current_site_status,
+                    delay_reason=delay_reason,
+                    next_work_plan=next_work_plan,
+                    remarks=remarks,
+                    progress_photo_1=progress_photo_1,
+                    progress_photo_2=progress_photo_2,
+                    progress_photo_3=progress_photo_3,
+                    inspection_report_document=inspection_report_document,
+                    milestone_report_document=milestone_report_document,
+                    other_document=other_document,
+                    created_by=kosh_user
+                )
+                messages.success(request, "प्रगती माहिती यशस्वीरित्या जतन केली")
+            
+            # Update Work Master progress status
+            work_master.work_progress_completed = True
+            work_master.work_progress_completed_date = timezone.now()
+            work_master.work_progress_status = 'In Progress'
+            work_master.save()
+            
+            return redirect('Activity-Work-In-Progress', work_id=work_id)
+            
+        except Exception as e:
+            messages.error(request, f"एरर आली: {str(e)}")
+
+    context = {
+        'user_type': 'Kosh',
+        'kosh_user': kosh_user,
+        'work_master': work_master,
+        'work_progress': work_progress,
+        'is_edit': is_edit,
+        'load_sidebar': "load_sidebar",
+    }
+
+    return render(request, 'Activity-Work-In-Progress.html', context)
+
+
+def Activity_Work_Final(request, work_id):
+    if request.session.get('user_type') != 'Kosh':
+        messages.error(request, "Unauthorized Access")
+        return redirect('Login')
+
+    user_id = request.session.get('user_id')
+
+    try:
+        kosh_user = Kosh_User.objects.get(id=user_id, status='Active')
+    except Kosh_User.DoesNotExist:
+        messages.error(request, "User Not Found")
+        return redirect('Login')
+
+    # Get Work Master by ID
+    work_master = get_object_or_404(Work_Master, id=work_id)
+    
+    # Check if Work Final already exists
+    try:
+        work_final = Work_Final.objects.get(work_master=work_master)
+        is_edit = True
+    except Work_Final.DoesNotExist:
+        work_final = None
+        is_edit = False
+
+    if request.method == 'POST':
+        try:
+            # Get form data
+            final_work_status = request.POST.get('final_work_status', '').strip() or None
+            final_report = request.POST.get('final_report', '').strip() or None
+            completion_remarks = request.POST.get('completion_remarks', '').strip() or None
+            status = request.POST.get('status', 'Pending')
+            
+            # Handle dates
+            completion_date = None
+            completion_date_str = request.POST.get('completion_date', '')
+            if completion_date_str and completion_date_str.strip():
+                try:
+                    completion_date = completion_date_str
+                except:
+                    pass
+            
+            # Handle file uploads
+            final_photo_1 = request.FILES.get('final_photo_1')
+            final_photo_2 = request.FILES.get('final_photo_2')
+            final_photo_3 = request.FILES.get('final_photo_3')
+            completion_certificate_document = request.FILES.get('completion_certificate_document')
+            measurement_book_document = request.FILES.get('measurement_book_document')
+            final_report_document = request.FILES.get('final_report_document')
+            other_document = request.FILES.get('other_document')
+            
+            if is_edit:
+                # Update existing record
+                work_final.completion_date = completion_date
+                work_final.final_work_status = final_work_status
+                work_final.final_report = final_report
+                work_final.completion_remarks = completion_remarks
+                work_final.status = status
+                work_final.updated_at = timezone.now()
+                
+                # Update documents
+                if final_photo_1:
+                    work_final.final_photo_1 = final_photo_1
+                if final_photo_2:
+                    work_final.final_photo_2 = final_photo_2
+                if final_photo_3:
+                    work_final.final_photo_3 = final_photo_3
+                if completion_certificate_document:
+                    work_final.completion_certificate_document = completion_certificate_document
+                if measurement_book_document:
+                    work_final.measurement_book_document = measurement_book_document
+                if final_report_document:
+                    work_final.final_report_document = final_report_document
+                if other_document:
+                    work_final.other_document = other_document
+                    
+                work_final.save()
+                messages.success(request, "काम पूर्ण माहिती यशस्वीरित्या अद्यतनित केली")
+            else:
+                # Create new record
+                work_final = Work_Final.objects.create(
+                    work_master=work_master,
+                    completion_date=completion_date,
+                    final_work_status=final_work_status,
+                    final_report=final_report,
+                    completion_remarks=completion_remarks,
+                    status=status,
+                    final_photo_1=final_photo_1,
+                    final_photo_2=final_photo_2,
+                    final_photo_3=final_photo_3,
+                    completion_certificate_document=completion_certificate_document,
+                    measurement_book_document=measurement_book_document,
+                    final_report_document=final_report_document,
+                    other_document=other_document,
+                    created_by=kosh_user
+                )
+                messages.success(request, "काम पूर्ण माहिती यशस्वीरित्या जतन केली")
+            
+            # Update Work Master final status
+            if status == 'Completed':
+                work_master.work_final_completed = True
+                work_master.work_final_completed_date = timezone.now()
+                work_master.work_final_status = 'Completed'
+                work_master.is_fully_completed = True
+                work_master.fully_completed_date = timezone.now()
+                work_master.overall_status = 'Completed'
+                work_master.save()
+            else:
+                work_master.work_final_status = 'Pending'
+                work_master.save()
+            
+            return redirect('Activity-Work-Final', work_id=work_id)
+            
+        except Exception as e:
+            messages.error(request, f"एरर आली: {str(e)}")
+
+    context = {
+        'user_type': 'Kosh',
+        'kosh_user': kosh_user,
+        'work_master': work_master,
+        'work_final': work_final,
+        'is_edit': is_edit,
+        'load_sidebar': "load_sidebar",
+    }
+
+    return render(request, 'Activity-Work-Final.html', context)
+
+
+def Payment_Process(request, work_id):
+    if request.session.get('user_type') != 'Kosh':
+        messages.error(request, "Unauthorized Access")
+        return redirect('Login')
+
+    user_id = request.session.get('user_id')
+
+    try:
+        kosh_user = Kosh_User.objects.get(id=user_id, status='Active')
+    except Kosh_User.DoesNotExist:
+        messages.error(request, "User Not Found")
+        return redirect('Login')
+
+    # Get Work Master by ID
+    work_master = get_object_or_404(Work_Master, id=work_id)
+    
+    # Check if Work Final already exists
+    try:
+        work_final = Work_Final.objects.get(work_master=work_master)
+        is_edit = True
+    except Work_Final.DoesNotExist:
+        work_final = None
+        is_edit = False
+
+    context = {
+        'user_type': 'Kosh',
+        'kosh_user': kosh_user,
+        'work_master': work_master,
+        'work_final': work_final,
+        'is_edit': is_edit,
+        'load_sidebar': "load_sidebar",
+    }
+
+    return render(request, 'Activity-Payment_Process.html', context)

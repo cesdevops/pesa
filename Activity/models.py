@@ -3,10 +3,7 @@ from Kosh.models import Kosh_User
 from FundRelease.models import Kosh_Fund_Allocation
 from Main.models import Kosh_Head
 
-    
-# ─────────────────────────────────────────────────────────────
 # ACTIVITY
-# ─────────────────────────────────────────────────────────────
 
 class Activity(models.Model):
     STATUS_CHOICES = (
@@ -138,7 +135,6 @@ class Administrative_Sanction(models.Model):
         ('Rejected', 'Rejected'),
     )
     work_master = models.ForeignKey('Work_Master', on_delete=models.SET_NULL, related_name='administrative_sanctions', null=True, blank=True)
-    work_master = models.ForeignKey('Work_Master', on_delete=models.SET_NULL, related_name='administrative_sanctions', null=True, blank=True)
     sanction_number = models.CharField(max_length=100, null=True, blank=True)
     department_name = models.CharField(max_length=255, null=True, blank=True)
     estimated_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
@@ -160,17 +156,17 @@ class Administrative_Sanction(models.Model):
     budget_estimate_document = models.FileField(upload_to='administrative_sanction/budget/', null=True, blank=True)
     approval_letter_document = models.FileField(upload_to='administrative_sanction/approval/', null=True, blank=True)
     other_document = models.FileField(upload_to='administrative_sanction/other/', null=True, blank=True)
-    # System Fields
-    created_by = models.ForeignKey(Kosh_User, on_delete=models.SET_NULL, related_name='administrative_sanctions', null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Pending', null=True, blank=True)
     # Documents
     resolution_document = models.FileField(upload_to='administrative_sanction/resolution/', null=True, blank=True)
     proposal_document = models.FileField(upload_to='administrative_sanction/proposal/', null=True, blank=True)
     budget_estimate_document = models.FileField(upload_to='administrative_sanction/budget/', null=True, blank=True)
     approval_letter_document = models.FileField(upload_to='administrative_sanction/approval/', null=True, blank=True)
     other_document = models.FileField(upload_to='administrative_sanction/other/', null=True, blank=True)
+    # System Fields
+    created_by = models.ForeignKey(Kosh_User, on_delete=models.SET_NULL, related_name='administrative_sanctions', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Pending', null=True, blank=True)
     # System Fields
     created_by = models.ForeignKey(Kosh_User, on_delete=models.SET_NULL, related_name='administrative_sanctions', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
@@ -185,11 +181,6 @@ class Administrative_Sanction(models.Model):
     def __str__(self):
         return f"{self.sanction_number or ''} - {self.work_master}"
 
-
-# ─────────────────────────────────────────────────────────────
-# STAGE 2 — TECHNICAL SANCTION
-# ─────────────────────────────────────────────────────────────
-        return f"{self.sanction_number or ''} - {self.work_master}"
 
 
 # ─────────────────────────────────────────────────────────────
@@ -212,7 +203,6 @@ class Technical_Sanction(models.Model):
         ('Sanitation', 'Sanitation'),
         ('Other', 'Other'),
     )
-    work_master = models.ForeignKey('Work_Master', on_delete=models.SET_NULL, related_name='technical_sanctions', null=True, blank=True)
     work_master = models.ForeignKey('Work_Master', on_delete=models.SET_NULL, related_name='technical_sanctions', null=True, blank=True)
     technical_sanction_number = models.CharField(max_length=100, null=True, blank=True)
     sanction_date = models.DateField(null=True, blank=True)
@@ -388,7 +378,6 @@ class Work_Order(models.Model):
         ('Cancelled', 'Cancelled'),
     )
     work_master = models.ForeignKey('Work_Master', on_delete=models.SET_NULL, related_name='work_orders', null=True, blank=True)
-    work_master = models.ForeignKey('Work_Master', on_delete=models.SET_NULL, related_name='work_orders', null=True, blank=True)
     work_order_number = models.CharField(max_length=100, null=True, blank=True)
     work_name = models.CharField(max_length=255, null=True, blank=True)
     work_description = models.TextField(null=True, blank=True)
@@ -457,7 +446,6 @@ class Work_Start(models.Model):
         ('Completed', 'Completed'),
     )
     work_master = models.ForeignKey('Work_Master', on_delete=models.SET_NULL, related_name='work_starts', null=True, blank=True)
-    work_master = models.ForeignKey('Work_Master', on_delete=models.SET_NULL, related_name='work_starts', null=True, blank=True)
     start_date = models.DateField(null=True, blank=True)
     expected_end_date = models.DateField(null=True, blank=True)
     actual_start_date = models.DateField(null=True, blank=True)
@@ -502,24 +490,11 @@ class Work_Start(models.Model):
 
         return f"{self.work_master} - {self.status}"
 
-
-# ─────────────────────────────────────────────────────────────
-# STAGE 6 — WORK IN PROGRESS
-# ─────────────────────────────────────────────────────────────
-
 # ─────────────────────────────────────────────────────────────
 # STAGE 6 — WORK IN PROGRESS
 # ─────────────────────────────────────────────────────────────
 
 class Work_In_Progress(models.Model):
-    STATUS_CHOICES = (
-        ('Pending', 'Pending'),
-        ('In Progress', 'In Progress'),
-        ('Partially Completed', 'Partially Completed'),
-        ('Completed', 'Completed'),
-        ('On Hold', 'On Hold'),
-    )
-    work_master = models.ForeignKey('Work_Master', on_delete=models.SET_NULL, related_name='work_in_progress', null=True, blank=True)
     work_master = models.ForeignKey('Work_Master', on_delete=models.SET_NULL, related_name='work_in_progress', null=True, blank=True)
     progress_title = models.CharField(max_length=255, null=True, blank=True)
     progress_date = models.DateField(null=True, blank=True)
@@ -532,7 +507,6 @@ class Work_In_Progress(models.Model):
     delay_reason = models.TextField(null=True, blank=True)
     next_work_plan = models.TextField(null=True, blank=True)
     remarks = models.TextField(null=True, blank=True)
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Pending', null=True, blank=True)
     # Documents
     progress_photo_1 = models.ImageField(upload_to='work_progress/photos/', null=True, blank=True)
     progress_photo_2 = models.ImageField(upload_to='work_progress/photos/', null=True, blank=True)
@@ -544,7 +518,6 @@ class Work_In_Progress(models.Model):
     updated_by = models.ForeignKey(Kosh_User, on_delete=models.SET_NULL, related_name='work_progress_updates', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Pending', null=True, blank=True)
     # Documents
     progress_photo_1 = models.ImageField(upload_to='work_progress/photos/', null=True, blank=True)
     progress_photo_2 = models.ImageField(upload_to='work_progress/photos/', null=True, blank=True)
@@ -574,7 +547,6 @@ class Work_Final(models.Model):
     STATUS_CHOICES = (
         ('Pending', 'Pending'),
         ('Completed', 'Completed'),
-        ('Verified', 'Verified'),
     )
     work_master = models.ForeignKey('Work_Master', on_delete=models.SET_NULL, related_name='work_finals', null=True, blank=True)
     completion_date = models.DateField(null=True, blank=True)

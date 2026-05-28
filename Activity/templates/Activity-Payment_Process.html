@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .as-header {
+        background: #fff;
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin-bottom: 20px;
+        border-left: 4px solid var(--gold);
+        box-shadow: 0 2px 6px rgba(13,43,69,.07);
+    }
+
+    .as-header h2 {
+        font-size: 18px;
+        color: var(--navy);
+        margin: 0 0 5px 0;
+        font-family: 'Noto Serif Devanagari', serif;
+    }
+
+    .as-header p {
+        font-size: 12px;
+        color: var(--muted);
+        margin: 0;
+    }
+
+    .work-info-bar {
+        background: #fff;
+        border-radius: 8px;
+        padding: 12px 20px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        border: 1px solid var(--gray2);
+    }
+
+    .work-info-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--text);
+    }
+
+    .work-info-item i {
+        font-size: 24px;
+        color: var(--gold);
+    }
+
+    .work-info-details h4 {
+        font-size: 12px;
+        margin: 0 0 3px 0;
+        opacity: 0.8;
+        color: var(--muted);
+    }
+
+    .work-info-details p {
+        font-size: 14px;
+        margin: 0;
+        font-weight: 600;
+        color: var(--navy);
+    }
+
+    .form-card {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(13,43,69,.1);
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+    .form-card-header {
+        background: var(--navy);
+        padding: 14px 20px;
+        border-bottom: 3px solid var(--gold);
+    }
+
+    .form-card-header h3 {
+        color: #fff;
+        font-size: 15px;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-card-header h3 i {
+        color: var(--gold);
+    }
+
+    .form-card-body {
+        padding: 25px;
+    }
+
+    .current-file {
+        background: #e8f4fd;
+        padding: 6px 10px;
+        border-radius: 4px;
+        font-size: 11px;
+        margin-top: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .current-file i {
+        color: var(--gold);
+    }
+
+    .file-info {
+        font-size: 10px;
+        color: var(--muted);
+        margin-top: 8px;
+    }
+</style>
+
+<div class="container-fluid px-0 as-container">
+    <!-- Header -->
+    <div class="as-header">
+        <h2>
+            <i class="fa fa-cogs" style="color: var(--gold); margin-right: 8px;"></i>
+            पेमेंट प्रक्रिया - {{ work_master.work_name }}
+        </h2>
+    </div>
+
+
+
+
+{% endblock %}

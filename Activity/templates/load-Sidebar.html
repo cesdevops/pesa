@@ -1,6 +1,24 @@
-<!-- load-Sidebar.html - Simple Sticky Version -->
+<!-- load-Sidebar.html -->
+<style>
+/* Status icon styles */
+.status-icon {
+    margin-left: auto;
+    font-size: 12px;
+    flex-shrink: 0;
+}
+.status-icon .completed {
+    color: #2ecc71;
+}
+.status-icon .pending {
+    color: #a5290e;
+}
+.status-icon .in-progress {
+    color: #3498db;
+}
+</style>
+
 <!-- Back Button to Work Master -->
-<div class="sidebar-section" style="padding: 10px 12px 0 12px; position: sticky; top: 0; background: var(--navy); z-index: 20;">
+<div style="padding: 10px 12px 0 12px;">
     <a href="{% url 'Activity-Work-Master' %}" 
        style="display: flex; align-items: center; gap: 8px; 
               background: var(--gold); 
@@ -21,87 +39,347 @@
 </div>
 
 <!-- MAIN NAVIGATION - Work Flow Items -->
-<div class="sidebar-section" style="margin-top: 4px; position: sticky; top: 60px; background: var(--navy); z-index: 15;">काम प्रगती मेनू</div>
-<ul class="sidebar-nav" style="max-height: calc(100vh - 120px); overflow-y: auto;">
+<div class="sidebar-section" style="margin-top: 4px;">काम प्रगती मेनू</div>
+<ul class="sidebar-nav">
+
     <li>
+        {% if work_master and work_master.id %}
+        <a href="#"
+           class="{% if request.resolver_match.url_name == 'Activity-Work-Detail' %}active{% endif %}"
+           data-tooltip="काम माहिती">
+        {% else %}
+        <a href="javascript:void(0);"
+           onclick="showMessage('काम माहिती', 'कृपया प्रथम काम तयार करा')"
+           data-tooltip="काम माहिती">
+        {% endif %}
+            <i class="fa fa-info-circle"></i>
+            <span class="nav-label">काम माहिती</span>
+        </a>
+    </li>
+    <li>
+        {% if work_master and work_master.id %}
         <a href="{% url 'Activity-Administrative-Sanction' work_master.id %}"
            class="{% if request.resolver_match.url_name == 'Activity-Administrative-Sanction' %}active{% endif %}"
            data-tooltip="Administrative Sanction">
+        {% else %}
+        <a href="javascript:void(0);" 
+           onclick="showMessage('प्रशासकीय मान्यता', 'कृपया प्रथम काम तयार करा')"
+           data-tooltip="Administrative Sanction">
+        {% endif %}
             <i class="fa fa-file-alt"></i>
             <span class="nav-label">प्रशासकीय मान्यता</span>
+            <span class="status-icon">
+                {% if work_master and work_master.administrative_sanction_completed %}
+                    <i class="fa fa-check-circle completed" title="पूर्ण"></i>
+                {% else %}
+                    <i class="fa fa-clock pending" title="प्रलंबित"></i>
+                {% endif %}
+            </span>
         </a>
     </li>
 
     <li>
+        {% if work_master and work_master.id %}
         <a href="{% url 'Activity-Technical-Sanction' work_master.id %}"
            class="{% if request.resolver_match.url_name == 'Activity-Technical-Sanction' %}active{% endif %}"
            data-tooltip="Technical Sanction">
+        {% else %}
+        <a href="javascript:void(0);" 
+           onclick="showMessage('तांत्रिक मान्यता', 'कृपया प्रथम काम तयार करा')"
+           data-tooltip="Technical Sanction">
+        {% endif %}
             <i class="fa fa-cogs"></i>
             <span class="nav-label">तांत्रिक मान्यता</span>
+            <span class="status-icon">
+                {% if work_master and work_master.technical_sanction_completed %}
+                    <i class="fa fa-check-circle completed" title="पूर्ण"></i>
+                {% else %}
+                    <i class="fa fa-clock pending" title="प्रलंबित"></i>
+                {% endif %}
+            </span>
         </a>
     </li>
     
     <li>
+        {% if work_master and work_master.id %}
         <a href="{% url 'Activity-Quotation-Tender' work_master.id %}"
            class="{% if request.resolver_match.url_name == 'Activity-Quotation-Tender' %}active{% endif %}"
            data-tooltip="Tender / Quotation">
+        {% else %}
+        <a href="javascript:void(0);" 
+           onclick="showMessage('निविदा / कोटेशन', 'कृपया प्रथम काम तयार करा')"
+           data-tooltip="Tender / Quotation">
+        {% endif %}
             <i class="fa fa-file-contract"></i>
             <span class="nav-label">निविदा / कोटेशन</span>
+            <span class="status-icon">
+                {% if work_master and work_master.quotation_tender_completed %}
+                    <i class="fa fa-check-circle completed" title="पूर्ण"></i>
+                {% else %}
+                    <i class="fa fa-clock pending" title="प्रलंबित"></i>
+                {% endif %}
+            </span>
         </a>
     </li>
 
     <!-- Work Order Link -->
     <li>
+        {% if work_master and work_master.id %}
         <a href="{% url 'Activity-Work-Order' work_master.id %}"
            class="{% if request.resolver_match.url_name == 'Activity-Work-Order' %}active{% endif %}"
            data-tooltip="Work Order">
+        {% else %}
+        <a href="javascript:void(0);" 
+           onclick="showMessage('वर्क ऑर्डर', 'कृपया प्रथम काम तयार करा')"
+           data-tooltip="Work Order">
+        {% endif %}
             <i class="fa fa-file-signature"></i>
             <span class="nav-label">वर्क ऑर्डर</span>
+            <span class="status-icon">
+                {% if work_master and work_master.work_order_completed %}
+                    <i class="fa fa-check-circle completed" title="पूर्ण"></i>
+                {% else %}
+                    <i class="fa fa-clock pending" title="प्रलंबित"></i>
+                {% endif %}
+            </span>
         </a>
     </li>
 
     <!-- Work Start Link -->
     <li>
+        {% if work_master and work_master.id %}
         <a href="{% url 'Activity-Work-Start' work_master.id %}"
            class="{% if request.resolver_match.url_name == 'Activity-Work-Start' %}active{% endif %}"
            data-tooltip="Work Started">
+        {% else %}
+        <a href="javascript:void(0);" 
+           onclick="showMessage('काम सुरू', 'कृपया प्रथम काम तयार करा')"
+           data-tooltip="Work Started">
+        {% endif %}
             <i class="fa fa-play-circle"></i>
             <span class="nav-label">काम सुरू</span>
+            <span class="status-icon">
+                {% if work_master and work_master.work_start_completed %}
+                    <i class="fa fa-check-circle completed" title="पूर्ण"></i>
+                {% else %}
+                    <i class="fa fa-clock pending" title="प्रलंबित"></i>
+                {% endif %}
+            </span>
         </a>
     </li>
 
+    <!-- Work In Progress Link -->
     <li>
-        <a href="#" data-tooltip="Work In Progress">
+        {% if work_master and work_master.id %}
+        <a href="{% url 'Activity-Work-In-Progress' work_master.id %}"
+           class="{% if request.resolver_match.url_name == 'Activity-Work-In-Progress' %}active{% endif %}"
+           data-tooltip="Work In Progress">
+        {% else %}
+        <a href="javascript:void(0);" 
+           onclick="showMessage('प्रगतीत काम', 'कृपया प्रथम काम तयार करा')"
+           data-tooltip="Work In Progress">
+        {% endif %}
             <i class="fa fa-spinner"></i>
             <span class="nav-label">प्रगतीत काम</span>
+            <span class="status-icon">
+                {% if work_master and work_master.work_progress_completed %}
+                    <i class="fa fa-check-circle completed" title="पूर्ण"></i>
+                {% else %}
+                    <i class="fa fa-clock pending" title="प्रलंबित"></i>
+                {% endif %}
+            </span>
         </a>
     </li>
 
+    <!-- Work Final Link -->
     <li>
-        <a href="#" data-tooltip="Work Final">
+        {% if work_master and work_master.id %}
+        <a href="{% url 'Activity-Work-Final' work_master.id %}"
+           class="{% if request.resolver_match.url_name == 'Activity-Work-Final' %}active{% endif %}"
+           data-tooltip="Work Final">
+        {% else %}
+        <a href="javascript:void(0);" 
+           onclick="showMessage('अंतिम काम', 'कृपया प्रथम काम तयार करा')"
+           data-tooltip="Work Final">
+        {% endif %}
             <i class="fa fa-check-circle"></i>
             <span class="nav-label">अंतिम काम</span>
+            <span class="status-icon">
+                {% if work_master and work_master.work_final_completed %}
+                    <i class="fa fa-check-circle completed" title="पूर्ण"></i>
+                {% else %}
+                    <i class="fa fa-clock pending" title="प्रलंबित"></i>
+                {% endif %}
+            </span>
         </a>
     </li>
-
+    
+    <!-- Payment Process Link -->
     <li>
-        <a href="#" data-tooltip="Payment Process">
+        {% if work_master and work_master.id %}
+        <a href="{% url 'Activity-Payment_Process' work_master.id %}"
+           class="{% if request.resolver_match.url_name == 'Activity-Payment_Process' %}active{% endif %}"
+           data-tooltip="Payment Process">
+        {% else %}
+        <a href="javascript:void(0);" 
+           onclick="showMessage('पेमेंट प्रक्रिया', 'कृपया प्रथम काम तयार करा')"
+           data-tooltip="Payment Process">
+        {% endif %}
             <i class="fa fa-money-bill"></i>
             <span class="nav-label">पेमेंट प्रक्रिया</span>
+            <span class="status-icon">
+                {% if work_master and work_master.payment_completed %}
+                    <i class="fa fa-check-circle completed" title="पूर्ण"></i>
+                {% else %}
+                    <i class="fa fa-clock pending" title="प्रलंबित"></i>
+                {% endif %}
+            </span>
         </a>
     </li>
 
+    <!-- Physical Verification Link -->
     <li>
-        <a href="#" data-tooltip="Physical Verification">
+        <a href="javascript:void(0);" 
+           onclick="showMessage('भौतिक पडताळणी', 'हे पेज अद्याप विकसित केले जात आहे. लवकरच उपलब्ध होईल.')"
+           data-tooltip="Physical Verification">
             <i class="fa fa-search-location"></i>
             <span class="nav-label">भौतिक पडताळणी</span>
+            <span class="status-icon">
+                {% if work_master and work_master.physically_completed %}
+                    <i class="fa fa-check-circle completed" title="पूर्ण"></i>
+                {% else %}
+                    <i class="fa fa-clock pending" title="प्रलंबित"></i>
+                {% endif %}
+            </span>
         </a>
     </li>
 
+    <!-- Success Story Link -->
     <li>
-        <a href="#" data-tooltip="Success Story">
+        <a href="javascript:void(0);" 
+           onclick="showMessage('यशोगाथा', 'हे पेज अद्याप विकसित केले जात आहे. लवकरच उपलब्ध होईल.')"
+           data-tooltip="Success Story">
             <i class="fa fa-star"></i>
             <span class="nav-label">यशोगाथा</span>
+            <span class="status-icon">
+                {% if work_master and work_master.success_story_completed %}
+                    <i class="fa fa-check-circle completed" title="पूर्ण"></i>
+                {% else %}
+                    <i class="fa fa-clock pending" title="प्रलंबित"></i>
+                {% endif %}
+            </span>
         </a>
     </li>
 </ul>
+
+<script>
+// Function to show message when clicking on under-development pages
+function showMessage(pageName, message) {
+    // Check if custom message container exists, if not create it
+    let msgContainer = document.getElementById('custom-message-container');
+    if (!msgContainer) {
+        msgContainer = document.createElement('div');
+        msgContainer.id = 'custom-message-container';
+        msgContainer.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10000;
+            min-width: 350px;
+            max-width: 500px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+            animation: slideDown 0.3s ease-out;
+        `;
+        document.body.appendChild(msgContainer);
+        
+        // Add animation styles if not present
+        if (!document.getElementById('custom-message-styles')) {
+            const style = document.createElement('style');
+            style.id = 'custom-message-styles';
+            style.textContent = `
+                @keyframes slideDown {
+                    from {
+                        opacity: 0;
+                        transform: translate(-50%, -60%);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translate(-50%, -50%);
+                    }
+                }
+                @keyframes fadeOut {
+                    from {
+                        opacity: 1;
+                        transform: translate(-50%, -50%);
+                    }
+                    to {
+                        opacity: 0;
+                        transform: translate(-50%, -40%);
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    }
+    
+    // Create message HTML
+    msgContainer.innerHTML = `
+        <div style="border-left: 5px solid var(--gold);">
+            <div style="background: var(--navy); padding: 15px 20px; color: white; display: flex; align-items: center; gap: 12px;">
+                <i class="fa fa-info-circle" style="font-size: 22px; color: var(--gold);"></i>
+                <div>
+                    <h4 style="margin: 0; font-size: 16px; font-weight: 700;">${pageName}</h4>
+                    <p style="margin: 5px 0 0 0; font-size: 11px; opacity: 0.8;">सूचना</p>
+                </div>
+            </div>
+            <div style="padding: 20px;">
+                <p style="margin: 0 0 15px 0; font-size: 13px; color: #333; line-height: 1.6;">
+                    <i class="fa fa-clock" style="color: var(--gold); margin-right: 8px;"></i>
+                    ${message}
+                </p>
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button onclick="closeCustomMessage()" 
+                            style="background: var(--gold); color: white; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.2s;">
+                        <i class="fa fa-check"></i> ठीक आहे
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    msgContainer.style.display = 'block';
+    
+    // Auto close after 4 seconds
+    setTimeout(function() {
+        closeCustomMessage();
+    }, 4000);
+}
+
+// Function to close custom message
+function closeCustomMessage() {
+    const msgContainer = document.getElementById('custom-message-container');
+    if (msgContainer) {
+        msgContainer.style.animation = 'fadeOut 0.3s ease-out forwards';
+        setTimeout(function() {
+            msgContainer.style.display = 'none';
+            msgContainer.innerHTML = '';
+        }, 300);
+    }
+}
+
+// Close message when clicking outside
+document.addEventListener('click', function(e) {
+    const msgContainer = document.getElementById('custom-message-container');
+    if (msgContainer && msgContainer.style.display === 'block') {
+        if (!msgContainer.contains(e.target)) {
+            closeCustomMessage();
+        }
+    }
+});
+</script>
+
+

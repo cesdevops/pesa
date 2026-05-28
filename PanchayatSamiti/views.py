@@ -22,12 +22,25 @@ from django.shortcuts import render, redirect
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 
-def PS_Dashboard(request):
 
+
+
+def PS_Dashboard(request):
+    if not request.session['user_type'] == 'PanchayatSamiti':
+        return redirect('Login')
+
+    try:
+        ps = Panchayat_Samiti.objects.get(
+            id=request.session.get('user_id'),
+            status='Active'
+        )
+    except Panchayat_Samiti.DoesNotExist:
+        request.session.flush()
+        return redirect('Login')
 
     context = {
 
-        'user_type': 'Panchayat Samiti'
+        'user_type': 'PanchayatSamiti'
 
     }
 
@@ -38,7 +51,273 @@ def PS_Dashboard(request):
     )
 
 
+# ============================================================
+#  PanchayatSamiti → Kosh Read-Only Views
+#  Add these to PanchayatSamiti/views.py
+# ============================================================
 
+from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib import messages
+from django.core.paginator import Paginator
+
+from PanchayatSamiti.models import Panchayat_Samiti, Panchayat_Samiti_User
+from Kosh.models import (       # adjust app label as needed
+    GramPanchayat, Kosh,
+    Kosh_Bank_Detail, Kosh_Population,
+    Kosh_Total_Population, Kosh_Committee,
+    Kosh_User,
+)
+
+
+# ─────────────────────────────────────────────
+# Helper: get authenticated PS user or redirect
+# ─────────────────────────────────────────────
+def _get_ps_user(request):
+    """
+    Returns (panchayat_samiti_obj, redirect_response).
+    If redirect_response is not None, the caller must return it.
+    """
+    if request.session.get('user_type') != 'PanchayatSamiti':
+        return None, redirect('Login')
+
+    try:
+        ps = Panchayat_Samiti.objects.get(
+            id=request.session.get('user_id'),
+            status='Active'
+        )
+        return ps, None
+    except Panchayat_Samiti.DoesNotExist:
+        request.session.flush()
+        return None, redirect('Login')
+
+
+# ─────────────────────────────────────────────
+# 1. GramPanchayat List  (read-only)
+# ─────────────────────────────────────────────
+def PS_GramPanchayat_List(request):
+    ps, redir = _get_ps_user(request)
+    if redir:
+        return redir
+
+    # Base queryset – only GPs under this PS
+    gp_qs = GramPanchayat.objects.filter(
+        panchayat_samiti=ps,
+        is_deleted=False,
+        status='Active',
+    ).order_by('gram_panchayat_name')
+
+    # ── Filters ──
+    search_name = request.GET.get('gram_panchayat_name', '').strip()
+    search_code = request.GET.get('gram_panchayat_code', '').strip()
+    status_filter = request.GET.get('status', 'all')
+
+    if request.GET.get('reset'):
+        search_name = search_code = ''
+        status_filter = 'all'
+
+    if search_name:
+        gp_qs = gp_qs.filter(gram_panchayat_name__icontains=search_name)
+    if search_code:
+        gp_qs = gp_qs.filter(gram_panchayat_code__icontains=search_code)
+    if status_filter == 'active':
+        gp_qs = gp_qs.filter(status='Active')
+    elif status_filter == 'inactive':
+        gp_qs = gp_qs.filter(status='Inactive')
+
+    total_count    = GramPanchayat.objects.filter(panchayat_samiti=ps, is_deleted=False).count()
+    active_count   = GramPanchayat.objects.filter(panchayat_samiti=ps, is_deleted=False, status='Active').count()
+    filtered_count = gp_qs.count()
+
+    paginator = Paginator(gp_qs, 15)
+    page      = paginator.get_page(request.GET.get('page', 1))
+    start_idx = (page.number - 1) * paginator.per_page + 1
+
+    return render(request, 'PS-GramPanchayat-List.html', {
+        'ps': ps,
+        'user_type': 'PanchayatSamiti',
+        'gp_list': page,
+        'total_count': total_count,
+        'active_count': active_count,
+        'filtered_count': filtered_count,
+        'start_index': start_idx,
+        'search_name': search_name,
+        'search_code': search_code,
+        'status_filter': status_filter,
+    })
+
+
+# ─────────────────────────────────────────────
+# 2. Kosh List for a GramPanchayat  (read-only)
+# ─────────────────────────────────────────────
+def PS_Kosh_List(request, gp_id):
+    ps, redir = _get_ps_user(request)
+    if redir:
+        return redir
+
+    gram_panchayat = get_object_or_404(
+        GramPanchayat,
+        id=gp_id,
+        panchayat_samiti=ps,
+        is_deleted=False,
+        status='Active',
+    )
+
+    kosh_qs = Kosh.objects.filter(
+        grampanchayat=gram_panchayat,
+        is_deleted=False,
+        status='Active',
+    ).order_by('kosh_name')
+
+    # ── Filters ──
+    search_name   = request.GET.get('kosh_name', '').strip()
+    search_code   = request.GET.get('kosh_code', '').strip()
+    status_filter = request.GET.get('status', 'all')
+
+    if request.GET.get('reset'):
+        search_name = search_code = ''
+        status_filter = 'all'
+
+    if search_name:
+        kosh_qs = kosh_qs.filter(kosh_name__icontains=search_name)
+    if search_code:
+        kosh_qs = kosh_qs.filter(kosh_code__icontains=search_code)
+    if status_filter == 'active':
+        kosh_qs = kosh_qs.filter(status='Active')
+    elif status_filter == 'inactive':
+        kosh_qs = kosh_qs.filter(status='Inactive')
+    elif status_filter == 'closed':
+        kosh_qs = kosh_qs.filter(status='Closed')
+
+    total_count    = Kosh.objects.filter(grampanchayat=gram_panchayat, is_deleted=False).count()
+    active_count   = Kosh.objects.filter(grampanchayat=gram_panchayat, is_deleted=False, status='Active').count()
+    filtered_count = kosh_qs.count()
+
+    paginator = Paginator(kosh_qs, 15)
+    page      = paginator.get_page(request.GET.get('page', 1))
+    start_idx = (page.number - 1) * paginator.per_page + 1
+
+    return render(request, 'PS-Kosh-List.html', {
+        'ps': ps,
+        'user_type': 'PanchayatSamiti',
+        'gram_panchayat': gram_panchayat,
+        'kosh_list': page,
+        'total_count': total_count,
+        'active_count': active_count,
+        'filtered_count': filtered_count,
+        'start_index': start_idx,
+        'search_name': search_name,
+        'search_code': search_code,
+        'status_filter': status_filter,
+    })
+
+
+# ─────────────────────────────────────────────
+# 3. Kosh Detail  (read-only)
+# ─────────────────────────────────────────────
+def PS_Kosh_Detail(request, gp_id, kosh_id):
+    ps, redir = _get_ps_user(request)
+    if redir:
+        return redir
+
+    gram_panchayat = get_object_or_404(
+        GramPanchayat,
+        id=gp_id,
+        panchayat_samiti=ps,
+        is_deleted=False,
+        status='Active',
+    )
+
+    kosh = get_object_or_404(
+        Kosh,
+        id=kosh_id,
+        grampanchayat=gram_panchayat,
+        is_deleted=False,
+        status='Active',
+    )
+
+    bank_details    = Kosh_Bank_Detail.objects.filter(kosh=kosh).order_by('-id')
+    populations     = Kosh_Population.objects.filter(kosh=kosh).select_related('cast_category', 'financial_year').order_by('-id')
+    total_pops      = Kosh_Total_Population.objects.filter(kosh=kosh).select_related('financial_year').order_by('-id')
+    committee_members = Kosh_Committee.objects.filter(kosh=kosh).order_by('role', 'name')
+
+    return render(request, 'PS-Kosh-Detail.html', {
+        'ps': ps,
+        'user_type': 'PanchayatSamiti',
+        'gram_panchayat': gram_panchayat,
+        'kosh': kosh,
+        'bank_details': bank_details,
+        'populations': populations,
+        'total_pops': total_pops,
+        'committee_members': committee_members,
+    })
+
+
+# ─────────────────────────────────────────────
+# 4. Kosh Users List  (read-only)
+# ─────────────────────────────────────────────
+def PS_Kosh_Users(request, gp_id):
+    ps, redir = _get_ps_user(request)
+    if redir:
+        return redir
+
+    gram_panchayat = get_object_or_404(
+        GramPanchayat,
+        id=gp_id,
+        panchayat_samiti=ps,
+        is_deleted=False,
+        status='Active',
+    )
+
+    # All Kosh under this GP
+    kosh_ids = Kosh.objects.filter(
+        grampanchayat=gram_panchayat,
+        is_deleted=False,
+        status='Active',
+    ).values_list('id', flat=True)
+
+    user_qs = Kosh_User.objects.filter(
+        kosh__id__in=kosh_ids,
+        is_retired=False,
+        status='Active',
+    ).distinct().prefetch_related('kosh')
+
+    # ── Filters ──
+    search_name   = request.GET.get('user_name', '').strip()
+    search_mobile = request.GET.get('mobile', '').strip()
+    status_filter = request.GET.get('status', 'all')
+
+    if request.GET.get('reset'):
+        search_name = search_mobile = ''
+        status_filter = 'all'
+
+    if search_name:
+        user_qs = user_qs.filter(name__icontains=search_name)
+    if search_mobile:
+        user_qs = user_qs.filter(mobile__icontains=search_mobile)
+    if status_filter == 'active':
+        user_qs = user_qs.filter(status='Active')
+    elif status_filter == 'inactive':
+        user_qs = user_qs.filter(status='Inactive')
+
+    total_count    = user_qs.count()
+    filtered_count = total_count  # same since filters applied above
+
+    paginator = Paginator(user_qs, 15)
+    page      = paginator.get_page(request.GET.get('page', 1))
+    start_idx = (page.number - 1) * paginator.per_page + 1
+
+    return render(request, 'PS-Kosh-Users.html', {
+        'ps': ps,
+        'user_type': 'PanchayatSamiti',
+        'gram_panchayat': gram_panchayat,
+        'user_list': page,
+        'total_count': total_count,
+        'filtered_count': filtered_count,
+        'start_index': start_idx,
+        'search_name': search_name,
+        'search_mobile': search_mobile,
+        'status_filter': status_filter,
+    })
 
 
 ################################### Superuser Management ####################################

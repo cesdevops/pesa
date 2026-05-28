@@ -1,0 +1,180 @@
+{% extends 'Base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+/* ── shared page styles ─────────────────────────── */
+.ps-page { padding: 28px; }
+
+.ps-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:14px; }
+.ps-header-left h1 { font-size:20px; font-weight:600; color:#0B1628; letter-spacing:-0.02em; }
+.ps-header-left p  { font-size:13px; color:#8A97A8; margin-top:4px; }
+
+.ps-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:22px; }
+.ps-stat  { background:#fff; border:1px solid rgba(0,0,0,.08); border-radius:14px; padding:16px 18px; box-shadow:0 1px 3px rgba(0,0,0,.07); }
+.ps-stat .st-label { font-size:12px; color:#8A97A8; font-weight:500; margin-bottom:6px; }
+.ps-stat .st-val   { font-size:24px; font-weight:600; color:#0B1628; letter-spacing:-0.02em; }
+
+/* Filter bar */
+.ps-filter { background:#fff; border:1px solid rgba(0,0,0,.08); border-radius:14px; padding:14px 16px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:18px; box-shadow:0 1px 3px rgba(0,0,0,.07); }
+.ps-filter input, .ps-filter select { border:1px solid rgba(0,0,0,.12); border-radius:10px; padding:7px 12px; font-size:13px; font-family:inherit; color:#0B1628; background:#F6F8FA; outline:none; transition:border-color .15s; }
+.ps-filter input:focus, .ps-filter select:focus { border-color:#e67e00; background:#fff; }
+.ps-filter input { flex:1; min-width:160px; }
+.btn-filter  { background:#e67e00; color:#fff; border:none; border-radius:10px; padding:7px 16px; font-size:13px; font-weight:500; cursor:pointer; font-family:inherit; transition:background .15s; }
+.btn-filter:hover { background:#0d2b45; }
+.btn-clear   { background:#fff; color:#4A5568; border:1px solid rgba(0,0,0,.12); border-radius:10px; padding:7px 14px; font-size:13px; cursor:pointer; font-family:inherit; text-decoration:none; display:inline-flex; align-items:center; }
+.btn-clear:hover { background:#F6F8FA; }
+
+/* Table card */
+.ps-table-card { background:#fff; border:1px solid rgba(0,0,0,.08); border-radius:14px; box-shadow:0 1px 3px rgba(0,0,0,.07); overflow:hidden; }
+.ps-table-head { display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid rgba(0,0,0,.08); }
+.ps-table-head .th-title { font-size:14px; font-weight:600; color:#0B1628; }
+.ps-table-head .th-count { font-size:12px; color:#8A97A8; }
+
+table { width:100%; border-collapse:collapse; }
+thead tr { background:#F6F8FA; }
+thead th { text-align:left; font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:#8A97A8; padding:10px 16px; border-bottom:1px solid rgba(0,0,0,.08); }
+tbody tr { border-bottom:1px solid rgba(0,0,0,.06); transition:background .1s; }
+tbody tr:last-child { border-bottom:none; }
+tbody tr:hover { background:#F6F8FA; }
+tbody td { padding:12px 16px; font-size:13px; color:#0B1628; vertical-align:middle; }
+
+.badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:99px; font-size:11px; font-weight:600; letter-spacing:.03em; }
+.badge-active   { background:#E1F5EE; color:#085041; border:1px solid #9FE1CB; }
+.badge-inactive { background:#F7FAFC; color:#8A97A8; border:1px solid rgba(0,0,0,.1); }
+
+.btn-view { display:inline-flex; align-items:center; gap:5px; padding:5px 14px; border-radius:8px; font-size:12px; font-weight:500; background:#EBF4FF; color:#2B6CB0; border:1px solid #BEE3F8; text-decoration:none; transition:all .13s; }
+.btn-view:hover { background:#2B6CB0; color:#fff; }
+
+/* Pagination */
+.ps-pagination { display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-top:1px solid rgba(0,0,0,.08); flex-wrap:wrap; gap:10px; }
+.pg-info { font-size:12px; color:#8A97A8; }
+.pg-links { display:flex; gap:5px; }
+.pg-links a, .pg-links span { display:inline-flex; align-items:center; justify-content:center; min-width:30px; height:30px; padding:0 8px; border-radius:8px; font-size:12px; font-weight:500; text-decoration:none; border:1px solid rgba(0,0,0,.1); color:#4A5568; transition:all .12s; }
+.pg-links a:hover { background:#F6F8FA; }
+.pg-links .current { background:#e67e00; color:#fff; border-color:#e67e00; }
+.pg-links .disabled { opacity:.4; pointer-events:none; }
+
+.ps-empty { text-align:center; padding:48px 20px; color:#8A97A8; }
+.ps-empty i { font-size:36px; margin-bottom:12px; display:block; opacity:.4; }
+.ps-empty p { font-size:14px; }
+
+/* read-only notice */
+.ro-badge { display:inline-flex; align-items:center; gap:5px; background:#FFFFF0; border:1px solid #ECC94B; color:#744210; border-radius:8px; padding:5px 12px; font-size:12px; font-weight:500; }
+</style>
+
+<div class="ps-page">
+
+  <!-- Stats -->
+  <div class="ps-stats">
+    <div class="ps-stat">
+      <div class="st-label">एकूण ग्रामपंचायत</div>
+      <div class="st-val">{{ total_count }}</div>
+    </div>
+    <div class="ps-stat">
+      <div class="st-label">सक्रिय</div>
+      <div class="st-val">{{ active_count }}</div>
+    </div>
+    <div class="ps-stat">
+      <div class="st-label">फिल्टर निकाल</div>
+      <div class="st-val">{{ filtered_count }}</div>
+    </div>
+  </div>
+
+  <!-- Filter -->
+  <form method="GET" class="ps-filter">
+    <input type="text" name="gram_panchayat_name" value="{{ search_name }}" placeholder="ग्रामपंचायत नाव शोधा...">
+    <input type="text" name="gram_panchayat_code" value="{{ search_code }}" placeholder="कोड..." style="flex:0 0 140px;">
+    <select name="status">
+      <option value="all"      {% if status_filter == 'all'      %}selected{% endif %}>सर्व स्थिती</option>
+      <option value="active"   {% if status_filter == 'active'   %}selected{% endif %}>सक्रिय</option>
+      <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>निष्क्रिय</option>
+    </select>
+    <button type="submit" class="btn-filter"><i class="fas fa-search" style="margin-right:5px;"></i>शोधा</button>
+    <a href="{% url 'PS-GramPanchayat-List' %}?reset=1" class="btn-clear"><i class="fas fa-undo-alt" style="margin-right:5px;"></i>रीसेट</a>
+  </form>
+
+  <!-- Table -->
+  <div class="ps-table-card">
+    <div class="ps-table-head">
+      <span class="th-title">ग्रामपंचायत</span>
+      <span class="th-count">{{ filtered_count }} दाखवत आहे</span>
+    </div>
+
+    {% if gp_list %}
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>ग्रामपंचायत नाव</th>
+          <th>पंचायत समिती</th>
+          <th>कोड</th>
+          <th>पत्ता</th>
+          <th>स्थिती</th>
+          <th>कोष</th>
+          <th>यूजर</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for gp in gp_list %}
+        <tr>
+          <td style="color:#8A97A8;font-size:12px;">{{ forloop.counter0|add:start_index }}</td>
+          <td style="font-weight:600;">{{ gp.gram_panchayat_name|default:"—" }}</td>
+          <td>{{ gp.panchayat_samiti.panchayat_samiti_name|default:"—" }}</td>
+          <td><code style="background:#F6F8FA;padding:2px 8px;border-radius:6px;font-size:12px;">{{ gp.gram_panchayat_code|default:"—" }}</code></td>
+          <td style="color:#4A5568;">{{ gp.address|default:"—"|truncatechars:40 }}</td>
+          <td>
+            {% if gp.status == 'Active' %}
+              <span class="badge badge-active"><i class="fas fa-circle" style="font-size:8px;margin-right:4px;"></i>सक्रिय</span>
+            {% else %}
+              <span class="badge badge-inactive"><i class="fas fa-circle" style="font-size:8px;margin-right:4px;"></i>निष्क्रिय</span>
+            {% endif %}
+          </td>
+          <td>
+            <a href="{% url 'PS-Kosh-List' gp.id %}" class="btn-view">
+              <i class="fas fa-database"></i> कोष पाहा
+            </a>
+          </td>
+          <td>
+            <a href="{% url 'PS-Kosh-Users' gp.id %}" class="btn-view">
+              <i class="fas fa-users"></i> यूजर पाहा
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% if gp_list.has_other_pages %}
+    <div class="ps-pagination">
+      <span class="pg-info">पान {{ gp_list.number }} / {{ gp_list.paginator.num_pages }}</span>
+      <div class="pg-links">
+        {% if gp_list.has_previous %}
+          <a href="?page={{ gp_list.previous_page_number }}&gram_panchayat_name={{ search_name }}&gram_panchayat_code={{ search_code }}&status={{ status_filter }}">‹</a>
+        {% else %}<span class="disabled">‹</span>{% endif %}
+
+        {% for i in gp_list.paginator.page_range %}
+          {% if gp_list.number == i %}
+            <span class="current">{{ i }}</span>
+          {% elif i >= gp_list.number|add:"-2" and i <= gp_list.number|add:"2" %}
+            <a href="?page={{ i }}&gram_panchayat_name={{ search_name }}&gram_panchayat_code={{ search_code }}&status={{ status_filter }}">{{ i }}</a>
+          {% endif %}
+        {% endfor %}
+
+        {% if gp_list.has_next %}
+          <a href="?page={{ gp_list.next_page_number }}&gram_panchayat_name={{ search_name }}&gram_panchayat_code={{ search_code }}&status={{ status_filter }}">›</a>
+        {% else %}<span class="disabled">›</span>{% endif %}
+      </div>
+      <span class="pg-info">एकूण {{ gp_list.paginator.count }}</span>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="ps-empty">
+      <i class="fas fa-building"></i>
+      <p>कोणतीही ग्रामपंचायत आढळली नाही.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

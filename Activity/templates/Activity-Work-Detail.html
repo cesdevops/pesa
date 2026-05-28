@@ -1,0 +1,303 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+.wd-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+.wd-header h2 {
+    font-family: 'Noto Serif Devanagari', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.wd-header h2 i { color: var(--gold); font-size: 14px; }
+.wd-header p {
+    font-size: 11px;
+    color: var(--muted);
+    margin: 2px 0 0 22px;
+}
+
+.wd-card {
+    background: #fff;
+    border: 1px solid var(--gray2);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(13,43,69,.07);
+    margin-bottom: 14px;
+}
+.wd-card-header {
+    background: var(--navy);
+    padding: 9px 14px;
+    border-bottom: 2px solid var(--gold);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.wd-card-header i  { color: var(--gold); font-size: 13px; }
+.wd-card-header span {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    font-family: 'Noto Serif Devanagari', serif;
+}
+
+.wd-body { padding: 16px; }
+
+.wd-section-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--navy3);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    border-bottom: 1px solid var(--gray2);
+    padding-bottom: 5px;
+    margin: 0 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.wd-section-label i { color: var(--gold); font-size: 11px; }
+
+.wd-divider {
+    height: 1px;
+    background: var(--gray2);
+    margin: 2px 0 14px;
+}
+
+.wd-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 14px;
+    font-size: 12.5px;
+    border: 1px solid var(--gray2);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.wd-table tr {
+    border-bottom: 1px solid var(--gray2);
+}
+.wd-table tr:last-child {
+    border-bottom: none;
+}
+.wd-key {
+    width: 20%;
+    padding: 9px 12px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    background: var(--gray1);
+    border-right: 1px solid var(--gray2);
+    white-space: nowrap;
+    vertical-align: middle;
+}
+.wd-val {
+    padding: 9px 14px;
+    color: var(--text);
+    font-size: 13px;
+    vertical-align: middle;
+    border-right: 1px solid var(--gray2);
+}
+.wd-val:last-child {
+    border-right: none;
+}
+.wd-val.amount {
+    font-weight: 700;
+    color: var(--navy3);
+    font-size: 14px;
+}
+.wd-val.empty {
+    color: var(--muted);
+    font-style: italic;
+    font-size: 11.5px;
+}
+
+/* Status badge */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11.5px;
+    font-weight: 700;
+}
+.status-badge.planning  { background: #e8f4fd; color: #1565c0; border: 1px solid #90caf9; }
+.status-badge.active    { background: #e8f5e9; color: #1e7e34; border: 1px solid #a5d6a7; }
+.status-badge.completed { background: #e8f5e9; color: #1e7e34; border: 1px solid #a5d6a7; }
+.status-badge.on_hold   { background: #fff8e1; color: #7d5a00; border: 1px solid #ffe082; }
+.status-badge.cancelled { background: #fdecea; color: #7f1d1d; border: 1px solid #ef9a9a; }
+
+.wd-meta-bar {
+    background: #f7f9fb;
+    border-top: 1px solid var(--gray2);
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    font-size: 10.5px;
+    color: var(--muted);
+}
+.wd-meta-bar span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.wd-meta-bar i { color: var(--navy3); font-size: 10px; }
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 16px;
+    font-size: 12.5px;
+    font-weight: 600;
+    font-family: inherit;
+    border-radius: 4px;
+    border: 1px solid var(--gray2);
+    background: #fff;
+    color: var(--muted);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all .15s;
+}
+.back-btn:hover { background: var(--gray1); color: var(--navy); }
+</style>
+
+<!-- ── Page Header ── -->
+<div class="wd-header">
+    <div>
+        <h2>
+            <i class="fa fa-info-circle"></i>
+            काम माहिती
+        </h2>
+        <p>Work ID: #{{ work_master.id }} &nbsp;|&nbsp; {{ work_master.work_name }}</p>
+    </div>
+    <a href="{% url 'Activity-Work-Master' %}" class="back-btn">
+        <i class="fa fa-arrow-left"></i> परत जा
+    </a>
+</div>
+
+<!-- ── Main Card ── -->
+<div class="wd-card">
+
+    <div class="wd-card-header">
+        <i class="fa fa-file-alt"></i>
+        <span>Work Master — संपूर्ण माहिती</span>
+    </div>
+
+    <div class="wd-body">
+
+        <!-- Section 1: Fund & Kosh -->
+        <div class="wd-section-label">
+            <i class="fa fa-wallet"></i> निधी व कोश माहिती
+        </div>
+        <table class="wd-table">
+            <tr>
+                <td class="wd-key">निवडलेला कोश</td>
+                <td class="wd-val">{{ work_master.kosh_fund_allocation.kosh.kosh_name|default:"—" }}</td>
+                <td class="wd-key">कोश कोड</td>
+                <td class="wd-val">{{ work_master.kosh_fund_allocation.kosh.kosh_code|default:"—" }}</td>
+            </tr>
+            <tr>
+                <td class="wd-key">एकूण स्थिती</td>
+                <td class="wd-val" colspan="3">
+                    {% with s=work_master.overall_status %}
+                    <span class="status-badge {{ s }}">
+                        {% if s == 'planning' %}
+                            <i class="fa fa-drafting-compass"></i> Planning
+                        {% elif s == 'active' %}
+                            <i class="fa fa-play-circle"></i> Active
+                        {% elif s == 'completed' %}
+                            <i class="fa fa-check-circle"></i> Completed
+                        {% elif s == 'on_hold' %}
+                            <i class="fa fa-pause-circle"></i> On Hold
+                        {% elif s == 'cancelled' %}
+                            <i class="fa fa-times-circle"></i> Cancelled
+                        {% else %}
+                            {{ s }}
+                        {% endif %}
+                    </span>
+                    {% endwith %}
+                </td>
+            </tr>
+        </table>
+
+        <div class="wd-divider"></div>
+
+        <!-- Section 2: Work Basic Info -->
+        <div class="wd-section-label">
+            <i class="fa fa-briefcase"></i> कामाची मूलभूत माहिती
+        </div>
+        <table class="wd-table">
+            <tr>
+                <td class="wd-key">काम नाव</td>
+                <td class="wd-val">{{ work_master.work_name|default:"—" }}</td>
+                <td class="wd-key">काम कोड</td>
+                <td class="wd-val {% if not work_master.work_code %}empty{% endif %}">
+                    {{ work_master.work_code|default:"नमूद नाही" }}
+                </td>
+            </tr>
+            <tr>
+                <td class="wd-key">काम ठिकाण</td>
+                <td class="wd-val {% if not work_master.work_location %}empty{% endif %}" colspan="3">
+                    {{ work_master.work_location|default:"नमूद नाही" }}
+                </td>
+            </tr>
+            <tr>
+                <td class="wd-key">काम वर्णन</td>
+                <td class="wd-val {% if not work_master.work_description %}empty{% endif %}" colspan="3"
+                    style="line-height:1.7;">
+                    {{ work_master.work_description|default:"नमूद नाही" }}
+                </td>
+            </tr>
+        </table>
+
+        <div class="wd-divider"></div>
+
+        <!-- Section 3: Financial -->
+        <div class="wd-section-label">
+            <i class="fa fa-rupee-sign"></i> आर्थिक माहिती
+        </div>
+        <table class="wd-table">
+            <tr>
+                <td class="wd-key">अंदाजित रक्कम ₹</td>
+                <td class="wd-val amount">₹ {{ work_master.estimated_amount|default:"0.00" }}</td>
+                <td class="wd-key">मंजूर रक्कम ₹</td>
+                <td class="wd-val amount">₹ {{ work_master.approved_amount|default:"0.00" }}</td>
+            </tr>
+        </table>
+
+    </div><!-- /wd-body -->
+
+    <!-- Meta bar -->
+    <div class="wd-meta-bar">
+        <span>
+            <i class="fa fa-user"></i>
+            तयार केले: {{ work_master.created_by.name|default:"—" }}
+        </span>
+        <span>
+            <i class="fa fa-calendar-alt"></i>
+            तारीख: {{ work_master.created_at|date:"d M Y, H:i"|default:"—" }}
+        </span>
+        <span>
+            <i class="fa fa-edit"></i>
+            अद्यतनित: {{ work_master.updated_at|date:"d M Y, H:i"|default:"—" }}
+        </span>
+    </div>
+
+</div><!-- /wd-card -->
+
+{% endblock %}

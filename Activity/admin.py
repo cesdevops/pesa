@@ -183,9 +183,7 @@ class WorkInProgressInline(admin.StackedInline):
         ('Planning', {
             'fields': ('delay_reason', 'next_work_plan', 'remarks')
         }),
-        ('Status', {
-            'fields': ('status',)
-        }),
+
         ('Documents', {
             'fields': ('progress_photo_1', 'progress_photo_2', 'progress_photo_3',
                       'inspection_report_document', 'milestone_report_document', 'other_document')
@@ -406,14 +404,78 @@ class WorkStartAdmin(admin.ModelAdmin):
 
 @admin.register(Work_In_Progress)
 class WorkInProgressAdmin(admin.ModelAdmin):
-    list_display = ['id', 'progress_title', 'work_master', 'progress_date', 
-                   'status', 'created_at']
-    list_filter = ['status', 'created_at']
-    search_fields = ['progress_title', 'work_master__work_name']
-    list_per_page = 25
-    readonly_fields = ['created_at', 'updated_at']
 
+    list_display = (
+        'id',
+        'work_master',
+        'progress_title',
+        'progress_date',
+        'labour_count',
+        'updated_by',
+        'created_at',
+    )
 
+    list_filter = (
+        'progress_date',
+        'created_at',
+        'updated_at',
+    )
+
+    search_fields = (
+        'progress_title',
+        'work_master__work_title',
+        'completed_work_details',
+        'pending_work_details',
+    )
+
+    readonly_fields = (
+        'created_at',
+        'updated_at',
+    )
+
+    fieldsets = (
+
+        ('Work Information', {
+            'fields': (
+                'work_master',
+                'progress_title',
+                'progress_date',
+            )
+        }),
+
+        ('Progress Details', {
+            'fields': (
+                'completed_work_details',
+                'pending_work_details',
+                'site_inspection_details',
+                'labour_count',
+                'material_used_details',
+                'current_site_status',
+                'delay_reason',
+                'next_work_plan',
+                'remarks',
+            )
+        }),
+
+        ('Documents', {
+            'fields': (
+                'progress_photo_1',
+                'progress_photo_2',
+                'progress_photo_3',
+                'inspection_report_document',
+                'milestone_report_document',
+                'other_document',
+            )
+        }),
+
+        ('System Information', {
+            'fields': (
+                'updated_by',
+                'created_at',
+                'updated_at',
+            )
+        }),
+    )
 @admin.register(Work_Final)
 class WorkFinalAdmin(admin.ModelAdmin):
     list_display = ['id', 'work_master', 'completion_date', 'status', 'created_at']
