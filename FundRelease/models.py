@@ -6,7 +6,7 @@ from ZillaParishad.models import Zilla_Parishad, Zilla_Parishad_User
 class Fund_Release(models.Model):
     financial_year = models.ForeignKey(
         Financial_Year,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         null=True,
         blank=True
     )
@@ -47,14 +47,16 @@ class Kosh_Fund_Allocation(models.Model):
         ('Lapsed', 'Lapsed'),
     )
 
-    fund_release = models.ForeignKey("Fund_Release", on_delete=models.CASCADE, related_name='kosh_fund_allocations')
-    kosh = models.ForeignKey(Kosh, on_delete=models.CASCADE, related_name='fund_allocations')
+    fund_release = models.ForeignKey("Fund_Release", on_delete=models.SET_NULL, related_name='kosh_fund_allocations', null=True,blank=True)
+    kosh = models.ForeignKey(Kosh, on_delete=models.SET_NULL, related_name='fund_allocations', null=True,blank=True)
     allocated_amount = models.DecimalField( max_digits=15, decimal_places=2, default=0)
     released_amount = models.DecimalField( max_digits=15, decimal_places=2, default=0)
     balance_amount = models.DecimalField( max_digits=15,decimal_places=2,default=0)
+    total_lapsed_amount = models.DecimalField( max_digits=15,decimal_places=2,default=0)
     allocated_date = models.DateField()
     status = models.CharField( max_length=30,choices=STATUS_CHOICES, default='Allocated')
     remark = models.TextField(null=True, blank=True)
+    is_fund_given = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -86,7 +88,10 @@ class HeadAllocation(models.Model):
     )
     allocated_amount = models.DecimalField(max_digits=15,decimal_places=2,default=0)
     utilize_amount = models.DecimalField(max_digits=15,decimal_places=2,default=0 )
+    lapsed_amount = models.DecimalField(max_digits=15,decimal_places=2,default=0)
+    freezed_amount = models.DecimalField(max_digits=15,decimal_places=2,default=0)
     remaining_amount = models.DecimalField( max_digits=15,decimal_places=2,default=0 )
+    is_fund_given = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

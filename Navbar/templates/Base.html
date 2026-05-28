@@ -1036,9 +1036,31 @@ body{
         <span class="nav-label">लाभार्थी</span>
     </a>
 </li>
+<li>
+    
+    <a href="{% url 'Kosh-fund-alloted-details' %}" data-tooltip="निधी व्यवस्थापन">
+        
+        <i class="fa fa-money-bill-wave"></i>
+        
+        <span class="nav-label">
+            निधी व्यवस्थापन
+        </span>
 
+    </a>
+    
+</li>
 {% endif %}
 
+{% if request.session.user_type == "ZillaParishad" %}
+<li>
+    <a href="{% url 'ZP-Dashboard' %}"
+       class="{% if request.resolver_match.url_name == 'ZP-Dashboard' %}active{% endif %}"
+       data-tooltip="डॅशबोर्ड">
+
+        <i class="fa fa-tachometer-alt"></i>
+        <span class="nav-label">डॅशबोर्ड</span>
+    </a>
+</li>
 
 <li>
     
@@ -1051,9 +1073,9 @@ body{
         </span>
 
     </a>
-
+    
 </li>
-
+{% endif %}
 
 <li><a href="#" data-tooltip="योजना"><i class="fa fa-tasks"></i><span class="nav-label">योजना</span></a></li>
     </ul>

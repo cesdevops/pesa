@@ -3,266 +3,757 @@
 
 {% block content %}
 
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 <style>
-  /* ──────────────────────────────────────────────────────────────
-     GLOBAL VARIABLES & RESET
-  ────────────────────────────────────────────────────────────── */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --navy: #0d2b45;
-    --navy2: #154360;
-    --navy3: #1a5276;
-    --gold: #e67e00;
-    --gold2: #f39c12;
-    --surface: #F6F8FA;
-    --border: rgba(0,0,0,0.08);
-    --border-md: rgba(0,0,0,0.12);
-    --text-1: #0B1628;
-    --text-2: #4A5568;
-    --text-3: #8A97A8;
-    --white: #ffffff;
-    --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 14px;
-    --shadow-sm: 0 1px 3px rgba(0,0,0,0.07);
-    --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
-    --shadow-lg: 0 12px 40px rgba(0,0,0,0.14);
-    --red: #E53E3E;
-    --green: #085041;
-    --green-bg: #E1F5EE;
-    --green-border: #9FE1CB;
-    --blue: #2B6CB0;
-    --blue-bg: #EBF4FF;
-  }
-  body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--text-1); }
+/* ══════════════════════════════════════════════════════════════
+   VARIABLES & RESET
+══════════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  .km-page { padding: 28px; }
+:root {
+  --navy:         #0d2b45;
+  --navy2:        #154360;
+  --gold:         #e67e00;
+  --gold2:        #f39c12;
+  --gold-light:   #FFF3E0;
+  --surface:      #F6F8FA;
+  --surface2:     #EEF1F5;
+  --border:       rgba(0,0,0,0.07);
+  --border-md:    rgba(0,0,0,0.12);
+  --text-1:       #0B1628;
+  --text-2:       #4A5568;
+  --text-3:       #8A97A8;
+  --white:        #ffffff;
+  --radius-sm:    6px;
+  --radius-md:    10px;
+  --radius-lg:    14px;
+  --radius-xl:    20px;
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.07);
+  --shadow-md:    0 4px 16px rgba(0,0,0,0.10);
+  --shadow-lg:    0 12px 40px rgba(0,0,0,0.15);
+  --shadow-xl:    0 24px 64px rgba(0,0,0,0.18);
+  --red:          #E53E3E;
+  --red-bg:       #FFF5F5;
+  --red-border:   #FED7D7;
+  --green:        #085041;
+  --green-bg:     #E1F5EE;
+  --green-border: #9FE1CB;
+  --blue:         #2B6CB0;
+  --blue-bg:      #EBF4FF;
+  --blue-border:  #BEE3F8;
+  --orange:       #DD6B20;
+  --orange-bg:    #FFFAF0;
+  --orange-border:#FBD38D;
+}
 
-  /* header card */
-  .km-header-card {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 20px 24px;
-    margin-bottom: 20px;
-    box-shadow: var(--shadow-sm);
-  }
-  .km-header-card h1 {
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--text-1);
-    letter-spacing: -0.02em;
-    margin-bottom: 4px;
-  }
-  .km-header-card p {
-    font-size: 13px;
-    color: var(--text-3);
-  }
-  .km-header-card .badge-year {
-    display: inline-block;
-    margin-top: 8px;
-    background: var(--blue-bg);
-    color: var(--blue);
-    padding: 4px 12px;
-    border-radius: 99px;
-    font-size: 12px;
-    font-weight: 500;
-  }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--surface);
+  color: var(--text-1);
+  -webkit-font-smoothing: antialiased;
+}
 
-  /* filter bar */
-  .km-filter-card {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 16px 20px;
-    margin-bottom: 20px;
-    box-shadow: var(--shadow-sm);
-  }
-  .filter-row {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    align-items: flex-end;
-  }
-  .filter-group {
-    flex: 1;
-    min-width: 160px;
-  }
-  .filter-group label {
-    display: block;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--text-3);
-    margin-bottom: 5px;
-  }
-  .filter-group input,
-  .filter-group select {
-    width: 100%;
-    border: 1px solid var(--border-md);
-    border-radius: var(--radius-md);
-    padding: 8px 12px;
-    font-size: 13px;
-    font-family: inherit;
-    color: var(--text-1);
-    background: var(--surface);
-    outline: none;
-    transition: border-color 0.15s;
-  }
-  .filter-group input:focus,
-  .filter-group select:focus {
-    border-color: var(--gold);
-    background: var(--white);
-  }
-  .km-filter-btn {
-    background: var(--gold);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius-md);
-    padding: 8px 20px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    font-family: inherit;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: background 0.15s;
-    margin-bottom: 0;
-  }
-  .km-filter-btn:hover {
-    background: var(--navy);
-  }
+/* ══════════════════════════════════════════════════════════════
+   PAGE WRAPPER
+══════════════════════════════════════════════════════════════ */
+.ac-page { padding: 28px; }
 
-  /* table card */
-  .km-table-card {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-    overflow-x: auto;
-  }
-  .km-table-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 20px;
-    border-bottom: 1px solid var(--border);
-  }
-  .km-table-header .th-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-1);
-  }
-  .km-table-header .th-count {
-    font-size: 12px;
-    color: var(--text-3);
-  }
+/* ══════════════════════════════════════════════════════════════
+   HEADER CARD
+══════════════════════════════════════════════════════════════ */
+.ac-header-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 22px 28px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-    min-width: 1200px;
-  }
-  thead tr {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-  }
-  thead th {
-    text-align: left;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--text-3);
-    padding: 12px 16px;
-    white-space: nowrap;
-  }
-  tbody tr {
-    border-bottom: 1px solid var(--border);
-    transition: background 0.1s;
-  }
-  tbody tr:hover {
-    background: var(--surface);
-  }
-  tbody td {
-    padding: 12px 16px;
-    color: var(--text-1);
-    white-space: nowrap;
-  }
+.ac-header-left h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-1);
+  letter-spacing: -0.025em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
-  /* badges and styling */
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 10px;
-    border-radius: 99px;
-    font-size: 11px;
-    font-weight: 600;
-  }
-  .badge-installment {
-    background: var(--green-bg);
-    color: var(--green);
-    border: 1px solid var(--green-border);
-  }
-  .text-amount {
-    font-weight: 600;
-    color: var(--green);
-    font-family: 'DM Mono', monospace;
-  }
-  .text-amount-small {
-    font-weight: 500;
-    color: var(--text-2);
-    font-family: 'DM Mono', monospace;
-  }
+.ac-header-left h1 .icon-wrap {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  border-radius: var(--radius-md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 15px;
+  flex-shrink: 0;
+}
 
-  /* empty state */
-  .km-empty {
-    text-align: center;
-    padding: 48px 20px;
-    color: var(--text-3);
-  }
-  .km-empty i {
-    font-size: 40px;
-    margin-bottom: 12px;
-    opacity: 0.35;
-  }
-  .km-empty p {
-    font-size: 14px;
-  }
+.ac-header-left p {
+  font-size: 13px;
+  color: var(--text-3);
+  margin-top: 5px;
+  margin-left: 46px;
+}
 
-  @media (max-width: 768px) {
-    .km-page { padding: 16px; }
-    .filter-row { flex-direction: column; }
-    .filter-group { width: 100%; }
-    .km-filter-btn { width: 100%; justify-content: center; }
-  }
+.ac-header-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.hbadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid;
+}
+.hbadge-year     { background: var(--blue-bg); color: var(--blue); border-color: var(--blue-border); }
+.hbadge-order    { background: var(--surface2); color: var(--text-2); border-color: var(--border-md); font-family: 'DM Mono', monospace; }
+.hbadge-amount   { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+.hbadge-install  { background: var(--gold-light); color: var(--orange); border-color: var(--orange-border); }
+
+/* ══════════════════════════════════════════════════════════════
+   FLASH MESSAGES
+══════════════════════════════════════════════════════════════ */
+.ac-messages { margin-bottom: 18px; }
+.ac-msg {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 16px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  border: 1px solid;
+}
+.ac-msg.success { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+.ac-msg.error   { background: var(--red-bg);   color: var(--red);   border-color: var(--red-border); }
+.ac-msg.warning { background: var(--orange-bg);color: var(--orange); border-color: var(--orange-border); }
+
+/* ══════════════════════════════════════════════════════════════
+   FILTER CARD
+══════════════════════════════════════════════════════════════ */
+.ac-filter-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.filter-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.filter-group {
+  flex: 1;
+  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.filter-group label {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-3);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.filter-group input,
+.filter-group select {
+  width: 100%;
+  border: 1px solid var(--border-md);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text-1);
+  background: var(--surface);
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.filter-group input:focus,
+.filter-group select:focus {
+  border-color: var(--gold);
+  background: var(--white);
+}
+
+.btn-filter {
+  background: var(--gold);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 9px 22px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: background 0.15s, transform 0.1s;
+  white-space: nowrap;
+}
+.btn-filter:hover { background: var(--navy); }
+.btn-filter:active { transform: scale(0.97); }
+
+.btn-clear {
+  background: var(--white);
+  color: var(--text-2);
+  border: 1px solid var(--border-md);
+  border-radius: var(--radius-md);
+  padding: 9px 18px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.13s;
+  white-space: nowrap;
+}
+.btn-clear:hover { background: var(--surface); }
+
+/* ══════════════════════════════════════════════════════════════
+   TABLE CARD
+══════════════════════════════════════════════════════════════ */
+.ac-table-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.ac-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ac-table-header .th-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ac-table-header .th-count {
+  font-size: 12px;
+  color: var(--text-3);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.table-scroll { overflow-x: auto; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 1300px;
+}
+
+thead tr { background: var(--surface); }
+
+thead th {
+  text-align: left;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-3);
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+}
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: var(--surface); }
+
+tbody td {
+  padding: 11px 16px;
+  color: var(--text-1);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* status badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid;
+  white-space: nowrap;
+}
+.status-done    { background: var(--green-bg); color: var(--green); border-color: var(--green-border); }
+.status-pending { background: var(--orange-bg); color: var(--orange); border-color: var(--orange-border); }
+.badge-fy       { background: var(--blue-bg); color: var(--blue); border-color: var(--blue-border); padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; border: 1px solid; }
+.badge-inst     { background: var(--green-bg); color: var(--green); border-color: var(--green-border); padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; border: 1px solid; }
+.badge-kosh     { background: var(--surface2); color: var(--text-2); border-color: var(--border-md); padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; border: 1px solid; }
+
+.text-amount     { font-weight: 700; color: var(--green); font-family: 'DM Mono', monospace; font-size: 13px; }
+.text-amount-sm  { font-weight: 500; color: var(--text-2); font-family: 'DM Mono', monospace; font-size: 12px; }
+.text-mono       { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text-2); }
+.text-counter    { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text-3); }
+
+/* head columns */
+.head-col { background: #FAFBFF; }
+
+/* ══════════════════════════════════════════════════════════════
+   EMPTY STATE
+══════════════════════════════════════════════════════════════ */
+.ac-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-3);
+}
+.ac-empty .empty-icon {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  font-size: 26px;
+  opacity: 0.5;
+}
+.ac-empty p { font-size: 14px; }
+.ac-empty small { font-size: 12px; margin-top: 5px; display: block; }
+
+/* ══════════════════════════════════════════════════════════════
+   DISTRIBUTE BAR
+══════════════════════════════════════════════════════════════ */
+.ac-dist-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 18px 22px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.db-info {
+  font-size: 13px;
+  color: var(--text-2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.db-info .db-count {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gold);
+  font-family: 'DM Mono', monospace;
+  line-height: 1;
+}
+.db-info .db-label { font-size: 12px; color: var(--text-3); }
+
+.db-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.db-date-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.db-date-group label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+.db-date-group input[type=date] {
+  border: 1px solid var(--border-md);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  background: var(--white);
+  color: var(--text-1);
+  transition: border-color 0.15s;
+}
+.db-date-group input[type=date]:focus { border-color: var(--gold); }
+
+.btn-allocate {
+  background: linear-gradient(135deg, var(--gold), #d97706);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 10px 26px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.15s;
+  box-shadow: 0 4px 12px rgba(230,126,0,0.35);
+  letter-spacing: 0.01em;
+}
+.btn-allocate:hover {
+  background: linear-gradient(135deg, var(--navy), var(--navy2));
+  box-shadow: 0 4px 12px rgba(13,43,69,0.35);
+  transform: translateY(-1px);
+}
+.btn-allocate:active { transform: translateY(0); }
+
+/* done banner */
+.ac-done-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 22px;
+  border-top: 1px solid var(--green-border);
+  background: var(--green-bg);
+}
+.done-icon-wrap {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--green);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 18px;
+  flex-shrink: 0;
+}
+.done-text strong { font-size: 14px; font-weight: 700; color: var(--green); display: block; }
+.done-text small  { font-size: 12px; color: var(--green); opacity: 0.75; margin-top: 2px; display: block; }
+
+/* warn banner (all done but flag not set) */
+.ac-warn-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 22px;
+  border-top: 1px solid var(--orange-border);
+  background: var(--orange-bg);
+  color: var(--orange);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CONFIRMATION MODAL
+══════════════════════════════════════════════════════════════ */
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  background: rgba(11, 22, 40, 0.55);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-backdrop.open { display: flex; }
+
+.modal-box {
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 460px;
+  box-shadow: var(--shadow-xl);
+  animation: modalIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+}
+
+@keyframes modalIn {
+  from { transform: translateY(20px) scale(0.96); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+
+.modal-top {
+  padding: 32px 28px 24px;
+  text-align: center;
+}
+
+.modal-icon-ring {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold-light), #FFE0B2);
+  border: 3px solid var(--orange-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 18px;
+}
+.modal-icon-ring i { font-size: 26px; color: var(--gold); }
+
+.modal-title {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--text-1);
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+.modal-sub {
+  font-size: 13px;
+  color: var(--text-3);
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+/* summary grid inside modal */
+.modal-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border-md);
+  border: 1px solid var(--border-md);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin: 20px 28px;
+}
+.summary-cell {
+  background: var(--white);
+  padding: 12px 16px;
+}
+.summary-cell .sc-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-3);
+  margin-bottom: 4px;
+}
+.summary-cell .sc-val {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-1);
+  font-family: 'DM Mono', monospace;
+}
+.summary-cell .sc-val.green { color: var(--green); }
+.summary-cell .sc-val.gold  { color: var(--gold); }
+
+/* date picker inside modal */
+.modal-date-row {
+  padding: 0 28px 20px;
+}
+.modal-date-row label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-3);
+  display: block;
+  margin-bottom: 6px;
+}
+.modal-date-row input[type=date] {
+  width: 100%;
+  border: 1px solid var(--border-md);
+  border-radius: var(--radius-md);
+  padding: 9px 14px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text-1);
+  background: var(--surface);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.modal-date-row input[type=date]:focus {
+  border-color: var(--gold);
+  background: var(--white);
+}
+
+/* warning stripe */
+.modal-warning {
+  margin: 0 28px 20px;
+  background: var(--red-bg);
+  border: 1px solid var(--red-border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--red);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* modal footer */
+.modal-footer {
+  display: flex;
+  gap: 10px;
+  padding: 16px 28px 24px;
+}
+.btn-modal-cancel {
+  flex: 1;
+  background: var(--white);
+  border: 1px solid var(--border-md);
+  border-radius: var(--radius-md);
+  padding: 11px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--text-2);
+  transition: background 0.13s;
+}
+.btn-modal-cancel:hover { background: var(--surface); }
+
+.btn-modal-confirm {
+  flex: 2;
+  background: linear-gradient(135deg, var(--gold), #d97706);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 11px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s;
+  box-shadow: 0 4px 12px rgba(230,126,0,0.30);
+}
+.btn-modal-confirm:hover {
+  background: linear-gradient(135deg, var(--navy), var(--navy2));
+}
+.btn-modal-confirm:disabled {
+  background: var(--text-3);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .ac-page { padding: 14px; }
+  .ac-header-card { flex-direction: column; }
+  .filter-row { flex-direction: column; }
+  .filter-group { width: 100%; min-width: 0; }
+  .btn-filter, .btn-clear { justify-content: center; }
+  .ac-dist-bar { flex-direction: column; align-items: flex-start; }
+  .db-right { width: 100%; flex-direction: column; align-items: stretch; }
+  .btn-allocate { justify-content: center; }
+  .modal-summary { grid-template-columns: 1fr; }
+}
 </style>
 
-<div class="km-page">
 
-  <!-- HEADER CARD -->
-  <div class="km-header-card">
-    <h1><i class="fas fa-chart-pie" style="color: var(--gold); margin-right: 8px;"></i> वितरण तक्ता</h1>
-    <p>ग्रामपंचायत आणि कोष समितीनुसार निधी वितरणाचे तपशील पहा</p>
-    <span class="badge-year">
-      <i class="fas fa-calendar-alt" style="margin-right: 5px;"></i> आर्थिक वर्ष: {{ financial_year.year }}
-    </span>
+<div class="ac-page">
+
+  <!-- ═══════════════════════════════════════════
+       HEADER CARD
+  ═══════════════════════════════════════════ -->
+  <div class="ac-header-card">
+    <div class="ac-header-left">
+      <h1>
+        <span class="icon-wrap"><i class="fas fa-chart-pie"></i></span>
+        वितरण तक्ता
+      </h1>
+      <p>ग्रामपंचायत आणि कोष समितीनुसार निधी वितरणाचे तपशील</p>
+    </div>
+    <div class="ac-header-badges">
+      <span class="hbadge hbadge-year">
+        <i class="fas fa-calendar-alt"></i> {{ financial_year }}
+      </span>
+      {% if fund_release %}
+      <span class="hbadge hbadge-order">
+        <i class="fas fa-hashtag"></i> {{ fund_release.release_order_no }}
+      </span>
+      <span class="hbadge hbadge-amount">
+        <i class="fas fa-rupee-sign"></i> {{ fund_release.total_amount }}
+      </span>
+      <span class="hbadge hbadge-install">
+        <i class="fas fa-layer-group"></i> हप्ता {{ fund_release.installment }}
+      </span>
+      {% endif %}
+    </div>
   </div>
 
-  <!-- FILTER CARD -->
-  <div class="km-filter-card">
+  <!-- ═══════════════════════════════════════════
+       FLASH MESSAGES
+  ═══════════════════════════════════════════ -->
+  {% if messages %}
+  <div class="ac-messages">
+    {% for message in messages %}
+    <div class="ac-msg {{ message.tags }}">
+      {% if message.tags == 'success' %}
+        <i class="fas fa-check-circle"></i>
+      {% elif message.tags == 'error' %}
+        <i class="fas fa-exclamation-circle"></i>
+      {% else %}
+        <i class="fas fa-info-circle"></i>
+      {% endif %}
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- ═══════════════════════════════════════════
+       FILTER CARD
+  ═══════════════════════════════════════════ -->
+  <div class="ac-filter-card">
     <form method="GET">
       <div class="filter-row">
+
         <div class="filter-group">
           <label><i class="fas fa-search"></i> शोधा</label>
-          <input type="text" name="search" value="{{ search }}" placeholder="वितरण नाव / आदेश क्र...">
+          <input type="text" name="search" value="{{ search }}"
+                 placeholder="वितरण नाव / आदेश क्रमांक...">
         </div>
+
         <div class="filter-group">
           <label><i class="fas fa-building"></i> कोष</label>
           <select name="kosh">
@@ -272,6 +763,7 @@
             {% endfor %}
           </select>
         </div>
+
         <div class="filter-group">
           <label><i class="fas fa-map-marker-alt"></i> ग्रामपंचायत</label>
           <select name="gram_panchayat">
@@ -281,81 +773,325 @@
             {% endfor %}
           </select>
         </div>
-        <div class="filter-group" style="flex: 0 0 auto;">
+
+        <div class="filter-group" style="flex: 0 0 auto; min-width: 0;">
           <label>&nbsp;</label>
-          <button type="submit" class="km-filter-btn">
-            <i class="fas fa-filter"></i> गाळा
-          </button>
+          <div style="display:flex;gap:8px;">
+            <button type="submit" class="btn-filter">
+              <i class="fas fa-filter"></i> गाळा लावा
+            </button>
+            <a href="?{{ request.GET.urlencode }}" class="btn-clear">
+              <i class="fas fa-undo-alt"></i>
+            </a>
+          </div>
         </div>
+
       </div>
     </form>
   </div>
 
-  <!-- TABLE CARD -->
-  <div class="km-table-card">
-    <div class="km-table-header">
+  <!-- ═══════════════════════════════════════════
+       TABLE CARD
+  ═══════════════════════════════════════════ -->
+  <div class="ac-table-card">
+
+    <div class="ac-table-header">
       <span class="th-title">
-        <i class="fas fa-table" style="margin-right: 6px; color: var(--gold);"></i> वितरण तपशील
+        <i class="fas fa-table" style="color:var(--gold);"></i>
+        वितरण तपशील
       </span>
       <span class="th-count">
-        <i class="fas fa-database"></i> एकूण नोंदी: {{ allocation_data|length }}
+        <i class="fas fa-database"></i>
+        एकूण {{ allocation_data|length }} नोंदी
+        &nbsp;|&nbsp;
+        <span style="color:var(--orange);">
+          <i class="fas fa-clock"></i> {{ pending_count }} प्रतीक्षेत
+        </span>
+        &nbsp;|&nbsp;
+        <span style="color:var(--green);">
+          <i class="fas fa-check-circle"></i> {{ allocated_count }} वाटप झाले
+        </span>
       </span>
     </div>
 
     {% if allocation_data %}
-    <div class="table-responsive">
+
+    <div class="table-scroll">
       <table>
         <thead>
           <tr>
             <th>#</th>
+            <th>स्थिती</th>
             <th>आ.व.</th>
             <th>वितरण नाव</th>
             <th>हप्ता</th>
             <th>आदेश क्रमांक</th>
-            <th>वितरण दिनांक</th>
+            <th>दिनांक</th>
             <th>एकूण रक्कम</th>
             <th>प्रति नागरिक</th>
             <th>ग्रामपंचायत</th>
             <th>कोष</th>
-            <th>कोष लोकसंख्या</th>
+            <th>लोकसंख्या</th>
             <th>कोष रक्कम</th>
             {% for h in all_heads %}
-              <th>{{ h.name }}<br><span style="font-weight:400;">({{ h.percentage }}%)</span></th>
+              <th class="head-col">
+                {{ h.name }}
+                <br><span style="font-weight:400;font-size:10px;">({{ h.percentage }}%)</span>
+              </th>
             {% endfor %}
           </tr>
         </thead>
         <tbody>
           {% for i in allocation_data %}
           <tr>
-            <td style="color: var(--text-3); font-family: 'DM Mono', monospace;">{{ forloop.counter }}</td>
-            <td><span class="badge" style="background: var(--blue-bg); color: var(--blue);">{{ i.financial_year }}</span></td>
-            <td><span class="fw-semibold">{{ i.release_name }}</span></td>
-            <td><span class="badge badge-installment">हप्ता {{ i.installment }}</span></td>
-            <td style="font-family: 'DM Mono', monospace;">{{ i.release_order_no }}</td>
-            <td>{{ i.release_date }}</td>
-            <td class="text-amount">₹ {{ i.total_amount }}</td>
-            <td class="text-amount-small">₹ {{ i.per_citizen_amount }}</td>
-            <td>{{ i.gram_panchayat_name }}</td>
-            <td><span class="badge" style="background: var(--surface); color: var(--text-2); border: 1px solid var(--border);">{{ i.kosh_name }}</span></td>
-            <td style="font-family: 'DM Mono', monospace;">{{ i.kosh_population }}</td>
-            <td class="text-amount">₹ {{ i.kosh_amount }}</td>
+            <td class="text-counter">{{ forloop.counter }}</td>
+
+            <td>
+              {% if i.already_allocated %}
+                <span class="status-badge status-done">
+                  <i class="fas fa-check-circle"></i> वाटप झाले
+                </span>
+              {% else %}
+                <span class="status-badge status-pending">
+                  <i class="fas fa-clock"></i> प्रतीक्षेत
+                </span>
+              {% endif %}
+            </td>
+
+            <td><span class="badge-fy">{{ i.financial_year }}</span></td>
+
+            <td>
+              <strong style="font-size:13px;">{{ i.release_name }}</strong>
+            </td>
+
+            <td>
+              <span class="badge-inst">हप्ता {{ i.installment }}</span>
+            </td>
+
+            <td class="text-mono">{{ i.release_order_no }}</td>
+
+            <td class="text-mono">{{ i.release_date }}</td>
+
+            <td class="text-amount">₹&nbsp;{{ i.total_amount }}</td>
+
+            <td class="text-amount-sm">₹&nbsp;{{ i.per_citizen_amount }}</td>
+
+            <td style="font-size:13px;font-weight:500;">{{ i.gram_panchayat_name }}</td>
+
+            <td><span class="badge-kosh">{{ i.kosh_name }}</span></td>
+
+            <td class="text-mono">{{ i.kosh_population }}</td>
+
+            <td class="text-amount">₹&nbsp;{{ i.kosh_amount }}</td>
+
             {% for v in i.head_values %}
-              <td class="text-amount-small">₹ {{ v }}</td>
+              <td class="text-amount-sm head-col">₹&nbsp;{{ v }}</td>
             {% endfor %}
           </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
-    {% else %}
-    <div class="km-empty">
-      <i class="fas fa-chart-bar"></i>
-      <p>कोणतीही वितरण नोंद सापडली नाही</p>
-      <p style="font-size: 12px; margin-top: 6px;">कृपया आपले शोध किंवा गाळणी निकष बदला</p>
-    </div>
-    {% endif %}
-  </div>
 
+    <!-- ── BOTTOM ACTION ZONE ── -->
+
+    {% if fund_release.fund_distributed %}
+
+      <!-- DONE BANNER — button permanently hidden -->
+      <div class="ac-done-banner">
+        <div class="done-icon-wrap">
+          <i class="fas fa-check"></i>
+        </div>
+        <div class="done-text">
+          <strong>निधी वितरण पूर्ण झाले आहे.</strong>
+          <small>सर्व कोषांना निधी वाटप यशस्वीरित्या केला गेला आहे. आता बदल शक्य नाही.</small>
+        </div>
+      </div>
+
+    {% elif pending_count == 0 %}
+
+      <!-- Edge case: all rows already allocated but flag not yet set -->
+      <div class="ac-warn-banner">
+        <i class="fas fa-info-circle" style="font-size:20px;flex-shrink:0;"></i>
+        <div>
+          <strong>सर्व कोष आधीच वाटप केले गेले आहेत.</strong>
+          <div style="font-size:12px;margin-top:3px;opacity:.8;">
+            नवीन वाटप करण्यासाठी काहीच शिल्लक नाही.
+          </div>
+        </div>
+      </div>
+
+    {% else %}
+
+      <!-- ALLOCATE BAR — shown only when pending kosh exist -->
+      <div class="ac-dist-bar">
+        <div class="db-info">
+          <div>
+            <div class="db-count">{{ pending_count }}</div>
+            <div class="db-label">कोष वाटपासाठी प्रतीक्षेत</div>
+          </div>
+        </div>
+        <div class="db-right">
+          <div class="db-date-group">
+            <label><i class="fas fa-calendar-check"></i> वाटप दिनांक</label>
+            <input type="date" id="alloc_date_picker"
+                   value="{{ fund_release.release_date|date:'Y-m-d' }}">
+          </div>
+          <button type="button" class="btn-allocate" onclick="openConfirmModal()">
+            <i class="fas fa-paper-plane"></i>
+            सर्व कोषांना निधी वाटप करा
+          </button>
+        </div>
+      </div>
+
+    {% endif %}
+
+    {% else %}
+
+    <!-- EMPTY -->
+    <div class="ac-empty">
+      <div class="empty-icon"><i class="fas fa-chart-bar"></i></div>
+      <p>कोणतीही वितरण नोंद सापडली नाही</p>
+      <small>कृपया आपले शोध किंवा गाळणी निकष बदला</small>
+    </div>
+
+    {% endif %}
+
+  </div><!-- /ac-table-card -->
+
+</div><!-- /ac-page -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     CONFIRMATION MODAL
+═══════════════════════════════════════════════════════════ -->
+<div class="modal-backdrop" id="confirmModalBg">
+  <div class="modal-box">
+
+    <div class="modal-top">
+      <div class="modal-icon-ring">
+        <i class="fas fa-paper-plane"></i>
+      </div>
+      <div class="modal-title">निधी वाटप करायचे का?</div>
+      <div class="modal-sub">
+        खालील तपशील तपासा आणि पुष्टी करा.<br>
+        एकदा वाटप केल्यानंतर हे पूर्ववत करता येणार नाही.
+      </div>
+    </div>
+
+    <!-- Summary grid -->
+    <div class="modal-summary">
+      <div class="summary-cell">
+        <div class="sc-label">आर्थिक वर्ष</div>
+        <div class="sc-val">{{ financial_year }}</div>
+      </div>
+      <div class="summary-cell">
+        <div class="sc-label">हप्ता</div>
+        <div class="sc-val">{{ fund_release.installment }}</div>
+      </div>
+      <div class="summary-cell">
+        <div class="sc-label">एकूण कोष</div>
+        <div class="sc-val gold">{{ allocation_data|length }}</div>
+      </div>
+      <div class="summary-cell">
+        <div class="sc-label">वाटप होणार</div>
+        <div class="sc-val green">{{ pending_count }}</div>
+      </div>
+      <div class="summary-cell" style="grid-column: 1 / -1;">
+        <div class="sc-label">एकूण रक्कम</div>
+        <div class="sc-val green" style="font-size:18px;">₹ {{ fund_release.total_amount }}</div>
+      </div>
+    </div>
+
+    <!-- Date picker inside modal -->
+    <div class="modal-date-row">
+      <label><i class="fas fa-calendar-check" style="margin-right:5px;"></i> वाटप दिनांक</label>
+      <input type="date" id="modal_alloc_date"
+             value="{{ fund_release.release_date|date:'Y-m-d' }}">
+    </div>
+
+    <!-- Warning stripe -->
+    <div class="modal-warning">
+      <i class="fas fa-exclamation-triangle" style="flex-shrink:0;"></i>
+      ही क्रिया कायमची आहे. सर्व {{ pending_count }} कोषांना एकाच वेळी निधी वाटप होईल.
+    </div>
+
+    <!-- Hidden POST form — only submitted on confirm click -->
+    <form method="POST"
+          action="{% url 'ZP-Kosh-Fund-Allocation' financial_year zp_id fund_id %}"
+          id="allocConfirmForm">
+      {% csrf_token %}
+      <input type="hidden" name="allocation_date" id="hidden_alloc_date"
+             value="{{ fund_release.release_date|date:'Y-m-d' }}">
+    </form>
+
+    <div class="modal-footer">
+      <button type="button" class="btn-modal-cancel" onclick="closeConfirmModal()">
+        रद्द करा
+      </button>
+      <button type="button" class="btn-modal-confirm"
+              id="confirmSubmitBtn"
+              onclick="submitAllocation()">
+        <i class="fas fa-check"></i> होय, वाटप करा
+      </button>
+    </div>
+
+  </div>
 </div>
+
+
+<script>
+  /* ── Modal open / close ── */
+  function openConfirmModal() {
+    // Sync date from the page-level date picker into the modal date picker
+    const pageDate = document.getElementById('alloc_date_picker');
+    if (pageDate) {
+      document.getElementById('modal_alloc_date').value = pageDate.value;
+    }
+    document.getElementById('confirmModalBg').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeConfirmModal() {
+    document.getElementById('confirmModalBg').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  /* ── Sync modal date into hidden form field + submit ── */
+  function submitAllocation() {
+    const modalDate = document.getElementById('modal_alloc_date').value;
+    if (!modalDate) {
+      alert('कृपया वाटप दिनांक निवडा.');
+      return;
+    }
+
+    document.getElementById('hidden_alloc_date').value = modalDate;
+
+    const btn = document.getElementById('confirmSubmitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> प्रक्रिया सुरू आहे...';
+
+    document.getElementById('allocConfirmForm').submit();
+  }
+
+  /* ── Close on backdrop click ── */
+  document.getElementById('confirmModalBg').addEventListener('click', function(e) {
+    if (e.target === this) closeConfirmModal();
+  });
+
+  /* ── ESC closes modal ── */
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeConfirmModal();
+  });
+
+  /* ── Keep page-level date picker in sync with modal date picker ── */
+  const modalDateInput = document.getElementById('modal_alloc_date');
+  if (modalDateInput) {
+    modalDateInput.addEventListener('change', function() {
+      const pagePicker = document.getElementById('alloc_date_picker');
+      if (pagePicker) pagePicker.value = this.value;
+    });
+  }
+</script>
 
 {% endblock %}
