@@ -27,11 +27,6 @@ class Activity(models.Model):
     def __str__(self):
         return self.activity_name or ''
 
-<<<<<<< HEAD
-
-=======
->>>>>>> main
-# ─────────────────────────────────────────────────────────────
 # WORK MASTER
 # ─────────────────────────────────────────────────────────────
 
@@ -43,11 +38,7 @@ class Work_Master(models.Model):
         ('Cancelled', 'Cancelled'),
     )
 
-<<<<<<< HEAD
     # activity = models.ForeignKey(Activity, on_delete=models.SET_NULL, null=True, blank=True, related_name='work_masters')
-=======
-    activity = models.ForeignKey('Activity', on_delete=models.SET_NULL, null=True, blank=True, related_name='work_masters')
->>>>>>> main
     kosh_fund_allocation = models.ForeignKey(Kosh_Fund_Allocation, on_delete=models.SET_NULL, null=True, blank=True, related_name='work_masters')
 
     # Basic Work Information
@@ -143,11 +134,15 @@ class Administrative_Sanction(models.Model):
         ('Pending', 'Pending'),
         ('Submitted', 'Submitted'),
         ('Approved', 'Approved'),
+        ('Approved', 'Approved'),
         ('Rejected', 'Rejected'),
     )
     work_master = models.ForeignKey('Work_Master', on_delete=models.SET_NULL, related_name='administrative_sanctions', null=True, blank=True)
+    work_master = models.ForeignKey('Work_Master', on_delete=models.SET_NULL, related_name='administrative_sanctions', null=True, blank=True)
     sanction_number = models.CharField(max_length=100, null=True, blank=True)
     department_name = models.CharField(max_length=255, null=True, blank=True)
+    estimated_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
+    approved_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
     estimated_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
     approved_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
     sanction_date = models.DateField(null=True, blank=True)
@@ -169,13 +164,31 @@ class Administrative_Sanction(models.Model):
     created_by = models.ForeignKey(Kosh_User, on_delete=models.SET_NULL, related_name='administrative_sanctions', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Pending', null=True, blank=True)
+    # Documents
+    resolution_document = models.FileField(upload_to='administrative_sanction/resolution/', null=True, blank=True)
+    proposal_document = models.FileField(upload_to='administrative_sanction/proposal/', null=True, blank=True)
+    budget_estimate_document = models.FileField(upload_to='administrative_sanction/budget/', null=True, blank=True)
+    approval_letter_document = models.FileField(upload_to='administrative_sanction/approval/', null=True, blank=True)
+    other_document = models.FileField(upload_to='administrative_sanction/other/', null=True, blank=True)
+    # System Fields
+    created_by = models.ForeignKey(Kosh_User, on_delete=models.SET_NULL, related_name='administrative_sanctions', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     class Meta:
         ordering = ['-id']
         verbose_name = "Administrative Sanction"
         verbose_name_plural = "1.Administrative Sanctions"
+        verbose_name_plural = "1.Administrative Sanctions"
 
     def __str__(self):
+        return f"{self.sanction_number or ''} - {self.work_master}"
+
+
+# ─────────────────────────────────────────────────────────────
+# STAGE 2 — TECHNICAL SANCTION
+# ─────────────────────────────────────────────────────────────
         return f"{self.sanction_number or ''} - {self.work_master}"
 
 
@@ -200,6 +213,7 @@ class Technical_Sanction(models.Model):
         ('Other', 'Other'),
     )
     work_master = models.ForeignKey('Work_Master', on_delete=models.SET_NULL, related_name='technical_sanctions', null=True, blank=True)
+    work_master = models.ForeignKey('Work_Master', on_delete=models.SET_NULL, related_name='technical_sanctions', null=True, blank=True)
     technical_sanction_number = models.CharField(max_length=100, null=True, blank=True)
     sanction_date = models.DateField(null=True, blank=True)
     technical_category = models.CharField(max_length=100, choices=CATEGORY_CHOICES, null=True, blank=True)
@@ -223,16 +237,87 @@ class Technical_Sanction(models.Model):
     approval_letter_document = models.FileField(upload_to='technical_sanction/approval/', null=True, blank=True)
     other_document = models.FileField(upload_to='technical_sanction/other/', null=True, blank=True)
     # System Fields
+    # Documents
+    technical_estimate_document = models.FileField(upload_to='technical_sanction/estimate/', null=True, blank=True)
+    site_inspection_document = models.FileField(upload_to='technical_sanction/inspection/', null=True, blank=True)
+    engineer_report_document = models.FileField(upload_to='technical_sanction/engineer/', null=True, blank=True)
+    drawing_plan_document = models.FileField(upload_to='technical_sanction/drawing/', null=True, blank=True)
+    approval_letter_document = models.FileField(upload_to='technical_sanction/approval/', null=True, blank=True)
+    other_document = models.FileField(upload_to='technical_sanction/other/', null=True, blank=True)
+    # System Fields
     created_by = models.ForeignKey(Kosh_User, on_delete=models.SET_NULL, related_name='technical_sanctions', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
 
     class Meta:
         ordering = ['-id']
         verbose_name = "Technical Sanction"
         verbose_name_plural = "2.Technical Sanctions"
+        verbose_name_plural = "2.Technical Sanctions"
 
     def __str__(self):
+        return f"{self.technical_sanction_number or ''} - {self.work_master}"
+
+
+# ─────────────────────────────────────────────────────────────
+# STAGE 3 — QUOTATION / B1 / TENDER
+# ─────────────────────────────────────────────────────────────
+
+class Quotation_Tender(models.Model):
+    STATUS_CHOICES = (
+        ('Pending', 'Pending'),
+        ('Quotation Process', 'Quotation Process'),
+        ('B1 Process', 'B1 Process'),
+        ('Tender Process', 'Tender Process'),
+        ('Contractor Finalized', 'Contractor Finalized'),
+        ('Approved', 'Approved'),
+        ('Rejected', 'Rejected'),
+    )
+    PROCESS_TYPE_CHOICES = (
+        ('Quotation', 'Quotation'),
+        ('B1', 'B1'),
+        ('Tender', 'Tender'),
+    )
+    work_master = models.ForeignKey('Work_Master', on_delete=models.SET_NULL, related_name='quotation_tenders', null=True, blank=True)
+    process_type = models.CharField(max_length=50, choices=PROCESS_TYPE_CHOICES, null=True, blank=True)
+    process_number = models.CharField(max_length=100, null=True, blank=True)
+    process_date = models.DateField(null=True, blank=True)
+    work_name = models.CharField(max_length=255, null=True, blank=True)
+    work_description = models.TextField(null=True, blank=True)
+    estimated_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
+    finalized_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
+    vendor_name = models.CharField(max_length=255, null=True, blank=True)
+    contractor_name = models.CharField(max_length=255, null=True, blank=True)
+    contractor_mobile = models.CharField(max_length=20, null=True, blank=True)
+    contractor_address = models.TextField(null=True, blank=True)
+    comparative_analysis = models.TextField(null=True, blank=True)
+    selection_reason = models.TextField(null=True, blank=True)
+    remarks = models.TextField(null=True, blank=True)
+    status = models.CharField(max_length=100, choices=STATUS_CHOICES, default='Pending', null=True, blank=True)
+    # Documents
+    quotation_form_document = models.FileField(upload_to='quotation_tender/quotation/', null=True, blank=True)
+    comparative_statement_document = models.FileField(upload_to='quotation_tender/comparative/', null=True, blank=True)
+    contractor_agreement_document = models.FileField(upload_to='quotation_tender/agreement/', null=True, blank=True)
+    tender_document = models.FileField(upload_to='quotation_tender/tender/', null=True, blank=True)
+    other_document = models.FileField(upload_to='quotation_tender/other/', null=True, blank=True)
+    # System Fields
+    created_by = models.ForeignKey(Kosh_User, on_delete=models.SET_NULL, related_name='quotation_tender_created_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+    class Meta:
+        ordering = ['-id']
+        verbose_name = "Quotation / B1 / Tender"
+        verbose_name_plural = "3.Quotation / B1 / Tenders"
+
+    def __str__(self):
+        return f"{self.process_type or ''} - {self.work_name or ''}"
+
+
+# ─────────────────────────────────────────────────────────────
+# STAGE 4 — WORK ORDER
+# ─────────────────────────────────────────────────────────────
         return f"{self.technical_sanction_number or ''} - {self.work_master}"
 
 
@@ -303,6 +388,7 @@ class Work_Order(models.Model):
         ('Cancelled', 'Cancelled'),
     )
     work_master = models.ForeignKey('Work_Master', on_delete=models.SET_NULL, related_name='work_orders', null=True, blank=True)
+    work_master = models.ForeignKey('Work_Master', on_delete=models.SET_NULL, related_name='work_orders', null=True, blank=True)
     work_order_number = models.CharField(max_length=100, null=True, blank=True)
     work_name = models.CharField(max_length=255, null=True, blank=True)
     work_description = models.TextField(null=True, blank=True)
@@ -313,6 +399,10 @@ class Work_Order(models.Model):
     work_start_date = models.DateField(null=True, blank=True)
     expected_completion_date = models.DateField(null=True, blank=True)
     actual_completion_date = models.DateField(null=True, blank=True)
+    estimated_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
+    approved_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
+    category = models.CharField(max_length=100, null=True, blank=True)
+    execution_instructions = models.TextField(null=True, blank=True)
     estimated_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
     approved_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
     category = models.CharField(max_length=100, null=True, blank=True)
@@ -328,13 +418,30 @@ class Work_Order(models.Model):
     updated_by = models.ForeignKey(Kosh_User, on_delete=models.SET_NULL, related_name='updated_work_orders', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Pending', null=True, blank=True)
+    # Documents
+    signed_work_order_document = models.FileField(upload_to='work_order/signed/', null=True, blank=True)
+    agreement_document = models.FileField(upload_to='work_order/agreement/', null=True, blank=True)
+    other_document = models.FileField(upload_to='work_order/other/', null=True, blank=True)
+    # System Fields
+    created_by = models.ForeignKey(Kosh_User, on_delete=models.SET_NULL, related_name='created_work_orders', null=True, blank=True)
+    updated_by = models.ForeignKey(Kosh_User, on_delete=models.SET_NULL, related_name='updated_work_orders', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     class Meta:
         ordering = ['-id']
         verbose_name = "Work Order"
         verbose_name_plural = "4.Work Orders"
+        verbose_name_plural = "4.Work Orders"
 
     def __str__(self):
+        return f"{self.work_order_number or ''} - {self.work_name or ''}"
+
+
+# ─────────────────────────────────────────────────────────────
+# STAGE 5 — WORK START
+# ─────────────────────────────────────────────────────────────
         return f"{self.work_order_number or ''} - {self.work_name or ''}"
 
 
@@ -349,6 +456,7 @@ class Work_Start(models.Model):
         ('On Hold', 'On Hold'),
         ('Completed', 'Completed'),
     )
+    work_master = models.ForeignKey('Work_Master', on_delete=models.SET_NULL, related_name='work_starts', null=True, blank=True)
     work_master = models.ForeignKey('Work_Master', on_delete=models.SET_NULL, related_name='work_starts', null=True, blank=True)
     start_date = models.DateField(null=True, blank=True)
     expected_end_date = models.DateField(null=True, blank=True)
@@ -370,15 +478,34 @@ class Work_Start(models.Model):
     started_by = models.ForeignKey(Kosh_User, on_delete=models.SET_NULL, related_name='started_works', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Pending', null=True, blank=True)
+    # Documents
+    site_photo_1 = models.ImageField(upload_to='work_start/photos/', null=True, blank=True)
+    site_photo_2 = models.ImageField(upload_to='work_start/photos/', null=True, blank=True)
+    site_photo_3 = models.ImageField(upload_to='work_start/photos/', null=True, blank=True)
+    commencement_certificate_document = models.FileField(upload_to='work_start/certificate/', null=True, blank=True)
+    supervisor_report_document = models.FileField(upload_to='work_start/supervisor/', null=True, blank=True)
+    other_document = models.FileField(upload_to='work_start/other/', null=True, blank=True)
+    # System Fields
+    started_by = models.ForeignKey(Kosh_User, on_delete=models.SET_NULL, related_name='started_works', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     class Meta:
         ordering = ['-id']
         verbose_name = "Work Start"
         verbose_name_plural = "5.Work Starts"
+        verbose_name_plural = "5.Work Starts"
 
     def __str__(self):
         return f"{self.work_master} - {self.status}"
 
+        return f"{self.work_master} - {self.status}"
+
+
+# ─────────────────────────────────────────────────────────────
+# STAGE 6 — WORK IN PROGRESS
+# ─────────────────────────────────────────────────────────────
 
 # ─────────────────────────────────────────────────────────────
 # STAGE 6 — WORK IN PROGRESS
@@ -393,6 +520,7 @@ class Work_In_Progress(models.Model):
         ('On Hold', 'On Hold'),
     )
     work_master = models.ForeignKey('Work_Master', on_delete=models.SET_NULL, related_name='work_in_progress', null=True, blank=True)
+    work_master = models.ForeignKey('Work_Master', on_delete=models.SET_NULL, related_name='work_in_progress', null=True, blank=True)
     progress_title = models.CharField(max_length=255, null=True, blank=True)
     progress_date = models.DateField(null=True, blank=True)
     completed_work_details = models.TextField(null=True, blank=True)
@@ -404,6 +532,18 @@ class Work_In_Progress(models.Model):
     delay_reason = models.TextField(null=True, blank=True)
     next_work_plan = models.TextField(null=True, blank=True)
     remarks = models.TextField(null=True, blank=True)
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Pending', null=True, blank=True)
+    # Documents
+    progress_photo_1 = models.ImageField(upload_to='work_progress/photos/', null=True, blank=True)
+    progress_photo_2 = models.ImageField(upload_to='work_progress/photos/', null=True, blank=True)
+    progress_photo_3 = models.ImageField(upload_to='work_progress/photos/', null=True, blank=True)
+    inspection_report_document = models.FileField(upload_to='work_progress/inspection/', null=True, blank=True)
+    milestone_report_document = models.FileField(upload_to='work_progress/milestone/', null=True, blank=True)
+    other_document = models.FileField(upload_to='work_progress/other/', null=True, blank=True)
+    # System Fields
+    updated_by = models.ForeignKey(Kosh_User, on_delete=models.SET_NULL, related_name='work_progress_updates', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Pending', null=True, blank=True)
     # Documents
     progress_photo_1 = models.ImageField(upload_to='work_progress/photos/', null=True, blank=True)
@@ -543,8 +683,176 @@ class Physically_Complete(models.Model):
         ordering = ['-id']
         verbose_name = "Physically Complete"
         verbose_name_plural = "9.Physically Complete Works"
+        verbose_name_plural = "6.Work In Progress"
 
     def __str__(self):
+        return f"{self.progress_title or ''} - {self.status}"
+
+
+# ─────────────────────────────────────────────────────────────
+# STAGE 7 — WORK FINAL
+# ─────────────────────────────────────────────────────────────
+
+class Work_Final(models.Model):
+    STATUS_CHOICES = (
+        ('Pending', 'Pending'),
+        ('Completed', 'Completed'),
+        ('Verified', 'Verified'),
+    )
+    work_master = models.ForeignKey('Work_Master', on_delete=models.SET_NULL, related_name='work_finals', null=True, blank=True)
+    completion_date = models.DateField(null=True, blank=True)
+    final_work_status = models.TextField(null=True, blank=True)
+    final_report = models.TextField(null=True, blank=True)
+    completion_remarks = models.TextField(null=True, blank=True)
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Pending', null=True, blank=True)
+    # Documents
+    final_photo_1 = models.ImageField(upload_to='work_final/photos/', null=True, blank=True)
+    final_photo_2 = models.ImageField(upload_to='work_final/photos/', null=True, blank=True)
+    final_photo_3 = models.ImageField(upload_to='work_final/photos/', null=True, blank=True)
+    completion_certificate_document = models.FileField(upload_to='work_final/certificate/', null=True, blank=True)
+    measurement_book_document = models.FileField(upload_to='work_final/measurement/', null=True, blank=True)
+    final_report_document = models.FileField(upload_to='work_final/report/', null=True, blank=True)
+    other_document = models.FileField(upload_to='work_final/other/', null=True, blank=True)
+    # System Fields
+    created_by = models.ForeignKey(Kosh_User, on_delete=models.SET_NULL, related_name='work_final_created_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+    class Meta:
+        ordering = ['-id']
+        verbose_name = "Work Final"
+        verbose_name_plural = "7.Work Finals"
+
+    def __str__(self):
+        return f"{self.work_master} - {self.status}"
+
+
+# ─────────────────────────────────────────────────────────────
+# STAGE 8 — PAYMENT PROCESS
+# ─────────────────────────────────────────────────────────────
+
+class Payment_Process(models.Model):
+    PAYMENT_TYPE_CHOICES = (
+        ('Advance', 'Advance'),
+        ('Mid-Stage', 'Mid-Stage'),
+        ('Running Bill', 'Running Bill'),   
+        ('Final Payment', 'Final Payment'),
+    )
+    STATUS_CHOICES = (
+        ('Pending', 'Pending'),
+        ('Processed', 'Processed'),
+        ('Rejected', 'Rejected'),
+        ('Completed', 'Completed'),
+    )
+    work_master = models.ForeignKey('Work_Master', on_delete=models.SET_NULL, related_name='payment_processes', null=True, blank=True)
+    payment_type = models.CharField(max_length=100, choices=PAYMENT_TYPE_CHOICES, null=True, blank=True)
+    payment_date = models.DateField(null=True, blank=True)
+    payment_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
+    bill_number = models.CharField(max_length=100, null=True, blank=True)
+    invoice_number = models.CharField(max_length=100, null=True, blank=True)
+    payment_remark = models.TextField(null=True, blank=True)
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Pending', null=True, blank=True)
+    # Documents
+    bill_document = models.FileField(upload_to='payment_process/bill/', null=True, blank=True)
+    invoice_document = models.FileField(upload_to='payment_process/invoice/', null=True, blank=True)
+    payment_receipt_document = models.FileField(upload_to='payment_process/receipt/', null=True, blank=True)
+    voucher_document = models.FileField(upload_to='payment_process/voucher/', null=True, blank=True)
+    other_document = models.FileField(upload_to='payment_process/other/', null=True, blank=True)
+    # System Fields
+    created_by = models.ForeignKey(Kosh_User, on_delete=models.SET_NULL, related_name='payment_process_created_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+    class Meta:
+        ordering = ['-id']
+        verbose_name = "Payment Process"
+        verbose_name_plural = "8.Payment Processes"
+
+    def __str__(self):
+        return f"{self.payment_type or ''} - {self.payment_amount}"
+# ─────────────────────────────────────────────────────────────
+# STAGE 9 — PHYSICALLY COMPLETE
+# ─────────────────────────────────────────────────────────────
+
+class Physically_Complete(models.Model):
+    STATUS_CHOICES = (
+        ('Pending', 'Pending'),
+        ('Inspection Pending', 'Inspection Pending'),
+        ('Verified', 'Verified'),
+        ('Physically Complete', 'Physically Complete'),
+        ('Rejected', 'Rejected'),
+    )
+    work_master = models.ForeignKey('Work_Master', on_delete=models.SET_NULL, related_name='physically_completed_works', null=True, blank=True)
+    inspection_date = models.DateField(null=True, blank=True)
+    inspection_officer_name = models.CharField(max_length=255, null=True, blank=True)
+    inspection_remark = models.TextField(null=True, blank=True)
+    physical_completion_date = models.DateField(null=True, blank=True)
+    verification_status = models.TextField(null=True, blank=True)
+    status = models.CharField(max_length=100, choices=STATUS_CHOICES, default='Pending', null=True, blank=True)
+    # Documents
+    verification_photo_1 = models.ImageField(upload_to='physically_complete/photos/', null=True, blank=True)
+    verification_photo_2 = models.ImageField(upload_to='physically_complete/photos/', null=True, blank=True)
+    verification_photo_3 = models.ImageField(upload_to='physically_complete/photos/', null=True, blank=True)
+    inspection_report_document = models.FileField(upload_to='physically_complete/inspection/', null=True, blank=True)
+    completion_certificate_document = models.FileField(upload_to='physically_complete/certificate/', null=True, blank=True)
+    officer_verification_letter_document = models.FileField(upload_to='physically_complete/letter/', null=True, blank=True)
+    other_document = models.FileField(upload_to='physically_complete/other/', null=True, blank=True)
+    # System Fields
+    created_by = models.ForeignKey(Kosh_User, on_delete=models.SET_NULL, related_name='physically_complete_created_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+    class Meta:
+        ordering = ['-id']
+        verbose_name = "Physically Complete"
+        verbose_name_plural = "9.Physically Complete Works"
+
+    def __str__(self):
+        return f"{self.work_master} - {self.status}"
+
+
+# ─────────────────────────────────────────────────────────────
+# STAGE 10 — SUCCESS STORY
+# ─────────────────────────────────────────────────────────────
+
+class Success_Story(models.Model):
+    STATUS_CHOICES = (
+        ('Draft', 'Draft'),
+        ('Published', 'Published'),
+    )
+    work_master = models.ForeignKey('Work_Master', on_delete=models.SET_NULL, related_name='success_stories', null=True, blank=True)
+    title = models.CharField(max_length=255, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    impact_details = models.TextField(null=True, blank=True)
+    beneficiary_details = models.TextField(null=True, blank=True)
+    before_work_details = models.TextField(null=True, blank=True)
+    after_work_details = models.TextField(null=True, blank=True)
+    remarks = models.TextField(null=True, blank=True)
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Draft', null=True, blank=True)
+    # Documents
+    before_photo_1 = models.ImageField(upload_to='success_story/before/', null=True, blank=True)
+    before_photo_2 = models.ImageField(upload_to='success_story/before/', null=True, blank=True)
+    before_photo_3 = models.ImageField(upload_to='success_story/before/', null=True, blank=True)
+    after_photo_1 = models.ImageField(upload_to='success_story/after/', null=True, blank=True)
+    after_photo_2 = models.ImageField(upload_to='success_story/after/', null=True, blank=True)
+    after_photo_3 = models.ImageField(upload_to='success_story/after/', null=True, blank=True)
+    impact_report_document = models.FileField(upload_to='success_story/impact/', null=True, blank=True)
+    beneficiary_document = models.FileField(upload_to='success_story/beneficiary/', null=True, blank=True)
+    media_coverage_document = models.FileField(upload_to='success_story/media/', null=True, blank=True)
+    other_document = models.FileField(upload_to='success_story/other/', null=True, blank=True)
+    # System Fields
+    created_by = models.ForeignKey(Kosh_User, on_delete=models.SET_NULL, related_name='success_story_created_by', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+    class Meta:
+        ordering = ['-id']
+        verbose_name = "Success Story"
+        verbose_name_plural = "91. Success Stories"
+
+    def __str__(self):
+        return self.title or ''
+    
         return f"{self.work_master} - {self.status}"
 
 

@@ -3,9 +3,6 @@ from . import views
 
 urlpatterns = [
 
-<<<<<<< HEAD
-    # path('Activity-Work-Master/',views.Activity_Work_Master,name='Activity-Work-Master'),
-=======
     path('Activity-Work-Master/',views.Activity_Work_Master,name='Activity-Work-Master'),
     path('Activity-Add-Work-Master/',views.Activity_Add_Work_Master,name='Activity-Add-Work-Master'),
     
@@ -18,6 +15,5 @@ urlpatterns = [
     path('Activity-Work-Start/<int:work_id>/',views.Activity_Work_Start,name='Activity-Work-Start'),
 
 
->>>>>>> main
 
 ]   

@@ -6,11 +6,7 @@ from Main.models import Kosh_Head
 
 
 
-<<<<<<< HEAD
 def calculate_kosh_release_amount(financial_year, zilla_parishad_id):
-=======
-def calculate_kosh_release_amount(financial_year, zilla_parishad_id,fund_id):
->>>>>>> main
     """
     Calculate Kosh Release Amount
     Returns formatted data for frontend/template usage
@@ -20,12 +16,7 @@ def calculate_kosh_release_amount(financial_year, zilla_parishad_id,fund_id):
         # Fetch Fund Releases
         fund_releases = Fund_Release.objects.filter(
             financial_year__year=financial_year,
-<<<<<<< HEAD
             zilla_parishad_id=zilla_parishad_id
-=======
-            zilla_parishad_id=zilla_parishad_id,
-            id=fund_id
->>>>>>> main
         )
         if not fund_releases.exists():
             return final_data
@@ -82,10 +73,6 @@ def calculate_kosh_release_amount(financial_year, zilla_parishad_id,fund_id):
 
                         # Final Data Append
                         final_data.append({
-<<<<<<< HEAD
-=======
-                            
->>>>>>> main
                             'financial_year': fund.financial_year.year,
                             'release_name': fund.release_name,
                             'installment': fund.installment,
