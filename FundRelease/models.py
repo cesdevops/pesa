@@ -53,10 +53,17 @@ class Kosh_Fund_Allocation(models.Model):
     released_amount = models.DecimalField( max_digits=15, decimal_places=2, default=0)
     balance_amount = models.DecimalField( max_digits=15,decimal_places=2,default=0)
     total_lapsed_amount = models.DecimalField( max_digits=15,decimal_places=2,default=0)
-    allocated_date = models.DateField()
+    allocated_date = models.DateField(auto_now_add=True)
     status = models.CharField( max_length=30,choices=STATUS_CHOICES, default='Allocated')
     remark = models.TextField(null=True, blank=True)
     is_fund_given = models.BooleanField(default=False)
+    distributed_by = models.ForeignKey(
+        Zilla_Parishad_User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='fund_distributed_by'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

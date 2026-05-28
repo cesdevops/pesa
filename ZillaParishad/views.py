@@ -2,10 +2,11 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import render
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from FundRelease.models import Fund_Release, Kosh_Fund_Allocation
 from Main.utils import validate_email, validate_file, validate_mobile_number, validate_clean_text
 from ZillaParishad.models import Zilla_Parishad_User
 from PanchayatSamiti.models import Panchayat_Samiti, Panchayat_Samiti_User
-from Kosh.models import Kosh_User
+from Kosh.models import GramPanchayat, Kosh, Kosh_User
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
@@ -25,25 +26,16 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import Zilla_Parishad
-from Main.models import District, Super_User
+from Main.models import District, Financial_Year, Super_User
+from django.db.models import Sum
 
 
 
 def ZP_Dashboard(request):
 
-    # =====================================================
-    # LOGIN CHECK
-    # =====================================================
-
-    if not request.session.get('user_id'):
+    # Login & User Check
+    if not request.session.get('user_id') or request.session.get('user_type') != 'ZillaParishad':
         return redirect('Login')
-
-    if request.session.get('user_type') != 'ZillaParishad':
-        return redirect('Login')
-
-    # =====================================================
-    # USER CHECK
-    # =====================================================
 
     try:
         zp_user = Zilla_Parishad_User.objects.get(
@@ -54,17 +46,60 @@ def ZP_Dashboard(request):
         request.session.flush()
         return redirect('Login')
 
-    # =====================================================
-    # CONTEXT
-    # =====================================================
+    # Active Financial Year
+    financial_year = Financial_Year.objects.filter(status='Active').first()
 
+    # Dashboard Data
+    total_gp = GramPanchayat.objects.filter(
+        status='Active'
+    ).count()
+
+    total_ps = Panchayat_Samiti.objects.filter(
+        status='Active'
+    ).count()
+
+    total_kosh = Kosh.objects.filter(
+        status='Active'
+    ).count()
+
+    total_kosh_users = Kosh_User.objects.filter(
+        status='Active'
+    ).count()
+
+    total_fund_release = Fund_Release.objects.filter(
+        financial_year=financial_year,
+        zilla_parishad=zp_user.zilla_parishad
+    ).count()
+
+    total_fund_amount = Fund_Release.objects.filter(
+        financial_year=financial_year,
+        zilla_parishad=zp_user.zilla_parishad
+    ).aggregate(total=Sum('total_amount'))['total'] or 0
+
+    total_allocated_amount = Kosh_Fund_Allocation.objects.filter(
+        fund_release__financial_year=financial_year
+    ).aggregate(total=Sum('allocated_amount'))['total'] or 0
+
+    total_balance_amount = Kosh_Fund_Allocation.objects.filter(
+        fund_release__financial_year=financial_year
+    ).aggregate(total=Sum('balance_amount'))['total'] or 0
+
+    # Context
     context = {
         'user': zp_user,
         'user_type': 'Zilla Parishad',
+        'financial_year': financial_year,
+        'total_gp': total_gp,
+        'total_ps': total_ps,
+        'total_kosh': total_kosh,
+        'total_kosh_users': total_kosh_users,
+        'total_fund_release': total_fund_release,
+        'total_fund_amount': total_fund_amount,
+        'total_allocated_amount': total_allocated_amount,
+        'total_balance_amount': total_balance_amount,
     }
 
     return render(request, 'ZP-Dashboard.html', context)
-
 
 
 def ZP_Manage_Zilla_Parishad(request):
