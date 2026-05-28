@@ -1043,23 +1043,52 @@ body{
       </a>
   </li>
 
-  <li>
-      <a href="#" data-tooltip="लाभार्थी">
-          <i class="fa fa-users"></i>
-          <span class="nav-label">लाभार्थी</span>
-      </a>
-  </li>
+<li>
+    <a href="#" data-tooltip="लाभार्थी">
+        <i class="fa fa-users"></i>
+        <span class="nav-label">लाभार्थी</span>
+    </a>
+</li>
+<li>
+    
+    <a href="{% url 'Kosh-fund-alloted-details' %}" data-tooltip="निधी व्यवस्थापन">
+        
+        <i class="fa fa-money-bill-wave"></i>
+        
+        <span class="nav-label">
+            निधी व्यवस्थापन
+        </span>
 
-  <li>
-      <a href="{% url 'Activity-Work-Master' %}"
-        class="{% if request.resolver_match.url_name == 'Activity-Work-Master' %}active{% endif %}"
-        data-tooltip="कामकाज">
+    </a>
+    
+</li>
+{% endif %}
 
-          <i class="fa fa-briefcase"></i>
-          <span class="nav-label">कामकाज</span>
-      </a>
-  </li>
+{% if request.session.user_type == "ZillaParishad" %}
+<li>
+    <a href="{% url 'ZP-Dashboard' %}"
+       class="{% if request.resolver_match.url_name == 'ZP-Dashboard' %}active{% endif %}"
+       data-tooltip="डॅशबोर्ड">
 
+        <i class="fa fa-tachometer-alt"></i>
+        <span class="nav-label">डॅशबोर्ड</span>
+    </a>
+</li>
+
+<li>
+    
+    <a href="{% url 'ZP-Fund-Release' %}" data-tooltip="निधी व्यवस्थापन">
+        
+        <i class="fa fa-money-bill-wave"></i>
+        
+        <span class="nav-label">
+            निधी व्यवस्थापन
+        </span>
+
+    </a>
+    
+</li>
+{% endif %}
 
 
     <div class="sidebar-divider"></div>

@@ -1,0 +1,94 @@
+<!-- templates/Kosh_fund_alloted_details.html -->
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+                Kosh Fund Alloted Details
+            </h4>
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover">
+
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Sr No</th>
+                            <th>Kosh</th>
+                            <th>Allocated Amount</th>
+                            <th>Released Amount</th>
+                            <th>Balance Amount</th>
+                            <th>Allocated Date</th>
+                            <th>Status</th>
+                            <th>Head Allocation</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for fund in fund_allocations %}
+
+                        <tr>
+
+                            <td>{{ forloop.counter }}</td>
+
+                            <td>
+                                {{ fund.kosh }}
+                            </td>
+
+                            <td>
+                                ₹ {{ fund.allocated_amount }}
+                            </td>
+
+                            <td>
+                                ₹ {{ fund.released_amount }}
+                            </td>
+
+                            <td>
+                                ₹ {{ fund.balance_amount }}
+                            </td>
+
+                            <td>
+                                {{ fund.allocated_date }}
+                            </td>
+
+                            <td>
+                                {{ fund.status }}
+                            </td>
+
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+                            <td colspan="8" class="text-center">
+                                No Fund Allocation Data Found
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
