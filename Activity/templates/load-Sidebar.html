@@ -1,0 +1,107 @@
+<!-- load-Sidebar.html - Simple Sticky Version -->
+<!-- Back Button to Work Master -->
+<div class="sidebar-section" style="padding: 10px 12px 0 12px; position: sticky; top: 0; background: var(--navy); z-index: 20;">
+    <a href="{% url 'Activity-Work-Master' %}" 
+       style="display: flex; align-items: center; gap: 8px; 
+              background: var(--gold); 
+              color: var(--navy); 
+              text-decoration: none; 
+              padding: 8px 12px; 
+              border-radius: 6px; 
+              font-size: 12px; 
+              font-weight: 700;
+              width: 100%;
+              box-sizing: border-box;
+              transition: all 0.2s ease;"
+       onmouseover="this.style.background='#cf6d00'; this.style.color='#fff';"
+       onmouseout="this.style.background='var(--gold)'; this.style.color='var(--navy)';">
+        <i class="fa fa-arrow-left" style="font-size: 11px;"></i>
+        <span>कामकाज वर परत या</span>
+    </a>
+</div>
+
+<!-- MAIN NAVIGATION - Work Flow Items -->
+<div class="sidebar-section" style="margin-top: 4px; position: sticky; top: 60px; background: var(--navy); z-index: 15;">काम प्रगती मेनू</div>
+<ul class="sidebar-nav" style="max-height: calc(100vh - 120px); overflow-y: auto;">
+    <li>
+        <a href="{% url 'Activity-Administrative-Sanction' work_master.id %}"
+           class="{% if request.resolver_match.url_name == 'Activity-Administrative-Sanction' %}active{% endif %}"
+           data-tooltip="Administrative Sanction">
+            <i class="fa fa-file-alt"></i>
+            <span class="nav-label">प्रशासकीय मान्यता</span>
+        </a>
+    </li>
+
+    <li>
+        <a href="{% url 'Activity-Technical-Sanction' work_master.id %}"
+           class="{% if request.resolver_match.url_name == 'Activity-Technical-Sanction' %}active{% endif %}"
+           data-tooltip="Technical Sanction">
+            <i class="fa fa-cogs"></i>
+            <span class="nav-label">तांत्रिक मान्यता</span>
+        </a>
+    </li>
+    
+    <li>
+        <a href="{% url 'Activity-Quotation-Tender' work_master.id %}"
+           class="{% if request.resolver_match.url_name == 'Activity-Quotation-Tender' %}active{% endif %}"
+           data-tooltip="Tender / Quotation">
+            <i class="fa fa-file-contract"></i>
+            <span class="nav-label">निविदा / कोटेशन</span>
+        </a>
+    </li>
+
+    <!-- Work Order Link -->
+    <li>
+        <a href="{% url 'Activity-Work-Order' work_master.id %}"
+           class="{% if request.resolver_match.url_name == 'Activity-Work-Order' %}active{% endif %}"
+           data-tooltip="Work Order">
+            <i class="fa fa-file-signature"></i>
+            <span class="nav-label">वर्क ऑर्डर</span>
+        </a>
+    </li>
+
+    <!-- Work Start Link -->
+    <li>
+        <a href="{% url 'Activity-Work-Start' work_master.id %}"
+           class="{% if request.resolver_match.url_name == 'Activity-Work-Start' %}active{% endif %}"
+           data-tooltip="Work Started">
+            <i class="fa fa-play-circle"></i>
+            <span class="nav-label">काम सुरू</span>
+        </a>
+    </li>
+
+    <li>
+        <a href="#" data-tooltip="Work In Progress">
+            <i class="fa fa-spinner"></i>
+            <span class="nav-label">प्रगतीत काम</span>
+        </a>
+    </li>
+
+    <li>
+        <a href="#" data-tooltip="Work Final">
+            <i class="fa fa-check-circle"></i>
+            <span class="nav-label">अंतिम काम</span>
+        </a>
+    </li>
+
+    <li>
+        <a href="#" data-tooltip="Payment Process">
+            <i class="fa fa-money-bill"></i>
+            <span class="nav-label">पेमेंट प्रक्रिया</span>
+        </a>
+    </li>
+
+    <li>
+        <a href="#" data-tooltip="Physical Verification">
+            <i class="fa fa-search-location"></i>
+            <span class="nav-label">भौतिक पडताळणी</span>
+        </a>
+    </li>
+
+    <li>
+        <a href="#" data-tooltip="Success Story">
+            <i class="fa fa-star"></i>
+            <span class="nav-label">यशोगाथा</span>
+        </a>
+    </li>
+</ul>

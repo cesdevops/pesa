@@ -1,0 +1,410 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+.wm-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+.wm-header-left h2 {
+    font-family: 'Noto Serif Devanagari', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 0;
+}
+.wm-header-left p {
+    font-size: 11px;
+    color: var(--muted);
+    margin: 2px 0 0;
+}
+
+/* Filter form inline */
+.wm-filter-bar {
+    background: #fff;
+    border: 1px solid var(--gray2);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.wm-filter-bar .ff {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.wm-filter-bar label {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+.wm-filter-bar input,
+.wm-filter-bar select {
+    padding: 5px 9px;
+    font-size: 12px;
+    font-family: inherit;
+    border: 1px solid var(--gray2);
+    border-radius: 4px;
+    color: var(--text);
+    outline: none;
+    min-width: 160px;
+}
+.wm-filter-bar input:focus,
+.wm-filter-bar select:focus {
+    border-color: var(--navy3);
+}
+.wm-filter-bar .ff-btns {
+    display: flex;
+    gap: 6px;
+    align-items: flex-end;
+}
+.wm-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 13px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: inherit;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background .15s;
+}
+.wm-btn-navy   { background: var(--navy); color: #fff; }
+.wm-btn-navy:hover { background: var(--navy2); }
+.wm-btn-outline { background: #fff; color: var(--navy); border: 1px solid var(--gray2); }
+.wm-btn-outline:hover { background: var(--gray1); }
+.wm-btn-gold   { background: var(--gold); color: #fff; }
+.wm-btn-gold:hover { background: #cf6d00; }
+
+/* Table card */
+.wm-table-card {
+    background: #fff;
+    border: 1px solid var(--gray2);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(13,43,69,.07);
+    margin-bottom: 12px;
+}
+.wm-table-card-header {
+    background: var(--navy);
+    padding: 9px 14px;
+    border-bottom: 2px solid var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+.wm-table-card-header .cht {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #fff;
+    font-family: 'Noto Serif Devanagari', serif;
+}
+.wm-table-card-header .count-badge {
+    background: var(--gold);
+    color: var(--navy);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+/* Table */
+.wm-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+}
+.wm-table thead tr {
+    background: #f4f7fa;
+    border-bottom: 2px solid var(--gray2);
+}
+.wm-table thead th {
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--navy);
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    white-space: nowrap;
+    border-right: 1px solid var(--gray2);
+}
+.wm-table thead th:last-child { border-right: none; }
+.wm-table tbody tr {
+    border-bottom: 1px solid var(--gray1);
+    transition: background .12s;
+}
+.wm-table tbody tr:hover { background: #f9fbfd; }
+.wm-table tbody tr:last-child { border-bottom: none; }
+.wm-table tbody td {
+    padding: 9px 12px;
+    color: var(--text);
+    vertical-align: middle;
+    border-right: 1px solid var(--gray1);
+}
+.wm-table tbody td:last-child { border-right: none; }
+
+.sr-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: var(--navy2);
+    color: #fff;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.work-name-cell .wn { font-weight: 600; color: var(--navy); }
+.work-name-cell .wc { font-size: 10.5px; color: var(--muted); font-family: monospace; margin-top: 1px; }
+
+.amount-cell { font-family: monospace; font-weight: 600; color: var(--navy3); font-size: 12px; }
+.muted-cell  { color: var(--muted); font-size: 12px; }
+.loc-cell    { display: flex; align-items: center; gap: 4px; color: var(--muted); font-size: 12px; }
+.loc-cell i  { color: var(--gold); font-size: 10px; flex-shrink: 0; }
+
+/* Status pill */
+.s-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-size: 10.5px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.s-pending   { background: #fff3cd; color: #7d5a00;  border: 1px solid #ffe082; }
+.s-inprog    { background: #dbeafe; color: #1e40af;  border: 1px solid #93c5fd; }
+.s-completed { background: #dcfce7; color: #14532d;  border: 1px solid #86efac; }
+.s-cancelled { background: #fee2e2; color: #7f1d1d;  border: 1px solid #fca5a5; }
+
+/* Next step button */
+.btn-next-step {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    background: var(--navy);
+    color: #fff;
+    border-radius: 4px;
+    font-size: 11.5px;
+    font-weight: 600;
+    font-family: inherit;
+    text-decoration: none;
+    border: none;
+    white-space: nowrap;
+    transition: background .15s;
+}
+.btn-next-step:hover { background: var(--gold); color: #fff; }
+.btn-next-step i { font-size: 10px; }
+
+/* Empty row */
+.empty-row td {
+    text-align: center;
+    padding: 40px;
+    color: var(--muted);
+}
+.empty-row i { font-size: 28px; color: var(--gray3); display: block; margin-bottom: 8px; }
+
+/* Pagination */
+.wm-pag {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0;
+}
+.wm-pag .pag-info { font-size: 11.5px; color: var(--muted); }
+.pag-links { display: flex; gap: 3px; }
+.pag-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    height: 30px;
+    padding: 0 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid var(--gray2);
+    background: #fff;
+    color: var(--navy);
+    text-decoration: none;
+    transition: all .13s;
+}
+.pag-link:hover   { background: var(--navy); color: #fff; border-color: var(--navy); }
+.pag-link.active  { background: var(--navy); color: #fff; border-color: var(--navy); }
+.pag-link.disabled{ color: var(--gray3); pointer-events: none; }
+</style>
+
+<!-- Page header -->
+<div class="wm-header">
+    <div class="wm-header-left">
+        <h2><i class="fa fa-briefcase" style="color:var(--gold);margin-right:7px;font-size:14px;"></i>कामकाज (Work Master)</h2>
+        <p>सर्व कामांची यादी — पुढील टप्पा सुरू करण्यासाठी "पुढे" बटण दाबा</p>
+    </div>
+    <a href="{% url 'Activity-Add-Work-Master' %}" class="wm-btn wm-btn-gold"><i class="fa fa-plus"></i> नवीन काम</a>
+</div>
+
+<!-- Filter bar -->
+<div class="wm-filter-bar">
+    <form method="GET" action="" style="display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap;width:100%;">
+        <div class="ff">
+            <label>काम नाव</label>
+            <input type="text" name="work_name" value="{{ work_name }}" placeholder="शोधा...">
+        </div>
+        <div class="ff">
+            <label>काम कोड</label>
+            <input type="text" name="work_code" value="{{ work_code }}" placeholder="कोड...">
+        </div>
+        <div class="ff">
+            <label>स्थिती</label>
+            <select name="overall_status">
+                <option value="">-- सर्व --</option>
+                {% for val, label in status_choices %}
+                    <option value="{{ val }}" {% if overall_status == val %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="ff-btns">
+            <button type="submit" class="wm-btn wm-btn-navy"><i class="fa fa-search"></i> शोधा</button>
+            <a href="?" class="wm-btn wm-btn-outline"><i class="fa fa-times"></i> रद्द</a>
+        </div>
+    </form>
+</div>
+
+<!-- Table card -->
+<div class="wm-table-card">
+    <div class="wm-table-card-header">
+        <span class="cht"><i class="fa fa-list" style="margin-right:6px;color:var(--gold);"></i>कामांची यादी</span>
+        <span class="count-badge">एकूण: {{ work_masters.paginator.count }}</span>
+    </div>
+    <div style="overflow-x:auto;">
+        <table class="wm-table">
+            <thead>
+                <tr>
+                    <th style="width:40px;">अ.क्र.</th>
+                    <th>काम नाव / कोड</th>
+                    <th>उपक्रम (Activity)</th>
+                    <th>ठिकाण</th>
+                    <th>अंदाजित रक्कम</th>
+                    <th>मंजूर रक्कम</th>
+                    <th>स्थिती</th>
+                    <th style="width:100px;">पुढील टप्पा</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for work in work_masters %}
+                <tr>
+                    <td><span class="sr-num">{{ forloop.counter }}</span></td>
+
+                    <td>
+                        <div class="work-name-cell">
+                            <div class="wn">{{ work.work_name|default:"—" }}</div>
+                            <div class="wc">{{ work.work_code|default:"" }}</div>
+                        </div>
+                    </td>
+
+                    <td class="muted-cell">{{ work.activity.activity_name|default:"—" }}</td>
+
+                    <td>
+                        <div class="loc-cell">
+                            <i class="fa fa-map-marker-alt"></i>
+                            {{ work.work_location|default:"—" }}
+                        </div>
+                    </td>
+
+                    <td class="amount-cell">
+                        {% if work.estimated_amount %}₹ {{ work.estimated_amount|floatformat:0 }}{% else %}—{% endif %}
+                    </td>
+
+                    <td class="amount-cell">
+                        {% if work.approved_amount %}₹ {{ work.approved_amount|floatformat:0 }}{% else %}—{% endif %}
+                    </td>
+
+                    <td>
+                        {% if work.overall_status == 'Pending' %}
+                            <span class="s-pill s-pending"><i class="fa fa-clock" style="font-size:9px;"></i> प्रलंबित</span>
+                        {% elif work.overall_status == 'In Progress' %}
+                            <span class="s-pill s-inprog"><i class="fa fa-spinner" style="font-size:9px;"></i> प्रगतीत</span>
+                        {% elif work.overall_status == 'Completed' %}
+                            <span class="s-pill s-completed"><i class="fa fa-check" style="font-size:9px;"></i> पूर्ण</span>
+                        {% elif work.overall_status == 'Cancelled' %}
+                            <span class="s-pill s-cancelled"><i class="fa fa-times" style="font-size:9px;"></i> रद्द</span>
+                        {% else %}
+                            <span class="s-pill s-pending">{{ work.overall_status }}</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <a href="{% url 'Activity-Administrative-Sanction' work.id %}"
+                           class="btn-next-step">
+                            पुढे <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr class="empty-row">
+                    <td colspan="8">
+                        <i class="fa fa-folder-open"></i>
+                        कोणतेही काम आढळले नाही
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if work_masters.has_other_pages %}
+<div class="wm-pag">
+    <span class="pag-info">
+        {{ work_masters.paginator.count }} पैकी {{ work_masters.start_index }}–{{ work_masters.end_index }} दाखवत आहे
+    </span>
+    <div class="pag-links">
+        {% if work_masters.has_previous %}
+            <a class="pag-link" href="?page={{ work_masters.previous_page_number }}{% if work_name %}&work_name={{ work_name }}{% endif %}{% if work_code %}&work_code={{ work_code }}{% endif %}{% if overall_status %}&overall_status={{ overall_status }}{% endif %}">
+                <i class="fa fa-chevron-left" style="font-size:10px;"></i>
+            </a>
+        {% else %}
+            <span class="pag-link disabled"><i class="fa fa-chevron-left" style="font-size:10px;"></i></span>
+        {% endif %}
+
+        {% for num in work_masters.paginator.page_range %}
+            {% if work_masters.number == num %}
+                <span class="pag-link active">{{ num }}</span>
+            {% elif num > work_masters.number|add:'-3' and num < work_masters.number|add:'3' %}
+                <a class="pag-link" href="?page={{ num }}{% if work_name %}&work_name={{ work_name }}{% endif %}{% if work_code %}&work_code={{ work_code }}{% endif %}{% if overall_status %}&overall_status={{ overall_status }}{% endif %}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if work_masters.has_next %}
+            <a class="pag-link" href="?page={{ work_masters.next_page_number }}{% if work_name %}&work_name={{ work_name }}{% endif %}{% if work_code %}&work_code={{ work_code }}{% endif %}{% if overall_status %}&overall_status={{ overall_status }}{% endif %}">
+                <i class="fa fa-chevron-right" style="font-size:10px;"></i>
+            </a>
+        {% else %}
+            <span class="pag-link disabled"><i class="fa fa-chevron-right" style="font-size:10px;"></i></span>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Fund_Release
+from .models import Fund_Release,Kosh_Fund_Allocation, HeadAllocation
 
 
 @admin.register(Fund_Release)
@@ -33,3 +33,67 @@ class FundReleaseAdmin(admin.ModelAdmin):
     )
 
     ordering = ('-id',)
+
+
+
+
+@admin.register(Kosh_Fund_Allocation)
+class KoshFundAllocationAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'fund_release',
+        'kosh',
+        'allocated_amount',
+        'released_amount',
+        'balance_amount',
+        'allocated_date',
+        'status',
+        'created_at'
+    )
+
+    list_filter = (
+        'status',
+        'allocated_date',
+        'created_at'
+    )
+
+    search_fields = (
+        'kosh__name',
+        'fund_release__id',
+        'remark'
+    )
+
+    readonly_fields = (
+        'created_at',
+        'updated_at'
+    )
+
+    ordering = ('-created_at',)
+
+
+@admin.register(HeadAllocation)
+class HeadAllocationAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'kosh_fund_allocation',
+        'kosh_head',
+        'allocated_amount',
+        'utilize_amount',
+        'remaining_amount',
+        'created_at'
+    )
+
+    list_filter = (
+        'created_at',
+    )
+
+    search_fields = (
+        'kosh_head__name',
+    )
+
+    readonly_fields = (
+        'created_at',
+        'updated_at'
+    )
+
+    ordering = ('-created_at',)
