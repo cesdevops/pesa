@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+<style>
+    .as-header {
+        background: #fff;
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin-bottom: 20px;
+        border-left: 4px solid var(--gold);
+        box-shadow: 0 2px 6px rgba(13,43,69,.07);
+    }
+    .as-header h2 {
+        font-size: 18px;
+        color: var(--navy);
+        margin: 0 0 5px 0;
+        font-family: 'Noto Serif Devanagari', serif;
+    }
+    .as-header p {
+        font-size: 12px;
+        color: var(--muted);
+        margin: 0;
+    }
+    .work-info-bar {
+        background: #fff;
+        border-radius: 8px;
+        padding: 12px 20px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        border: 1px solid var(--gray2);
+    }
+    .work-info-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--text);
+    }
+    .work-info-item i {
+        font-size: 24px;
+        color: var(--gold);
+    }
+    .work-info-details h4 {
+        font-size: 12px;
+        margin: 0 0 3px 0;
+        opacity: 0.8;
+        color: var(--muted);
+    }
+    .work-info-details p {
+        font-size: 14px;
+        margin: 0;
+        font-weight: 600;
+        color: var(--navy);
+    }
+    .form-card {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(13,43,69,.1);
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+    .form-card-header {
+        background: var(--navy);
+        padding: 14px 20px;
+        border-bottom: 3px solid var(--gold);
+    }
+    .form-card-header h3 {
+        color: #fff;
+        font-size: 15px;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .form-card-header h3 i {
+        color: var(--gold);
+    }
+    .form-card-body {
+        padding: 25px;
+    }
+    .current-file {
+        background: #e8f4fd;
+        padding: 6px 10px;
+        border-radius: 4px;
+        font-size: 11px;
+        margin-top: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .current-file i, .current-file a {
+        color: var(--gold);
+        text-decoration: none;
+    }
+    .file-info {
+        font-size: 10px;
+        color: var(--muted);
+        margin-top: 8px;
+    }
+    .photo-preview {
+        max-width: 100px;
+        max-height: 100px;
+        margin-top: 5px;
+        border-radius: 4px;
+    }
+</style>
+
+<div class="container-fluid px-0 as-container">
+    <div class="as-header">
+        <h2><i class="fa fa-play-circle" style="color: var(--gold); margin-right: 8px;"></i> काम सुरू (Work Start)</h2>
+        <p>कृपया काम सुरू करतानाची सर्व माहिती भरून सबमिट करा</p>
+    </div>
+
+    <div class="work-info-bar">
+        <div class="work-info-item">
+            <i class="fa fa-briefcase"></i>
+            <div class="work-info-details">
+                <h4>कामाचे नाव</h4>
+                <p>{{ work_master.work_name|default:"—" }}</p>
+            </div>
+        </div>
+        <div class="work-info-item">
+            <i class="fa fa-code"></i>
+            <div class="work-info-details">
+                <h4>काम कोड</h4>
+                <p>{{ work_master.work_code|default:"—" }}</p>
+            </div>
+        </div>
+        <div class="work-info-item">
+            <i class="fa fa-map-marker-alt"></i>
+            <div class="work-info-details">
+                <h4>ठिकाण</h4>
+                <p>{{ work_master.work_location|default:"—" }}</p>
+            </div>
+        </div>
+        <div class="work-info-item">
+            <i class="fa fa-user"></i>
+            <div class="work-info-details">
+                <h4>कंत्राटदार</h4>
+                <p>{{ work_master.contractor_name|default:"—" }}</p>
+            </div>
+        </div>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-card">
+            <div class="form-card-header">
+                <h3><i class="fa fa-info-circle"></i> {% if is_edit %}काम सुरू माहिती संपादित करा{% else %}काम सुरू माहिती नोंद करा{% endif %}</h3>
+            </div>
+            <div class="form-card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fa fa-calendar"></i> नियोजित सुरू दिनांक</label>
+                        <input type="date" class="form-control form-control-sm" name="start_date" value="{{ work_start.start_date|date:'Y-m-d'|default:'' }}">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fa fa-calendar-check"></i> अपेक्षित पूर्णता दिनांक</label>
+                        <input type="date" class="form-control form-control-sm" name="expected_end_date" value="{{ work_start.expected_end_date|date:'Y-m-d'|default:'' }}">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fa fa-calendar-alt"></i> वास्तविक सुरू दिनांक</label>
+                        <input type="date" class="form-control form-control-sm" name="actual_start_date" value="{{ work_start.actual_start_date|date:'Y-m-d'|default:'' }}">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fa fa-map-pin"></i> साइट ठिकाण</label>
+                        <input type="text" class="form-control form-control-sm" name="site_location" value="{{ work_start.site_location|default:work_master.work_location|default:'' }}" placeholder="साइट ठिकाण">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fa fa-user-tie"></i> पर्यवेक्षक नाव</label>
+                        <input type="text" class="form-control form-control-sm" name="supervisor_name" value="{{ work_start.supervisor_name|default:'' }}" placeholder="पर्यवेक्षक नाव">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fa fa-user"></i> कंत्राटदार नाव</label>
+                        <input type="text" class="form-control form-control-sm" name="contractor_name" value="{{ work_start.contractor_name|default:work_master.contractor_name|default:'' }}" placeholder="कंत्राटदार नाव">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fa fa-flag"></i> स्थिती</label>
+                        <select class="form-select form-select-sm" name="status">
+                            <option value="Pending" {% if work_start.status == 'Pending' %}selected{% endif %}>प्रलंबित (Pending)</option>
+                            <option value="Started" {% if work_start.status == 'Started' %}selected{% endif %}>सुरू केले (Started)</option>
+                            <option value="On Hold" {% if work_start.status == 'On Hold' %}selected{% endif %}>स्थगित (On Hold)</option>
+                            <option value="Completed" {% if work_start.status == 'Completed' %}selected{% endif %}>पूर्ण (Completed)</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label"><i class="fa fa-chart-line"></i> प्रारंभिक काम स्थिती</label>
+                        <textarea class="form-control form-control-sm" name="initial_work_status" rows="3" placeholder="कामाची प्रारंभिक स्थिती वर्णन करा...">{{ work_start.initial_work_status|default:'' }}</textarea>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label"><i class="fa fa-comment"></i> सूचना / शेरा</label>
+                        <textarea class="form-control form-control-sm" name="remarks" rows="2" placeholder="अतिरिक्त सूचना...">{{ work_start.remarks|default:'' }}</textarea>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label"><i class="fa fa-image"></i> साइट फोटो</label>
+                        <div class="row g-2 mt-1">
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">फोटो 1</label>
+                                <input type="file" class="form-control form-control-sm" name="site_photo_1" accept="image/*">
+                                {% if work_start.site_photo_1 %}
+                                <div class="current-file"><i class="fa fa-image"></i><a href="{{ work_start.site_photo_1.url }}" target="_blank">सध्याचा फोटो पहा</a></div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">फोटो 2</label>
+                                <input type="file" class="form-control form-control-sm" name="site_photo_2" accept="image/*">
+                                {% if work_start.site_photo_2 %}
+                                <div class="current-file"><i class="fa fa-image"></i><a href="{{ work_start.site_photo_2.url }}" target="_blank">सध्याचा फोटो पहा</a></div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">फोटो 3</label>
+                                <input type="file" class="form-control form-control-sm" name="site_photo_3" accept="image/*">
+                                {% if work_start.site_photo_3 %}
+                                <div class="current-file"><i class="fa fa-image"></i><a href="{{ work_start.site_photo_3.url }}" target="_blank">सध्याचा फोटो पहा</a></div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label"><i class="fa fa-paperclip"></i> दस्तऐवज अपलोड</label>
+                        <div class="row g-2 mt-1">
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">प्रारंभ प्रमाणपत्र</label>
+                                <input type="file" class="form-control form-control-sm" name="commencement_certificate_document" accept=".pdf,.doc,.docx">
+                                {% if work_start.commencement_certificate_document %}
+                                <div class="current-file"><i class="fa fa-file-pdf"></i><a href="{{ work_start.commencement_certificate_document.url }}" target="_blank">सध्याची फाईल पहा</a></div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">पर्यवेक्षक अहवाल</label>
+                                <input type="file" class="form-control form-control-sm" name="supervisor_report_document" accept=".pdf,.doc,.docx">
+                                {% if work_start.supervisor_report_document %}
+                                <div class="current-file"><i class="fa fa-file-pdf"></i><a href="{{ work_start.supervisor_report_document.url }}" target="_blank">सध्याची फाईल पहा</a></div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold">इतर दस्तऐवज</label>
+                                <input type="file" class="form-control form-control-sm" name="other_document" accept=".pdf,.doc,.docx">
+                                {% if work_start.other_document %}
+                                <div class="current-file"><i class="fa fa-file-pdf"></i><a href="{{ work_start.other_document.url }}" target="_blank">सध्याची फाईल पहा</a></div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="file-info"><i class="fa fa-info-circle"></i> स्वीकारलेले फॉरमॅट: PDF, DOC, DOCX, JPG, PNG (कमाल 10MB)</div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
+                    <a href="{% url 'Activity-Work-Master' %}" class="btn btn-light btn-sm"><i class="fa fa-times"></i> रद्द करा</a>
+                    <button type="submit" class="btn btn-warning btn-sm" style="background: var(--gold); color: #fff; border: none;"><i class="fa fa-save"></i> {% if is_edit %}अपडेट करा{% else %}सबमिट करा{% endif %}</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+{% endblock %}

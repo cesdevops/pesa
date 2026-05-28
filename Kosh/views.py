@@ -1,5 +1,10 @@
 from django.shortcuts import get_object_or_404, redirect, render
+<<<<<<< HEAD
 from Main.models import Financial_Year, Kosh_Head, Super_User, Kosh_Head
+=======
+from FundRelease.models import Kosh_Fund_Allocation
+from Main.models import Financial_Year, Kosh_Head, Super_User
+>>>>>>> main
 from Main.utils import validate_clean_text, validate_file, validate_mobile_number
 from PanchayatSamiti.models import Panchayat_Samiti
 from django.contrib import messages
@@ -46,6 +51,7 @@ def Kosh_Dashboard(request):
         messages.error(request, "User Not Found")
         return redirect('Login')
 
+<<<<<<< HEAD
     # # Get all active Kosh Heads
     # all_heads = Kosh_Head.objects.filter(status='Active')
     
@@ -70,15 +76,40 @@ def Kosh_Dashboard(request):
     # # Calculate statistics
     # total_heads = all_heads.count()
     # active_heads = all_heads.filter(status='Active').count()
+=======
+    # Get all heads
+    all_heads = Kosh_Head.objects.filter(status='Active')
+
+    heads_with_percentages = []
+    total_percentage = 0
+
+    for head in all_heads:
+        percentage = float(head.percentage or 0)
+        total_percentage += percentage
+
+        heads_with_percentages.append({
+            'head': head,
+            'percentage': percentage
+        })
+
+    remaining_percentage = max(0, 100 - total_percentage)
+>>>>>>> main
 
     context = {
         'user_type': 'Kosh',
         'kosh_user': kosh_user,
+<<<<<<< HEAD
         # 'heads_with_percentages': heads_with_percentages,
         # 'total_percentage': round(total_percentage, 2),
         # 'remaining_percentage': round(remaining_percentage, 2),
         # 'total_heads': total_heads,
         # 'active_heads': active_heads,
+=======
+        'heads_with_percentages': heads_with_percentages,
+        'total_percentage': round(total_percentage, 2),
+        'remaining_percentage': round(remaining_percentage, 2),
+        'total_heads': all_heads.count(),
+>>>>>>> main
         **switch_kosh(request),
     }
 
@@ -1809,4 +1840,31 @@ def Kosh_Manage_Kosh_Committee(request):
 
 
 
-    
+def Kosh_fund_alloted_details(request):
+
+    # =========================
+    # LOGIN CHECK
+    # =========================
+    if request.session.get('user_type') != 'Kosh':
+        messages.error(request, "Unauthorized Access")
+        return redirect('Login')
+
+    user_id = request.session.get('user_id')
+
+    try:
+        kosh_user = Kosh_User.objects.get(id=user_id, status='Active')
+    except Kosh_User.DoesNotExist:
+        messages.error(request, "User Not Found")
+        return redirect('Login')
+
+    # =========================
+    # FUND ALLOCATION DATA
+    # =========================
+    fund_allocations = Kosh_Fund_Allocation.objects.all()
+
+    context = {
+        'kosh_user': kosh_user,
+        'fund_allocations': fund_allocations,
+    }
+
+    return render(request, 'Kosh_fund_alloted_details.html', context)

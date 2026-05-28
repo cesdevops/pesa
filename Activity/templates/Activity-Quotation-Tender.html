@@ -1,0 +1,373 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .as-header {
+        background: #fff;
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin-bottom: 20px;
+        border-left: 4px solid var(--gold);
+        box-shadow: 0 2px 6px rgba(13,43,69,.07);
+    }
+
+    .as-header h2 {
+        font-size: 18px;
+        color: var(--navy);
+        margin: 0 0 5px 0;
+        font-family: 'Noto Serif Devanagari', serif;
+    }
+
+    .as-header p {
+        font-size: 12px;
+        color: var(--muted);
+        margin: 0;
+    }
+
+    .work-info-bar {
+        background: #fff;
+        border-radius: 8px;
+        padding: 12px 20px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        border: 1px solid var(--gray2);
+    }
+
+    .work-info-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--text);
+    }
+
+    .work-info-item i {
+        font-size: 24px;
+        color: var(--gold);
+    }
+
+    .work-info-details h4 {
+        font-size: 12px;
+        margin: 0 0 3px 0;
+        opacity: 0.8;
+        color: var(--muted);
+    }
+
+    .work-info-details p {
+        font-size: 14px;
+        margin: 0;
+        font-weight: 600;
+        color: var(--navy);
+    }
+
+    .form-card {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(13,43,69,.1);
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+    .form-card-header {
+        background: var(--navy);
+        padding: 14px 20px;
+        border-bottom: 3px solid var(--gold);
+    }
+
+    .form-card-header h3 {
+        color: #fff;
+        font-size: 15px;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-card-header h3 i {
+        color: var(--gold);
+    }
+
+    .form-card-body {
+        padding: 25px;
+    }
+
+    .current-file {
+        background: #e8f4fd;
+        padding: 6px 10px;
+        border-radius: 4px;
+        font-size: 11px;
+        margin-top: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .current-file i {
+        color: var(--gold);
+    }
+
+    .file-info {
+        font-size: 10px;
+        color: var(--muted);
+        margin-top: 8px;
+    }
+</style>
+
+<div class="container-fluid px-0 as-container">
+    <!-- Header -->
+    <div class="as-header">
+        <h2>
+            <i class="fa fa-file-contract" style="color: var(--gold); margin-right: 8px;"></i>
+            कोटेशन / बी1 / निविदा (Quotation / B1 / Tender)
+        </h2>
+        <p>कृपया खालील सर्व माहिती भरून सबमिट करा</p>
+    </div>
+
+    <!-- Work Information Bar -->
+    <div class="work-info-bar">
+        <div class="work-info-item">
+            <i class="fa fa-briefcase"></i>
+            <div class="work-info-details">
+                <h4>कामाचे नाव</h4>
+                <p>{{ work_master.work_name|default:"—" }}</p>
+            </div>
+        </div>
+        <div class="work-info-item">
+            <i class="fa fa-code"></i>
+            <div class="work-info-details">
+                <h4>काम कोड</h4>
+                <p>{{ work_master.work_code|default:"—" }}</p>
+            </div>
+        </div>
+        <div class="work-info-item">
+            <i class="fa fa-map-marker-alt"></i>
+            <div class="work-info-details">
+                <h4>ठिकाण</h4>
+                <p>{{ work_master.work_location|default:"—" }}</p>
+            </div>
+        </div>
+        <div class="work-info-item">
+            <i class="fa fa-rupee-sign"></i>
+            <div class="work-info-details">
+                <h4>अंदाजित रक्कम</h4>
+                <p>₹ {{ work_master.estimated_amount|floatformat:2|default:"0" }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-card">
+            <div class="form-card-header">
+                <h3>
+                    <i class="fa fa-info-circle"></i>
+                    {% if is_edit %}कोटेशन/बी1/निविदा संपादित करा{% else %}कोटेशन/बी1/निविदा नोंद करा{% endif %}
+                </h3>
+            </div>
+            <div class="form-card-body">
+                <div class="row g-3">
+                    <!-- Process Type -->
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fa fa-tag"></i> प्रक्रिया प्रकार</label>
+                        <select class="form-select form-select-sm" name="process_type">
+                            <option value="">-- निवडा --</option>
+                            <option value="Quotation" {% if quotation_tender.process_type == 'Quotation' %}selected{% endif %}>कोटेशन (Quotation)</option>
+                            <option value="B1" {% if quotation_tender.process_type == 'B1' %}selected{% endif %}>बी1 (B1)</option>
+                            <option value="Tender" {% if quotation_tender.process_type == 'Tender' %}selected{% endif %}>निविदा (Tender)</option>
+                        </select>
+                    </div>
+
+                    <!-- Process Number -->
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fa fa-hashtag"></i> प्रक्रिया क्रमांक</label>
+                        <input type="text" class="form-control form-control-sm" name="process_number" value="{{ quotation_tender.process_number|default:'' }}" placeholder="उदा. QTN/2024/001">
+                    </div>
+
+                    <!-- Process Date -->
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fa fa-calendar"></i> प्रक्रिया दिनांक</label>
+                        <input type="date" class="form-control form-control-sm" name="process_date" value="{{ quotation_tender.process_date|date:'Y-m-d'|default:'' }}">
+                    </div>
+
+                    <!-- Work Name -->
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fa fa-briefcase"></i> कामाचे नाव</label>
+                        <input type="text" class="form-control form-control-sm" name="work_name" value="{{ quotation_tender.work_name|default:work_master.work_name|default:'' }}" placeholder="कामाचे नाव">
+                    </div>
+
+                    <!-- Estimated Amount -->
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fa fa-calculator"></i> अंदाजित रक्कम (₹)</label>
+                        <input type="number" step="0.01" class="form-control form-control-sm" name="estimated_amount" value="{{ quotation_tender.estimated_amount|default:work_master.estimated_amount|default:'' }}" placeholder="अंदाजित रक्कम">
+                    </div>
+
+                    <!-- Finalized Amount -->
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fa fa-check-circle"></i> अंतिम रक्कम (₹)</label>
+                        <input type="number" step="0.01" class="form-control form-control-sm" name="finalized_amount" value="{{ quotation_tender.finalized_amount|default:'' }}" placeholder="अंतिम रक्कम">
+                    </div>
+
+                    <!-- Vendor Name -->
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fa fa-store"></i> विक्रेता नाव</label>
+                        <input type="text" class="form-control form-control-sm" name="vendor_name" value="{{ quotation_tender.vendor_name|default:'' }}" placeholder="विक्रेता नाव">
+                    </div>
+
+                    <!-- Contractor Name -->
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fa fa-user"></i> कंत्राटदार नाव</label>
+                        <input type="text" class="form-control form-control-sm" name="contractor_name" value="{{ quotation_tender.contractor_name|default:'' }}" placeholder="कंत्राटदार नाव">
+                    </div>
+
+                    <!-- Contractor Mobile -->
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fa fa-phone"></i> कंत्राटदार मोबाईल</label>
+                        <input type="text" class="form-control form-control-sm" name="contractor_mobile" value="{{ quotation_tender.contractor_mobile|default:'' }}" placeholder="कंत्राटदार मोबाईल क्रमांक">
+                    </div>
+
+                    <!-- Contractor Address -->
+                    <div class="col-12">
+                        <label class="form-label"><i class="fa fa-map-pin"></i> कंत्राटदार पत्ता</label>
+                        <textarea class="form-control form-control-sm" name="contractor_address" rows="2" placeholder="कंत्राटदार पूर्ण पत्ता...">{{ quotation_tender.contractor_address|default:'' }}</textarea>
+                    </div>
+
+                    <!-- Work Description -->
+                    <div class="col-12">
+                        <label class="form-label"><i class="fa fa-file-alt"></i> कामाचे वर्णन</label>
+                        <textarea class="form-control form-control-sm" name="work_description" rows="3" placeholder="कामाचे तपशीलवार वर्णन...">{{ quotation_tender.work_description|default:'' }}</textarea>
+                    </div>
+
+                    <!-- Comparative Analysis -->
+                    <div class="col-12">
+                        <label class="form-label"><i class="fa fa-chart-line"></i> तुलनात्मक विश्लेषण</label>
+                        <textarea class="form-control form-control-sm" name="comparative_analysis" rows="3" placeholder="विविध विक्रेत्यांचे तुलनात्मक विश्लेषण...">{{ quotation_tender.comparative_analysis|default:'' }}</textarea>
+                    </div>
+
+                    <!-- Selection Reason -->
+                    <div class="col-12">
+                        <label class="form-label"><i class="fa fa-question-circle"></i> निवडीचे कारण</label>
+                        <textarea class="form-control form-control-sm" name="selection_reason" rows="2" placeholder="हा विक्रेता/कंत्राटदार का निवडला?">{{ quotation_tender.selection_reason|default:'' }}</textarea>
+                    </div>
+
+                    <!-- Remarks -->
+                    <div class="col-12">
+                        <label class="form-label"><i class="fa fa-comment"></i> सूचना / शेरा</label>
+                        <textarea class="form-control form-control-sm" name="remarks" rows="2" placeholder="अतिरिक्त सूचना असल्यास...">{{ quotation_tender.remarks|default:'' }}</textarea>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fa fa-flag"></i> स्थिती</label>
+                        <select class="form-select form-select-sm" name="status">
+                            <option value="Pending" {% if quotation_tender.status == 'Pending' %}selected{% endif %}>प्रलंबित (Pending)</option>
+                            <option value="Quotation Process" {% if quotation_tender.status == 'Quotation Process' %}selected{% endif %}>कोटेशन प्रक्रिया (Quotation Process)</option>
+                            <option value="B1 Process" {% if quotation_tender.status == 'B1 Process' %}selected{% endif %}>बी1 प्रक्रिया (B1 Process)</option>
+                            <option value="Tender Process" {% if quotation_tender.status == 'Tender Process' %}selected{% endif %}>निविदा प्रक्रिया (Tender Process)</option>
+                            <option value="Contractor Finalized" {% if quotation_tender.status == 'Contractor Finalized' %}selected{% endif %}>कंत्राटदार अंतिम (Contractor Finalized)</option>
+                            <option value="Approved" {% if quotation_tender.status == 'Approved' %}selected{% endif %}>मंजूर (Approved)</option>
+                            <option value="Rejected" {% if quotation_tender.status == 'Rejected' %}selected{% endif %}>नामंजूर (Rejected)</option>
+                        </select>
+                    </div>
+
+                    <!-- Documents Section -->
+                    <div class="col-12">
+                        <label class="form-label"><i class="fa fa-paperclip"></i> दस्तऐवज अपलोड</label>
+                        <div class="row g-2 mt-1">
+                            <!-- Quotation Form Document -->
+                            <div class="col-md-6 col-lg-4">
+                                <div class="file-input-wrapper">
+                                    <label class="form-label small fw-bold">कोटेशन फॉर्म</label>
+                                    <input type="file" class="form-control form-control-sm" name="quotation_form_document" accept=".pdf,.doc,.docx,.xls,.xlsx">
+                                    {% if quotation_tender.quotation_form_document %}
+                                    <div class="current-file mt-1">
+                                        <i class="fa fa-file-pdf"></i>
+                                        <a href="{{ quotation_tender.quotation_form_document.url }}" target="_blank" class="text-decoration-none">सध्याची फाईल पहा</a>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Comparative Statement Document -->
+                            <div class="col-md-6 col-lg-4">
+                                <div class="file-input-wrapper">
+                                    <label class="form-label small fw-bold">तुलनात्मक विवरण</label>
+                                    <input type="file" class="form-control form-control-sm" name="comparative_statement_document" accept=".pdf,.doc,.docx,.xls,.xlsx">
+                                    {% if quotation_tender.comparative_statement_document %}
+                                    <div class="current-file mt-1">
+                                        <i class="fa fa-file-pdf"></i>
+                                        <a href="{{ quotation_tender.comparative_statement_document.url }}" target="_blank" class="text-decoration-none">सध्याची फाईल पहा</a>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Contractor Agreement Document -->
+                            <div class="col-md-6 col-lg-4">
+                                <div class="file-input-wrapper">
+                                    <label class="form-label small fw-bold">कंत्राटदार करार</label>
+                                    <input type="file" class="form-control form-control-sm" name="contractor_agreement_document" accept=".pdf,.doc,.docx">
+                                    {% if quotation_tender.contractor_agreement_document %}
+                                    <div class="current-file mt-1">
+                                        <i class="fa fa-file-pdf"></i>
+                                        <a href="{{ quotation_tender.contractor_agreement_document.url }}" target="_blank" class="text-decoration-none">सध्याची फाईल पहा</a>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Tender Document -->
+                            <div class="col-md-6 col-lg-4">
+                                <div class="file-input-wrapper">
+                                    <label class="form-label small fw-bold">निविदा दस्तऐवज</label>
+                                    <input type="file" class="form-control form-control-sm" name="tender_document" accept=".pdf,.doc,.docx">
+                                    {% if quotation_tender.tender_document %}
+                                    <div class="current-file mt-1">
+                                        <i class="fa fa-file-pdf"></i>
+                                        <a href="{{ quotation_tender.tender_document.url }}" target="_blank" class="text-decoration-none">सध्याची फाईल पहा</a>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Other Document -->
+                            <div class="col-md-6 col-lg-4">
+                                <div class="file-input-wrapper">
+                                    <label class="form-label small fw-bold">इतर दस्तऐवज</label>
+                                    <input type="file" class="form-control form-control-sm" name="other_document" accept=".pdf,.doc,.docx">
+                                    {% if quotation_tender.other_document %}
+                                    <div class="current-file mt-1">
+                                        <i class="fa fa-file-pdf"></i>
+                                        <a href="{{ quotation_tender.other_document.url }}" target="_blank" class="text-decoration-none">सध्याची फाईल पहा</a>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="file-info">
+                            <i class="fa fa-info-circle"></i> स्वीकारलेले फॉरमॅट: PDF, DOC, DOCX, XLS, XLSX (कमाल 10MB)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
+                    <a href="{% url 'Activity-Work-Master' %}" class="btn btn-light btn-sm">
+                        <i class="fa fa-times"></i> रद्द करा
+                    </a>
+                    <button type="submit" class="btn btn-warning btn-sm" style="background: var(--gold); color: #fff; border: none;">
+                        <i class="fa fa-save"></i> {% if is_edit %}अपडेट करा{% else %}सबमिट करा{% endif %}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+{% endblock %}

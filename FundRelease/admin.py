@@ -1,35 +1,33 @@
 from django.contrib import admin
-from .models import Fund_Release
+from .models import Fund_Release, Kosh_Fund_Allocation, HeadAllocation
 
-
+                      
 @admin.register(Fund_Release)
 class FundReleaseAdmin(admin.ModelAdmin):
-
     list_display = (
         'id',
-        'financial_year',
-        'added_by',
         'release_name',
+        'financial_year',
+        'zilla_parishad',
         'installment',
         'release_order_no',
         'release_date',
         'total_amount',
+        'fund_distributed',
+        'created_at',
+    )
+
+    list_filter = (
+        'financial_year',
+        'fund_distributed',
+        'installment',
         'created_at',
     )
 
     search_fields = (
         'release_name',
         'release_order_no',
-        'installment',
-        'added_by__name',
-        'added_by__username',
+        'remarks',
     )
 
-    list_filter = (
-        'financial_year',
-        'installment',
-        'release_date',
-        'created_at',
-    )
-
-    ordering = ('-id',)
+    ordering = ('-created_at',)

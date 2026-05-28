@@ -27,7 +27,10 @@ class Activity(models.Model):
     def __str__(self):
         return self.activity_name or ''
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> main
 # ─────────────────────────────────────────────────────────────
 # WORK MASTER
 # ─────────────────────────────────────────────────────────────
@@ -40,7 +43,11 @@ class Work_Master(models.Model):
         ('Cancelled', 'Cancelled'),
     )
 
+<<<<<<< HEAD
     # activity = models.ForeignKey(Activity, on_delete=models.SET_NULL, null=True, blank=True, related_name='work_masters')
+=======
+    activity = models.ForeignKey('Activity', on_delete=models.SET_NULL, null=True, blank=True, related_name='work_masters')
+>>>>>>> main
     kosh_fund_allocation = models.ForeignKey(Kosh_Fund_Allocation, on_delete=models.SET_NULL, null=True, blank=True, related_name='work_masters')
 
     # Basic Work Information

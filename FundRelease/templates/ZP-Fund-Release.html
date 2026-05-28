@@ -675,6 +675,10 @@
         <thead>
           <tr>
             <th>#</th>
+<<<<<<< HEAD
+=======
+            <th>निधी आयडी</th>
+>>>>>>> main
             <th>आर्थिक वर्ष</th>
             <th>वितरण नाव</th>
             <th>हप्ता</th>
@@ -690,6 +694,10 @@
           {% for release in all_fund_release %}
           <tr>
             <td style="color:var(--text-3); font-family:'DM Mono',monospace;">{{ forloop.counter }}</td>
+<<<<<<< HEAD
+=======
+            <td><span class="badge badge-year">{{ release.id }}</span></td>
+>>>>>>> main
             <td><span class="badge badge-year">{{ release.financial_year.year }}</span></td>
             <td><span class="fw-semibold">{{ release.release_name }}</span></td>
             <td><span class="badge badge-installment">हप्ता {{ release.installment }}</span></td>
@@ -705,7 +713,11 @@
             </td>
             <td>{{ release.remarks|truncatechars:30|default:"—" }}</td>
             <td>
+<<<<<<< HEAD
                 <a href="{% url 'ZP-Allocation-Chart' release.financial_year.year release.added_by.id %}"
+=======
+                <a href="{% url 'ZP-Allocation-Chart' release.financial_year.year release.added_by.id release.id %}"
+>>>>>>> main
                 class="btn btn-sm btn-primary rounded-pill px-3">
 
                     वाटप तक्ता

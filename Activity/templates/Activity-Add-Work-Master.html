@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+.fm-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+.fm-page-header h2 {
+    font-family: 'Noto Serif Devanagari', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 0;
+}
+.fm-page-header p {
+    font-size: 11px;
+    color: var(--muted);
+    margin: 2px 0 0;
+}
+
+.fm-card {
+    background: #fff;
+    border: 1px solid var(--gray2);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(13,43,69,.07);
+}
+.fm-card-header {
+    background: var(--navy);
+    padding: 9px 14px;
+    border-bottom: 2px solid var(--gold);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.fm-card-header i  { color: var(--gold); font-size: 13px; }
+.fm-card-header span {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    font-family: 'Noto Serif Devanagari', serif;
+}
+
+.fm-card-body { padding: 16px; }
+
+.fm-section-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--navy3);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    border-bottom: 1px solid var(--gray2);
+    padding-bottom: 5px;
+    margin: 0 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.fm-section-label i { color: var(--gold); font-size: 11px; }
+
+.fm-grid   { display: grid; gap: 12px; margin-bottom: 14px; }
+.fm-grid-2 { grid-template-columns: 1fr 1fr; }
+.fm-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+.fm-grid-1 { grid-template-columns: 1fr; }
+
+.fm-field { display: flex; flex-direction: column; gap: 3px; }
+.fm-field label {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+.fm-field label .req { color: #c0392b; margin-left: 2px; }
+
+.fm-field input,
+.fm-field select,
+.fm-field textarea {
+    padding: 6px 9px;
+    font-size: 12.5px;
+    font-family: 'Noto Sans Devanagari', sans-serif;
+    border: 1px solid var(--gray2);
+    border-radius: 4px;
+    color: var(--text);
+    background: #fff;
+    outline: none;
+    width: 100%;
+    transition: border-color .15s;
+}
+.fm-field input:focus,
+.fm-field select:focus,
+.fm-field textarea:focus {
+    border-color: var(--navy3);
+    box-shadow: 0 0 0 2px rgba(26,82,118,.08);
+}
+.fm-field textarea { resize: vertical; min-height: 68px; }
+.fm-field .hint {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 1px;
+}
+
+/* optgroup style */
+select optgroup {
+    font-weight: 700;
+    color: var(--navy);
+    font-size: 11.5px;
+    background: #f4f7fa;
+}
+select option {
+    font-weight: 400;
+    color: var(--text);
+    padding-left: 8px;
+}
+
+.fm-divider {
+    height: 1px;
+    background: var(--gray2);
+    margin: 2px 0 14px;
+}
+
+.fm-footer {
+    padding: 10px 14px;
+    background: #f7f9fb;
+    border-top: 1px solid var(--gray2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.fm-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 18px;
+    font-size: 12.5px;
+    font-weight: 600;
+    font-family: inherit;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background .15s;
+}
+.fm-btn-submit { background: var(--navy); color: #fff; }
+.fm-btn-submit:hover { background: var(--navy2); }
+.fm-btn-cancel { background: #fff; color: var(--muted); border: 1px solid var(--gray2); }
+.fm-btn-cancel:hover { background: var(--gray1); color: var(--navy); }
+</style>
+
+<!-- Page header -->
+<div class="fm-page-header">
+    <div>
+        <h2>
+            <i class="fa fa-plus-circle" style="color:var(--gold);margin-right:7px;font-size:14px;"></i>
+            नवीन काम नोंदवा
+        </h2>
+    </div>
+    <a href="{% url 'Activity-Work-Master' %}" class="fm-btn fm-btn-cancel">
+        <i class="fa fa-arrow-left"></i> परत जा
+    </a>
+</div>
+
+<div class="fm-card">
+    <div class="fm-card-header">
+        <i class="fa fa-file-alt"></i>
+        <span>Work Master — नोंदणी फॉर्म</span>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="fm-card-body">
+
+            <!-- ── Section 1: Fund & Activity ── -->
+            <div class="fm-section-label">
+                <i class="fa fa-wallet"></i> निधी व उपक्रम निवड
+            </div>
+
+            <div class="fm-grid fm-grid-3">
+
+                <div class="fm-field">
+
+                    <label>निवडलेला कोश (Selected Kosh)</label>
+
+                    <input type="text"
+                        class="form-control"
+                        value="{{ active_kosh.kosh_name }}"
+                        readonly>
+
+                </div>
+
+                <div class="fm-field">
+                    <label>कोश प्रमुख <span class="req">*</span></label>
+                    <select name="kosh_head" required>
+                        <option value="">-- निवडा --</option>
+                        {% for head in kosh_heads %}
+                        <option value="{{ head.id }}">{{ head.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="hint">उपक्रम निवडण्यासाठी प्रथम प्रमुख निवडा</span>
+                </div>
+
+                <div class="fm-field">
+                    <label>उपक्रम (Activity) <span class="req">*</span></label>
+                    <select name="activity" required>
+                        <option value="">-- निवडा --</option>
+                        {% regroup activities by kosh_head as activity_groups %}
+                        {% for group in activity_groups %}
+                        <optgroup label="{{ group.grouper.name|default:'इतर' }}">
+                            {% for activity in group.list %}
+                            <option value="{{ activity.id }}">{{ activity.activity_name }}</option>
+                            {% endfor %}
+                        </optgroup>
+                        {% endfor %}
+                    </select>
+                    <span class="hint">कोश प्रमुखानुसार गटबद्ध उपक्रम</span>
+                </div>
+
+            </div>
+
+            <div class="fm-divider"></div>
+
+            <!-- ── Section 2: Work Basic Info ── -->
+            <div class="fm-section-label">
+                <i class="fa fa-briefcase"></i> कामाची मूलभूत माहिती
+            </div>
+
+            <div class="fm-grid fm-grid-2">
+                <div class="fm-field">
+                    <label>काम नाव (Work Name) <span class="req">*</span></label>
+                    <input type="text" name="work_name" placeholder="कामाचे संपूर्ण नाव लिहा..." required>
+                </div>
+                <div class="fm-field">
+                    <label>काम कोड (Work Code)</label>
+                    <input type="text" name="work_code" placeholder="उदा. WM-2025-001">
+                </div>
+            </div>
+
+            <div class="fm-grid fm-grid-1">
+                <div class="fm-field">
+                    <label>काम वर्णन (Work Description)</label>
+                    <textarea name="work_description" placeholder="कामाचे थोडक्यात वर्णन लिहा..."></textarea>
+                </div>
+            </div>
+
+            <div class="fm-grid fm-grid-2">
+                <div class="fm-field">
+                    <label>काम ठिकाण (Work Location)</label>
+                    <input type="text" name="work_location" placeholder="गाव / तालुका / जिल्हा">
+                </div>
+                <div class="fm-field">
+                    <label>एकूण स्थिती (Overall Status)</label>
+                    <select name="overall_status">
+                        {% for value, label in status_choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="fm-divider"></div>
+
+            <!-- ── Section 3: Financial ── -->
+            <div class="fm-section-label">
+                <i class="fa fa-rupee-sign"></i> आर्थिक माहिती
+            </div>
+
+            <div class="fm-grid fm-grid-2">
+                <div class="fm-field">
+                    <label>अंदाजित रक्कम ₹ (Estimated Amount)</label>
+                    <input type="number" step="0.01" name="estimated_amount" placeholder="0.00" min="0">
+                </div>
+                <div class="fm-field">
+                    <label>मंजूर रक्कम ₹ (Approved Amount)</label>
+                    <input type="number" step="0.01" name="approved_amount" placeholder="0.00" min="0">
+                </div>
+            </div>
+
+        </div><!-- /fm-card-body -->
+
+        <div class="fm-footer">
+            <button type="submit" class="fm-btn fm-btn-submit">
+                <i class="fa fa-save"></i> जतन करा
+            </button>
+            <a href="{% url 'Activity-Work-Master' %}" class="fm-btn fm-btn-cancel">
+                <i class="fa fa-times"></i> रद्द करा
+            </a>
+        </div>
+
+    </form>
+</div>
+
+{% endblock %}

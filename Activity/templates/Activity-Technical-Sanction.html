@@ -1,0 +1,389 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .as-header {
+        background: #fff;
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin-bottom: 20px;
+        border-left: 4px solid var(--gold);
+        box-shadow: 0 2px 6px rgba(13,43,69,.07);
+    }
+
+    .as-header h2 {
+        font-size: 18px;
+        color: var(--navy);
+        margin: 0 0 5px 0;
+        font-family: 'Noto Serif Devanagari', serif;
+    }
+
+    .as-header p {
+        font-size: 12px;
+        color: var(--muted);
+        margin: 0;
+    }
+
+    .work-info-bar {
+        background: #fff;
+        border-radius: 8px;
+        padding: 12px 20px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        border: 1px solid var(--gray2);
+    }
+
+    .work-info-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--text);
+    }
+
+    .work-info-item i {
+        font-size: 24px;
+        color: var(--gold);
+    }
+
+    .work-info-details h4 {
+        font-size: 12px;
+        margin: 0 0 3px 0;
+        opacity: 0.8;
+        color: var(--muted);
+    }
+
+    .work-info-details p {
+        font-size: 14px;
+        margin: 0;
+        font-weight: 600;
+        color: var(--navy);
+    }
+
+    .form-card {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(13,43,69,.1);
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+    .form-card-header {
+        background: var(--navy);
+        padding: 14px 20px;
+        border-bottom: 3px solid var(--gold);
+    }
+
+    .form-card-header h3 {
+        color: #fff;
+        font-size: 15px;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-card-header h3 i {
+        color: var(--gold);
+    }
+
+    .form-card-body {
+        padding: 25px;
+    }
+
+    .current-file {
+        background: #e8f4fd;
+        padding: 6px 10px;
+        border-radius: 4px;
+        font-size: 11px;
+        margin-top: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .current-file i {
+        color: var(--gold);
+    }
+
+    .file-info {
+        font-size: 10px;
+        color: var(--muted);
+        margin-top: 8px;
+    }
+</style>
+
+<div class="container-fluid px-0 as-container">
+    <!-- Header -->
+    <div class="as-header">
+        <h2>
+            <i class="fa fa-cogs" style="color: var(--gold); margin-right: 8px;"></i>
+            तांत्रिक मान्यता (Technical Sanction)
+        </h2>
+        <p>कृपया खालील सर्व माहिती भरून सबमिट करा</p>
+    </div>
+
+    <!-- Work Information Bar -->
+    <div class="work-info-bar">
+        <div class="work-info-item">
+            <i class="fa fa-briefcase"></i>
+            <div class="work-info-details">
+                <h4>कामाचे नाव</h4>
+                <p>{{ work_master.work_name|default:"—" }}</p>
+            </div>
+        </div>
+        <div class="work-info-item">
+            <i class="fa fa-code"></i>
+            <div class="work-info-details">
+                <h4>काम कोड</h4>
+                <p>{{ work_master.work_code|default:"—" }}</p>
+            </div>
+        </div>
+        <div class="work-info-item">
+            <i class="fa fa-map-marker-alt"></i>
+            <div class="work-info-details">
+                <h4>ठिकाण</h4>
+                <p>{{ work_master.work_location|default:"—" }}</p>
+            </div>
+        </div>
+        <div class="work-info-item">
+            <i class="fa fa-rupee-sign"></i>
+            <div class="work-info-details">
+                <h4>अंदाजित रक्कम</h4>
+                <p>₹ {{ work_master.estimated_amount|floatformat:2|default:"0" }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-card">
+            <div class="form-card-header">
+                <h3>
+                    <i class="fa fa-info-circle"></i>
+                    {% if is_edit %}तांत्रिक मान्यता संपादित करा{% else %}तांत्रिक मान्यता नोंद करा{% endif %}
+                </h3>
+            </div>
+            <div class="form-card-body">
+                <div class="row g-3">
+                    <!-- Technical Sanction Number -->
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fa fa-hashtag"></i> तांत्रिक मान्यता क्रमांक</label>
+                        <input type="text" class="form-control form-control-sm" name="technical_sanction_number" value="{{ tech_sanction.technical_sanction_number|default:'' }}" placeholder="उदा. TECH/SAN/2024/001">
+                    </div>
+
+                    <!-- Technical Category -->
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fa fa-tag"></i> तांत्रिक श्रेणी</label>
+                        <select class="form-select form-select-sm" name="technical_category">
+                            <option value="">-- निवडा --</option>
+                            <option value="Education" {% if tech_sanction.technical_category == 'Education' %}selected{% endif %}>शिक्षण (Education)</option>
+                            <option value="Healthcare" {% if tech_sanction.technical_category == 'Healthcare' %}selected{% endif %}>आरोग्य सेवा (Healthcare)</option>
+                            <option value="Infrastructure" {% if tech_sanction.technical_category == 'Infrastructure' %}selected{% endif %}>पायाभूत सुविधा (Infrastructure)</option>
+                            <option value="Water Supply" {% if tech_sanction.technical_category == 'Water Supply' %}selected{% endif %}>पाणी पुरवठा (Water Supply)</option>
+                            <option value="Road Development" {% if tech_sanction.technical_category == 'Road Development' %}selected{% endif %}>रस्ता विकास (Road Development)</option>
+                            <option value="Sanitation" {% if tech_sanction.technical_category == 'Sanitation' %}selected{% endif %}>स्वच्छता (Sanitation)</option>
+                            <option value="Other" {% if tech_sanction.technical_category == 'Other' %}selected{% endif %}>इतर (Other)</option>
+                        </select>
+                    </div>
+
+                    <!-- Estimated Amount -->
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fa fa-calculator"></i> अंदाजित रक्कम (₹)</label>
+                        <input type="number" step="0.01" class="form-control form-control-sm" name="estimated_amount" value="{{ tech_sanction.estimated_amount|default:work_master.estimated_amount|default:'' }}" placeholder="अंदाजित रक्कम">
+                    </div>
+
+                    <!-- Approved Amount -->
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fa fa-check-circle"></i> मंजूर रक्कम (₹)</label>
+                        <input type="number" step="0.01" class="form-control form-control-sm" name="approved_amount" value="{{ tech_sanction.approved_amount|default:work_master.approved_amount|default:'' }}" placeholder="मंजूर रक्कम">
+                    </div>
+
+                    <!-- Sanction Date -->
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fa fa-calendar"></i> मान्यता दिनांक</label>
+                        <input type="date" class="form-control form-control-sm" name="sanction_date" value="{{ tech_sanction.sanction_date|date:'Y-m-d'|default:'' }}">
+                    </div>
+
+                    <!-- Inspection Date -->
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fa fa-clipboard-list"></i> तपासणी दिनांक</label>
+                        <input type="date" class="form-control form-control-sm" name="inspection_date" value="{{ tech_sanction.inspection_date|date:'Y-m-d'|default:'' }}">
+                    </div>
+
+                    <!-- Engineer Name -->
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fa fa-user"></i> अभियंता नाव</label>
+                        <input type="text" class="form-control form-control-sm" name="engineer_name" value="{{ tech_sanction.engineer_name|default:'' }}" placeholder="अभियंता नाव">
+                    </div>
+
+                    <!-- Engineer Designation -->
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fa fa-id-card"></i> अभियंता पद</label>
+                        <input type="text" class="form-control form-control-sm" name="engineer_designation" value="{{ tech_sanction.engineer_designation|default:'' }}" placeholder="अभियंता पद">
+                    </div>
+
+                    <!-- Technical Specification -->
+                    <div class="col-12">
+                        <label class="form-label"><i class="fa fa-file-alt"></i> तांत्रिक तपशील</label>
+                        <textarea class="form-control form-control-sm" name="technical_specification" rows="3" placeholder="तांत्रिक तपशील लिहा...">{{ tech_sanction.technical_specification|default:'' }}</textarea>
+                    </div>
+
+                    <!-- Work Scope -->
+                    <div class="col-12">
+                        <label class="form-label"><i class="fa fa-tasks"></i> कामाची व्याप्ती</label>
+                        <textarea class="form-control form-control-sm" name="work_scope" rows="3" placeholder="कामाची व्याप्ती स्पष्ट करा...">{{ tech_sanction.work_scope|default:'' }}</textarea>
+                    </div>
+
+                    <!-- Site Details -->
+                    <div class="col-12">
+                        <label class="form-label"><i class="fa fa-map"></i> साइट तपशील</label>
+                        <textarea class="form-control form-control-sm" name="site_details" rows="2" placeholder="साइटची माहिती...">{{ tech_sanction.site_details|default:'' }}</textarea>
+                    </div>
+
+                    <!-- Measurement Details -->
+                    <div class="col-12">
+                        <label class="form-label"><i class="fa fa-ruler"></i> मापन तपशील</label>
+                        <textarea class="form-control form-control-sm" name="measurement_details" rows="2" placeholder="मापन तपशील...">{{ tech_sanction.measurement_details|default:'' }}</textarea>
+                    </div>
+
+                    <!-- Material Details -->
+                    <div class="col-12">
+                        <label class="form-label"><i class="fa fa-box"></i> साहित्य तपशील</label>
+                        <textarea class="form-control form-control-sm" name="material_details" rows="2" placeholder="साहित्याची माहिती...">{{ tech_sanction.material_details|default:'' }}</textarea>
+                    </div>
+
+                    <!-- Approval Remark -->
+                    <div class="col-12">
+                        <label class="form-label"><i class="fa fa-comment"></i> मंजुरी शेरा</label>
+                        <textarea class="form-control form-control-sm" name="approval_remark" rows="2" placeholder="मंजुरी संबंधित सूचना...">{{ tech_sanction.approval_remark|default:'' }}</textarea>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fa fa-flag"></i> स्थिती</label>
+                        <select class="form-select form-select-sm" name="status">
+                            <option value="Pending" {% if tech_sanction.status == 'Pending' %}selected{% endif %}>प्रलंबित (Pending)</option>
+                            <option value="Submitted" {% if tech_sanction.status == 'Submitted' %}selected{% endif %}>सादर केले (Submitted)</option>
+                            <option value="Approved" {% if tech_sanction.status == 'Approved' %}selected{% endif %}>मंजूर (Approved)</option>
+                            <option value="Rejected" {% if tech_sanction.status == 'Rejected' %}selected{% endif %}>नामंजूर (Rejected)</option>
+                        </select>
+                    </div>
+
+                    <!-- Documents Section -->
+                    <div class="col-12">
+                        <label class="form-label"><i class="fa fa-paperclip"></i> दस्तऐवज अपलोड</label>
+                        <div class="row g-2 mt-1">
+                            <!-- Technical Estimate Document -->
+                            <div class="col-md-6 col-lg-4">
+                                <div class="file-input-wrapper">
+                                    <label class="form-label small fw-bold">तांत्रिक अंदाजपत्रक</label>
+                                    <input type="file" class="form-control form-control-sm" name="technical_estimate_document" accept=".pdf,.doc,.docx">
+                                    {% if tech_sanction.technical_estimate_document %}
+                                    <div class="current-file mt-1">
+                                        <i class="fa fa-file-pdf"></i>
+                                        <a href="{{ tech_sanction.technical_estimate_document.url }}" target="_blank" class="text-decoration-none">सध्याची फाईल पहा</a>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Site Inspection Document -->
+                            <div class="col-md-6 col-lg-4">
+                                <div class="file-input-wrapper">
+                                    <label class="form-label small fw-bold">साइट तपासणी अहवाल</label>
+                                    <input type="file" class="form-control form-control-sm" name="site_inspection_document" accept=".pdf,.doc,.docx">
+                                    {% if tech_sanction.site_inspection_document %}
+                                    <div class="current-file mt-1">
+                                        <i class="fa fa-file-pdf"></i>
+                                        <a href="{{ tech_sanction.site_inspection_document.url }}" target="_blank" class="text-decoration-none">सध्याची फाईल पहा</a>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Engineer Report Document -->
+                            <div class="col-md-6 col-lg-4">
+                                <div class="file-input-wrapper">
+                                    <label class="form-label small fw-bold">अभियंता अहवाल</label>
+                                    <input type="file" class="form-control form-control-sm" name="engineer_report_document" accept=".pdf,.doc,.docx">
+                                    {% if tech_sanction.engineer_report_document %}
+                                    <div class="current-file mt-1">
+                                        <i class="fa fa-file-pdf"></i>
+                                        <a href="{{ tech_sanction.engineer_report_document.url }}" target="_blank" class="text-decoration-none">सध्याची फाईल पहा</a>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Drawing Plan Document -->
+                            <div class="col-md-6 col-lg-4">
+                                <div class="file-input-wrapper">
+                                    <label class="form-label small fw-bold">नकाशा / आराखडा</label>
+                                    <input type="file" class="form-control form-control-sm" name="drawing_plan_document" accept=".pdf,.jpg,.png">
+                                    {% if tech_sanction.drawing_plan_document %}
+                                    <div class="current-file mt-1">
+                                        <i class="fa fa-file-image"></i>
+                                        <a href="{{ tech_sanction.drawing_plan_document.url }}" target="_blank" class="text-decoration-none">सध्याची फाईल पहा</a>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Approval Letter Document -->
+                            <div class="col-md-6 col-lg-4">
+                                <div class="file-input-wrapper">
+                                    <label class="form-label small fw-bold">मान्यता पत्र</label>
+                                    <input type="file" class="form-control form-control-sm" name="approval_letter_document" accept=".pdf,.doc,.docx">
+                                    {% if tech_sanction.approval_letter_document %}
+                                    <div class="current-file mt-1">
+                                        <i class="fa fa-file-pdf"></i>
+                                        <a href="{{ tech_sanction.approval_letter_document.url }}" target="_blank" class="text-decoration-none">सध्याची फाईल पहा</a>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Other Document -->
+                            <div class="col-md-6 col-lg-4">
+                                <div class="file-input-wrapper">
+                                    <label class="form-label small fw-bold">इतर दस्तऐवज</label>
+                                    <input type="file" class="form-control form-control-sm" name="other_document" accept=".pdf,.doc,.docx">
+                                    {% if tech_sanction.other_document %}
+                                    <div class="current-file mt-1">
+                                        <i class="fa fa-file-pdf"></i>
+                                        <a href="{{ tech_sanction.other_document.url }}" target="_blank" class="text-decoration-none">सध्याची फाईल पहा</a>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="file-info">
+                            <i class="fa fa-info-circle"></i> स्वीकारलेले फॉरमॅट: PDF, DOC, DOCX, JPG, PNG (कमाल 10MB)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
+                    <a href="{% url 'Activity-Work-Master' %}" class="btn btn-light btn-sm">
+                        <i class="fa fa-times"></i> रद्द करा
+                    </a>
+                    <button type="submit" class="btn btn-warning btn-sm" style="background: var(--gold); color: #fff; border: none;">
+                        <i class="fa fa-save"></i> {% if is_edit %}अपडेट करा{% else %}सबमिट करा{% endif %}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+{% endblock %}

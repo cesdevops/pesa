@@ -27,6 +27,7 @@ urlpatterns = [
     path('Kosh-Edit-User/<int:grampanchayat_id>/<int:kosh_user_id>/', views.Kosh_Edit_User, name='Kosh-Edit-User'),
     
 
+    path( 'Kosh-fund-alloted-details/', views.Kosh_fund_alloted_details,name='Kosh-fund-alloted-details'),
 
 
 
